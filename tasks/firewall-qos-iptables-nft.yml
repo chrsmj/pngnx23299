@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/firewall-qos-iptables-nft.yml
+
+# Toggles some bits to keep calls flowing faster.
+
+# TODO: use a nft specific role to completely remove the iptables
+
+- name: Flush the OUTPUT chain in the mangle table.
+  become: yes
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    table: mangle
+    flush: true
+
+- name: QoS VoiP - SIP media.
+  become: yes
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    jump: DSCP
+    table: mangle
+    set_dscp_mark_class: EF
+    protocol: udp
+    source_port: "{{ rtp_port_range|default('10000:20000') }}"
+
+- name: QoS VoiP - SIP fax.
+  become: yes
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    jump: DSCP
+    table: mangle
+    set_dscp_mark_class: EF
+    protocol: udp
+    source_port: "{{ t38_port_range|default('4000:4999') }}"
+
+- name: QoS VoiP - SIP signaling.
+  become: yes
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    jump: DSCP
+    table: mangle
+    set_dscp_mark_class: CS3
+    protocol: udp
+    source_port: "{{ sip_port_range|default('5060:5069') }}"
+
+- name: QoS VoiP - IAX media and signaling on same port.
+  become: yes
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    jump: DSCP
+    table: mangle
+    set_dscp_mark_class: CS1
+    protocol: udp
+    source_port: "{{ iax_port|default('4569') }}"
+
+- name: Dump the NFT output of the mangle rules.
+  become: yes
+  ansible.builtin.shell: /usr/sbin/nft list table ip mangle > /etc/nftables-qos-mangle.conf
+
+- name: Modify the NFT config to load the mangled table.
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/nftables.conf
+    regexp: '^include "/etc/nftables-qos-mangle.conf"'
+    line: 'include "/etc/nftables-qos-mangle.conf"'
+
+- name: Restart and enable NFT.
+  become: yes
+  ansible.builtin.service:
+    name: nftables
+    state: restarted
+    enabled: true
+

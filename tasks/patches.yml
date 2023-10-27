@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/patches.yml
+
+# The most minor of adjustments needed.
+
+- name: Minor bug when adding outbound route.
+  become: yes
+  ansible.posix.patch:
+    src: freepbx-core-views-routing-form.patch
+    dest: /var/www/html/admin/modules/core/views/routing/form.php
+

@@ -1,0 +1,108 @@
+---
+
+# the script is fairly idempotent but you can still shoot yourself in the foot
+new_src: yes
+clean_src: yes
+do_asterisk_install: yes
+blow_away_config: true
+
+build_target: /usr/local/src
+
+# lots of things deprecated in PHP 8.2, yikes
+php_major: 8
+php_minor: 2
+php_version: "{{ php_major }}.{{ php_minor }}"
+
+# latest DAHDI Linux
+dahdilinux_major: 3
+dahdilinux_minor: 3.0-rc1
+dahdilinux_version: "{{ dahdilinux_major }}.{{ dahdilinux_minor }}"
+dahdilinux_urlbase: "https://github.com/asterisk/dahdi-linux/releases/download/v{{ dahdilinux_version }}"
+dahdilinux_checksum: sha256:453b4cb81396d8215d193a7bb6987a8d1cfdbd28cf12e4bfaca7ecf702d2dc76
+dahdilinux_tarball: "dahdi-linux-{{ dahdilinux_version }}.tar.gz"
+dahdilinux_target: "{{ build_target }}/dahdi-linux-{{ dahdilinux_version }}"
+
+# latest DAHDI Tools
+dahditools_major: 3
+dahditools_minor: 3.0-rc1
+dahditools_version: "{{ dahditools_major }}.{{ dahditools_minor }}"
+dahditools_urlbase: "https://github.com/asterisk/dahdi-tools/releases/download/v{{ dahditools_version }}"
+dahditools_checksum: sha256:00bb02ea8d9aa5761da82fe578059aa73dee1e6f2a4a475b2e2ab602e1eed01f
+dahditools_tarball: "dahdi-tools-{{ dahditools_version }}.tar.gz"
+dahditools_target: "{{ build_target }}/dahdi-tools-{{ dahditools_version }}"
+
+# latest LIBPRI
+libpri_major: 1
+libpri_minor: 6.1
+libpri_version: "{{ libpri_major }}.{{ libpri_minor }}"
+libpri_urlbase: "https://github.com/asterisk/libpri/releases/download/{{ libpri_version }}"
+libpri_checksum: sha256:d4d1a62766695455f1b616f5f7603458e6d23df787ebabc31ffda1c6298d0509
+libpri_tarball: "libpri-{{ libpri_version }}.tar.gz"
+libpri_target: "{{ build_target }}/libpri-{{ libpri_version }}"
+
+# latest Asterisk
+asterisk_major: 20
+asterisk_minor: 5.0
+asterisk_version: "{{ asterisk_major }}.{{ asterisk_minor }}"
+asterisk_urlbase: "https://github.com/asterisk/asterisk/releases/download/{{ asterisk_version }}"
+asterisk_checksum: sha256:05dc5f235da44b69102bedca067bf35a612813502d1e18cd88a22d9e4c25c5e7
+asterisk_tarball: "asterisk-{{ asterisk_version }}.tar.gz"
+asterisk_target: "{{ build_target }}/asterisk-{{ asterisk_version }}"
+
+# extra Digium codecs
+digium_urlbase: "http://downloads.digium.com/pub/telephony"
+digium_codecs:
+  - opus
+  - silk
+  - siren7
+  - siren14
+
+# getting ready for the FreePBX tarball
+freepbx_major: 17
+freepbx_minor: "0-latest"
+freepbx_version: "{{ freepbx_major }}.{{ freepbx_minor }}"
+freepbx_urlbase: "http://mirror.freepbx.org/modules/packages/freepbx"
+freepbx_tarball: "freepbx-{{ freepbx_version }}.tgz"
+freepbx_target: "{{ build_target }}/freepbx-{{ freepbx_version }}"
+
+# but at least with FreePBX git zips we get something to test
+freepbx_git_version: freepbx-git-17
+freepbx_git_urlbase: "https://git.freepbx.org/rest/api/latest/projects/FREEPBX/repos"
+freepbx_git_urlpost: "archive?at=refs%2Fheads%2Frelease%2F17.0&format=zip"
+freepbx_git_target: "{{ build_target }}/{{ freepbx_git_version }}"
+
+# minimal install mostly for testing module development
+freepbx_basic_modules:
+  - framework 
+  - backup
+  - core
+  - dashboard
+  - filestore
+  - pm2
+  - sipsettings
+  - voicemail
+
+# more nice things to have
+freepbx_extra_modules:
+  - announcement
+  - arimanager
+  - asteriskinfo
+  - calendar
+  - callrecording
+  - cdr
+  - cel
+  - conferences
+  - customappsreg
+  - featurecodeadmin
+  - ivr
+  - logfiles
+  - manager
+  - miscapps
+  - music
+  - paging
+  - queues
+  - recordings
+  - ringgroups
+  - soundlang
+  - timeconditions
+

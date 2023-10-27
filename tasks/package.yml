@@ -1,0 +1,205 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/package.yml
+
+- name: Update packages for Debian 12.
+  become: yes
+  register: rdeb12
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: safe
+
+- name: Install packages for Asterisk 20 - mostly per contrib/source/install_prereq file.
+  become: yes
+  register: rast20
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - bash
+      - binutils-dev
+      - bison
+      - build-essential
+      - bzip2
+      - doxygen
+      - flex
+      - freetds-dev
+      - graphviz
+      - libasound2-dev
+      - libbluetooth-dev
+      - libcap-dev
+      - libc-client2007e-dev
+      - libcfg-dev
+      - libcodec2-dev
+      - libcorosync-common-dev
+      - libcpg-dev
+      - libcurl4-openssl-dev
+      - libedit-dev
+      - libfftw3-dev
+      - libgmime-3.0-dev
+      - libgsm1-dev
+      - libical-dev
+      - libiksemel-dev
+      - libjack-jackd2-dev
+      - libjansson-dev
+      - libldap2-dev
+      - liblua5.2-dev
+      - libmariadb-dev
+      - libneon27-dev
+      - libnewt-dev
+      - libogg-dev
+      - libosptk-dev
+      - libpopt-dev
+      - libpq-dev
+      - libradcli-dev
+      - libresample1-dev
+      - libsndfile1-dev
+      - libsnmp-dev
+      - libspandsp-dev
+      - libspeex-dev
+      - libspeexdsp-dev
+      - libsqlite3-dev
+      - libsrtp2-dev
+      - libssl-dev
+      - libunbound-dev
+      - liburiparser-dev
+      - libvorbis-dev
+      - libxml2-dev
+      - libxslt1-dev
+      - patch
+      - pkg-config
+      - portaudio19-dev
+      - subversion
+      - unixodbc-dev
+      - uuid-dev
+      - wget
+      - xmlstarlet
+      - zlib1g-dev
+
+- name: Install extra packages for Asterisk 20 for more faxing and codec support.
+  become: yes
+  register: rfax20
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - ghostscript
+      - imagemagick
+      - libjpeg-dev
+      - libmp3lame-dev
+      - libncurses5-dev
+      - libopus-dev
+      - libsox-fmt-mp3
+      - libsystemd-dev
+      - libtiff-dev
+      - libtiff-tools
+      - libxml2-utils
+
+- name: Install packages for DAHDI 3.
+  become: yes
+  register: rdhd3
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - linux-headers-{{ ansible_kernel }}
+
+- name: Install packages for FreePBX 17.
+  become: yes
+  register: rfpbx17
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - apache2
+      - git
+      - lame
+      - mariadb-server
+      - mariadb-client
+      - mpg123
+      - odbc-mariadb
+      - nodejs
+      - php{{ php_version }}
+      - php{{ php_version }}-curl
+      - php{{ php_version }}-cli
+      - php{{ php_version }}-common
+      - php{{ php_version }}-mysql
+      - php{{ php_version }}-pgsql
+      - php{{ php_version }}-gd
+      - php{{ php_version }}-mbstring
+      - php{{ php_version }}-intl
+      - php{{ php_version }}-xml
+      - sox
+      - sqlite3
+      - unixodbc
+      - uuid
+
+- name: The PM2 module for FreePBX needs NPM which is HUGE.
+  become: yes
+  register: rnpm
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - npm
+
+- name: Install packages that are nice-to-have.
+  become: yes
+  register: rnice
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - acl
+      - conntrack
+      - curl
+      - dtach
+      - fail2ban
+      - gnupg2
+      - haveged
+      - irqbalance
+      - locate
+      - mime-construct
+      - mc
+      - mutt
+      - ncdu
+      - net-tools
+      - openssh-server
+      - opus-tools
+      - python3-pymysql
+      - rsyslog
+      - sip-tester
+      - sngrep
+      - snmp
+      - sudo
+      - tcl
+      - tcl-tclreadline
+      - tcllib
+      - tcpdump
+      - tmux
+      - ufw
+    
+- name: Automatically rebooting if necessary. You may need to manually power-up the machine. Script will continue once connection is re-established.
+  become: yes
+  when:
+    - rdeb12.changed or
+      rast20.changed or
+      rfax20.changed or
+      rdhd3.changed or
+      rfpbx17.changed or
+      rnpm.changed or
+      rnice.changed
+  ansible.builtin.reboot:
+ 
+- name: Reboot status check.
+  when:
+    - rdeb12.changed or
+      rast20.changed or
+      rfax20.changed or
+      rdhd3.changed or
+      rfpbx17.changed or
+      rnpm.changed or
+      rnice.changed
+  ansible.builtin.debug:
+    msg:
+     - "**************************************************************************"
+     - "* Target rebooted and role should continue automatically until finished. *"
+     - "*                    Maybe go get a drink of water?                      *" 
+     - "**************************************************************************"
+

@@ -1,0 +1,12 @@
+diff --git a/core/views/routing/form.php b/core/views/routing/form.php
+index b2bf859..34a3cb9 100644
+--- a/core/views/routing/form.php
++++ b/core/views/routing/form.php
+@@ -1,6 +1,7 @@
+ <?php
+ global $amp_conf;
+ $formAction = '';
++$hooktab = '';
+ //If we are passed data we will throw it in here
+ if(!empty($viewinfo) && is_array($viewinfo)) {
+ 	extract($viewinfo);

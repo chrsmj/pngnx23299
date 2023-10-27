@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/firewall-ssh.yml
+
+# Maybe counts as application-level firewalling...
+
+- name: Limit SSH access to current user via AllowUsers line.
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config.d/pngnx23299.conf
+    regexp: '^AllowUsers '
+    line: 'AllowUsers {{ ansible_user_id }}'
+    create: true
+
+- name: Restarting SSH to pick up the change.
+  become: yes
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+

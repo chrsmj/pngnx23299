@@ -1,0 +1,324 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/firewall-ufw.yml
+
+# Careful!
+- name: Reset UFW.
+  become: yes
+  ansible.builtin.ufw:
+    state: reset
+
+- name: Disable IPv6 support in UFW.
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^IPV6'
+    line: 'IPV6=no'
+
+- name: Enable various helpers for firewalled traversal of services.
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^IPT_MODULES'
+    line: 'IPT_MODULES="nf_conntrack_ftp nf_nat_ftp nf_conntrack_tftp nf_nat_tftp nf_conntrack_netbios_ns"'
+
+- name: Initially allow everything and enable UFW with logging.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    state: enabled
+    policy: allow
+    logging: full
+
+# TODO: fix this bug in Ansible - only 'in' or 'out' work not full 'incoming' or 'outgoing' as per the docs online
+# BUT is superflous anyhow as default UFW always allows in/out traffic on the loopback
+#- name: Loopback always works.
+#  become: yes
+#  ufw:
+#    rule: allow
+#    interface: lo
+#    direction: "{{ item }}"
+#  loop:
+#    - incoming
+#    - outgoing
+
+- name: Remove previous SSH limits on default port.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: '22'
+    proto: tcp
+    delete: yes
+ 
+- name: Limit SSH attempts on potentially non-standard port if defined in host/group variables.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: "{{ ssh_port|default('22') }}"
+    proto: tcp
+    log: yes
+    comment: Allow limited SSH.
+
+- name: Limit SIP UDP attempts on the LAN/VPNs.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: "{{ sip_port_range|default('5060:5069') }}"
+    src: "{{ itemx }}"
+    proto: udp
+    log: yes
+    comment: Allow limited SIP via UDP for phone signal layer on LAN.
+  loop:
+    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Limit SIP TCP attempts on the LAN/VPNs.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: "{{ sip_port_range|default('5060:5069') }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: yes
+    comment: Allow limited SIP via TCP for phone signal layer on LAN.
+  loop:
+    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Open RTP to the LAN/VPNs.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ rtp_port_range|default('10000:20000') }}"
+    src: "{{ itemx }}"
+    proto: udp
+    log: no
+    comment: Allow RTP for phone media channels on LAN.
+  loop:
+    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Open RTP for T38 FAX to the LAN/VPNs.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ t38_port_range|default('4000:4999') }}"
+    src: "{{ itemx }}"
+    proto: udp
+    log: no
+    comment: Allow RTP for T38 FAX on LAN.
+  loop:
+    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Only certain IPs can make IAX attempts.
+  when: iax_hosts is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ iax_port|default('4569') }}"
+    proto: udp
+    from: "{{ item }}"
+    log: no
+    comment: Allow IAX (a VoiP protocol) for communicating with other PBXes.
+  loop: "{{ iax_hosts }}"
+
+- name: Apache might get in on HTTP 80. Allow from friendlies/LANs because GUI is a hog with requests.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ http_port|default('80') }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: no
+    comment: Allow friendly/LAN access to the PBX Webserver - HTTP.
+  loop:
+    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Apache might get in on HTTPS 443. Allow from friendlies/LANs because GUI is a hog with requests.
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ https_port|default('443') }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: no
+    comment: Allow friendly/LAN access to the PBX Webserver - HTTPS.
+  loop:
+    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Asterisk serves up phone provisioning on 8088 usually. But limit it to VLAN if defined; otherwise, the LAN. And log it!
+  when:
+    - phoneprov_port is defined
+    - phone_vlans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ phoneprov_port|default('8088') }}"
+    src: "{{ item }}"
+    proto: tcp
+    log: yes
+    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    direction: in
+    comment: Allow access to the PBX phone provisioning server to the VLAN.
+  loop: "{{ phone_vlans }}"
+
+- name: Asterisk serves up phone provisioning on 8088 usually. Trying it on the LAN if no VLAN. Log it!
+  when:
+    - phoneprov_port is defined
+    - phone_vlans is not defined
+    - friendly_lans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: "{{ phoneprov_port|default('8088') }}"
+    src: "{{ item }}"
+    proto: tcp
+    log: yes
+    comment: Limit access to the PBX phone provisioning server to the friendly nets.
+  loop: "{{ friendly_lans }}"
+
+- name: Acting as NTP server only on VLAN, if defined.
+  when: phone_vlans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: 123
+    src: "{{ item }}"
+    proto: udp
+    log: no
+    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    direction: in
+    comment: ChronyD NTP service. On the VLAN.
+  loop: "{{ phone_vlans }}"
+
+- name: Acting as NTP server on the friendly local networks, if no VLAN.
+  when:
+    - phone_vlans is not defined
+    - friendly_lans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: 123
+    src: "{{ item }}"
+    proto: udp
+    log: no
+    comment: ChronyD NTP service. On friendly nets.
+  loop: "{{ friendly_lans }}"
+
+- name: TFTP gets in on 69. VLAN vs friendly nets. Very Limited. Logged!
+  when: phone_vlans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: 69
+    src: "{{ item }}"
+    proto: udp
+    log: yes
+    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    direction: in
+    comment: TFTP for phone provisioning. On the VLAN.
+  loop: "{{ phone_vlans }}"
+
+- name: TFTP gets in on 69. VLAN vs friendly nets. Very Limited. Logged!
+  when:
+    - phone_vlans is not defined
+    - friendly_lans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: 69
+    src: "{{ item }}"
+    proto: udp
+    log: yes
+    comment: TFTP for phone provisioning. On friendly nets.
+  loop: "{{ friendly_lans }}"
+
+- name: Run DNS server on VLAN, if any.
+  when: phone_vlans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: 53
+    src: "{{ item }}"
+    proto: udp
+    log: yes
+    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    direction: in
+    comment: DNS server on the VLAN.
+  loop: "{{ phone_vlans }}"
+
+- name: Run DHCP server on VLAN, if any.
+  when: phone_vlans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: 67
+    proto: udp
+    log: yes
+    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    direction: in
+    comment: DHCP server on the VLAN.
+  loop: "{{ phone_vlans }}"
+
+- name: Switch from Allow to Deny default policy. This disallows everything else not explicity allowed already. Double-check SSH still works!
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    state: enabled
+    policy: deny
+    logging: low
+
+- name: Enable UFW service.
+  become: yes
+  ansible.builtin.service:
+    name: ufw
+    enabled: yes
+    state: started
+ 

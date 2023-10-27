@@ -1,0 +1,52 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/systemd-freepbx.yml
+
+# Provides automatic start up of FreePBX at boot via SystemD.
+
+- name: Copy SystemD service config files for FreePBX.
+  become: yes
+  ansible.builtin.copy:
+    src: freepbx.service
+    dest: /etc/systemd/system/freepbx.service
+    owner: root
+    group: root
+    mode: 0444
+
+- name: Reload SystemD to catch new FreePBX service changes.
+  become: yes
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Give SystemD a moment to catch-up.
+  delegate_to: localhost
+  ansible.builtin.wait_for:
+    timeout: 2
+
+- name: Enable FreePBX service via SystemD.
+  become: yes
+  ansible.builtin.systemd:
+    name: freepbx
+    enabled: true
+
+- name: Give SystemD another moment to catch-up.
+  delegate_to: localhost
+  ansible.builtin.wait_for:
+    timeout: 2
+
+- name: Start FreePBX service via SystemD.
+  become: yes
+  ansible.builtin.systemd:
+    name: freepbx
+    state: started
+ 
+- name: Restart FreePBX. Only when new source build.
+  become: yes
+  when: new_src
+  ansible.builtin.service:
+    name: freepbx
+    enabled: yes   
+    state: restarted
+

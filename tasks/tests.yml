@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/tests.yml
+
+- name: Show IPv4.
+  ansible.builtin.debug:
+    msg: "{{ ansible_default_ipv4['address'] }}"
+  tags: tests
+

@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/mariadb.yml
+
+# Configure MariaDB/MYSQL in a way that FreePBX can handle.
+
+- name: Make MYSQL Great Again.
+  become: yes
+  ansible.builtin.ini_file:
+    path: /etc/mysql/conf.d/freepbx.cnf
+    section: mysqld
+    option: sql_mode
+    value: ''
+    no_extra_spaces: yes
+
+- name: Restart MariaDB (MYSQL).
+  become: yes
+  ansible.builtin.service:
+    name: mariadb
+    state: restarted
+
+- name: Prep odbc.ini for FreePBX ODBC connection.
+  become: yes
+  tags: extra
+  ansible.builtin.ini_file:
+    path: /etc/odbc.ini
+    section: MySQL-asteriskcdrdb
+    option: "{{ item.k }}"
+    value: "{{ item.v }}"
+    no_extra_spaces: yes
+  with_items:
+    - { k: "Description", v: "MySQL connection to 'asteriskcdrdb' database" }
+    - { k: "driver",      v: "MariaDB Unicode" }
+    - { k: "server",      v: "localhost" }
+    - { k: "database",    v: "asteriskcdrdb" }
+    - { k: "Port",        v: "3306" }
+    - { k: "Socket",      v: "/run/mysqld/mysqld.sock" }
+    - { k: "option",      v: "3" }
+    - { k: "Charset",     v: "utf8" }

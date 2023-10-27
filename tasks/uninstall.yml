@@ -1,0 +1,113 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/uninstall.yml
+
+# Cleans up most parts of a previous role install.
+# uninstall - Keeps Asterisk build, but blows away FreePBX parts.
+# splat - Wipes Asterisk, DAHDI and LIBPRI and non-free codecs.
+# nopants - Stops and flushes out the firewall parts. Careful!
+
+- name: Disable and Stop FreePBX, Asterisk, Apache and MariaDB.
+  become: yes
+  tags: [ never, uninstall, splat ]
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  with_items:
+    - freepbx
+    - asterisk
+    - apache2
+    - mariadb
+  ignore_errors: true
+
+- name: Remove most of the FreePBX parts.
+  become: yes
+  tags: [ never, uninstall, splat ]
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/freepbx.conf
+    - /etc/amportal.conf
+    - /etc/asterisk
+    - /tmp/{{ freepbx_git_version }}
+    - /tmp/{{ freepbx_tarball }}
+    - "{{ freepbx_git_target }}"
+    - "{{ freepbx_target }}"
+    - /var/www/html/admin
+  ignore_errors: true
+
+- name: Drops the Asterisk MariaDB databases.
+  become: yes
+  tags: [ never, uninstall, splat ]
+  ansible.builtin.command: mysqladmin -f drop {{ item }}
+  with_items:
+    - asterisk
+    - asteriskcdrdb
+  ignore_errors: true
+
+- name: Uninstall DAHDI and LIBPRI.
+  become: yes
+  tags: [ never, splat ]
+  ansible.builtin.command: /usr/bin/make uninstall
+  args:
+    chdir: "{{ item }}"
+  with_items:
+    - "{{ libpri_target }}"
+    - "{{ dahditools_target }}"
+    - "{{ dahdilinux_target }}"
+  ignore_errors: true
+
+- name: Completely uninstall and remove all parts of Asterisk install.
+  become: yes
+  tags: [ never, splat ]
+  ansible.builtin.command: /usr/bin/make uninstall-all
+  args:
+    chdir: "{{ asterisk_target }}"
+  ignore_errors: true
+  
+- name: Remove source trees for Asterisk, DAHDI and LIBPRI.
+  become: yes
+  tags: [ never, splat ]
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "{{ asterisk_target }}"
+    - "{{ libpri_target }}"
+    - "{{ dahditools_target }}"
+    - "{{ dahdilinux_target }}"
+  ignore_errors: true
+ 
+- name: Remove some more files.
+  become: yes
+  tags: [ never, splat ]
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /etc/asterisk.makeopts
+  ignore_errors: true
+ 
+- name: Removes non-free codecs if any. Uses rm (yuck).
+  become: yes
+  tags: [ never, splat ]
+  ansible.builtin.command: /usr/bin/rm -Rf {{ build_target }}/codec_{{ item }}-*
+  with_items: "{{ digium_codecs }}"
+  ignore_errors: true
+
+- name: Stop and disable fail2ban, ufw, and nftables. Careful!
+  become: yes
+  tags: [ never, nopants ]
+  ansible.builtin.service:
+    state: stopped
+    enabled: false
+  with_items:
+    - fail2ban
+    - ufw
+    - nftables
+  ignore_errors: true
+

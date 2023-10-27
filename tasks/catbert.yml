@@ -1,0 +1,70 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/catbert.yml
+
+# Handles Human and Robot Resource issues such as usernames and permissions.
+
+- name: Create asterisk group.
+  become: yes
+  ansible.builtin.group:
+    name: asterisk
+    state: present
+
+- name: Create asterisk user.
+  become: yes
+  ansible.builtin.user:
+    name: asterisk
+    state: present
+    groups: asterisk
+    shell: /usr/sbin/nologin
+    home: /var/lib/asterisk
+
+- name: Create pbx-bots group.
+  become: yes
+  ansible.builtin.group:
+    name: pbx-bots
+    state: present
+
+- name: Put current user in some extra groups.
+  become: yes
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: asterisk,www-data,pbx-bots,sudo
+    append: yes
+
+- name: Change ownership on certain files and also touch them.
+  become: yes
+  ignore_errors: yes
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: asterisk
+    group: asterisk
+    mode: 0750
+    state: touch
+  with_items:
+    - /etc/asterisk/asterisk.conf
+    - /etc/asterisk/cdr.conf
+    - /etc/asterisk/modules.conf
+    - /var/lib/asterisk/astdb.sqlite3
+
+- name: Change ownership on certain directories.
+  become: yes
+  ignore_errors: yes
+  ansible.builtin.file:
+    path: "{{ item.dir }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: 0750
+    recurse: "{{ item.recurse }}"
+  with_items:
+    - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/var/lib/asterisk/sounds",    owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
+    - { dir: "/var/log/asterisk",           owner: "asterisk", group: "pbx-bots", recurse: "yes" }
+    - { dir: "/var/spool/asterisk",         owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/var/spool/asterisk/monitor", owner: "asterisk", group: "pbx-bots", recurse: "yes" }
+    - { dir: "/var/spool/asterisk",         owner: "asterisk", group: "pbx-bots", recurse: "no" }
+

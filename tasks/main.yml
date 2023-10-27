@@ -1,0 +1,196 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# pngnx23299 -- An Ansible Role for installing FreePBX 17 on Debian 12
+#
+# This file is part of pngnx23299.
+#
+# pngnx23299 is free software: you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# pngnx23299 is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# pngnx23299. If not, see <https://www.gnu.org/licenses/>. 
+#
+
+---
+# file: roles/pngnx23299/tasks/main.yml
+
+# Starts the installation. Asks two questions and then off to the races.
+
+- name: Howdy :)
+  tags: [ confirm ]
+  ansible.builtin.debug:
+    msg:
+     - "**************************************************************************"
+     - "*                                                                        *"
+     - "* Welcome to pngnx23299!  Copyright 2023 GPLv3+ by Penguin PBX Solutions *"
+     - "*                                                                        *"
+     - "* This Ansible Role helps install software written/copyright by others,  *"
+     - "* mainly Asterisk 20 and FreePBX pre-release 17 on Debian 12, so mostly  *"
+     - "* open source, but can be told to install some non-free codecs/firmware. *"
+     - "*                                                                        *"
+     - "*            BEFORE YOU BEGIN, PLEASE ASK YOURSELF IF YOU:               *"
+     - "*                                                                        *"
+     - "* 1. Want to test pre-release of most of FreePBX 17, direct from GIT?    *"
+     - "* 2. Got 5GB of disk space free on your brand new Debian 12 testing box? *"
+     - "* 3. Can SSH into the box and su to root? (Check your ~/.ssh/config)     *"
+     - "* 4. Okay with blowing away everything on the target?  REALLY??? Backup? *"
+     - "* 5. Accept full liability/responsibility for everything that happens?   *"
+     - "*                                                                        *"
+     - "*       DO NOT PROCEED UNTIL YOU CAN ANSWER YES TO ALL THE ABOVE.        *"
+     - "*                                                                        *"
+     - "* System may reboot automatically if any new/updated packages installed. *"
+     - "*  Role will continue to run if target comes back online in 10 minutes.  *"
+     - "*  But, you may need to manually restart the target eg. Virtual Machine. *"
+     - "*                                                                        *"
+     - "* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING *" 
+     - "*     You are installing bleeding-edge GIT pulled development code!      *"
+     - "*    Running Online Module Updates will not work very easily at all.     *"
+     - "*       Some modules may not work without some serious hammering.        *"
+     - "*       Please do not use outside of your test bench environment.        *"
+     - "* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING *" 
+     - "*                                                                        *"
+     - "**************************************************************************"
+
+- name: Testing. Testing. Check. Check.
+  include_tasks: tests.yml
+  tags: [ never, tests ]
+
+- name: Checking if Debian 12 target.
+  tags: [ confirm ]
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == "Debian"
+      - ansible_distribution_major_version == "12"
+    fail_msg: "Install terminated. Role currently only works with Debian 12, sorry."
+    success_msg: "{{ ansible_lsb.description }} detected on {{ ansible_ssh_host }}. Great!"
+
+- name: Prompting to confirm installation.
+  tags: [ confirm ]
+  ansible.builtin.pause:
+    prompt: Please read the *BOXED WARNING* above and type YES to confirm installation, then press Enter.
+  register: promptconfirmed
+
+- name: Checking for confirmation.
+  tags: [ confirm ]
+  ansible.builtin.assert:
+    that: 
+      - promptconfirmed.user_input == "YES"
+    fail_msg: "Install terminated. Adios!"
+    success_msg: "Confirmation accepted. Install proceeding. Great!"
+
+- name: Prompting to confirm non-free parts.
+  tags: [ confirm ]
+  ansible.builtin.pause:
+    prompt: Please type YES to install non-free parts eg. more codecs, DAHDI firmware, etc.
+  register: promptnonfree
+
+- name: Uninstall only when tag provided.
+  include_tasks: uninstall.yml
+  tags: [ never, uninstall ]
+ 
+- name: Packages.
+  include_tasks: package.yml
+
+- name: Database.
+  include_tasks: mariadb.yml
+
+- name: DAHDI hardware installation.
+  include_tasks: dahdi.yml
+
+- name: DAHDI non-free firmware installation.
+  tags: nonfree
+  when:
+    - promptnonfree is defined
+    - promptnonfree.user_input == "YES"
+  include_tasks: dahdi.yml
+
+- name: LIBPRI installation.
+  include_tasks: libpri.yml
+
+- name: Asterisk installation.
+  include_tasks:
+    file: bigstar.yml
+    apply:
+      tags: star
+  tags: star
+
+- name: Additonal non-free codecs.
+  tags: nonfree
+  when:
+    - promptnonfree is defined
+    - promptnonfree.user_input == "YES"
+  include_tasks: codecs.yml
+
+- name: Adjusting users, groups and permissions.
+  include_tasks: catbert.yml
+
+- name: Apache2 installation.
+  include_tasks: apache2.yml
+
+### not used by FreePBX
+###- name: SystemD start up for Asterisk.
+###  include_tasks: systemd-asterisk.yml
+
+- block:
+  ### tarball not ready yet for prime time
+  ###- name: FreePBX from tarball.
+  ###  include_tasks: freepbx-tarball.yml
+  - name: Basic FreePBX from GIT.
+    include_tasks: freepbx-git-basic.yml
+  - name: Database. Partially run again to get ODBC ready now that FreePBX is installed.
+    include_tasks: mariadb.yml
+    tags: extra
+  - name: Extra FreePBX modules from GIT.
+    include_tasks:
+      file: freepbx-git-extra.yml
+      apply:
+        tags: extra
+    tags: extra
+  - name: Patches. Currently just one PHP 8.2 deprecation is patched for outbound routing.
+    include_tasks: patches.yml
+  # FreePBX uses fwconsole to start Asterisk and several other things
+  - name: SystemD start up for FreePBX.
+    include_tasks: systemd-freepbx.yml
+  tags: gui
+
+- name: Firewall protection.
+  tags: firewall
+  include_tasks:
+    file: "{{ item }}"
+    apply:
+      tags: firewall
+  with_items:
+    - firewall-qos-iptables-nft.yml
+    - firewall-ufw.yml
+    - firewall-fail2ban.yml
+    - firewall-ssh.yml
+
+- name: W00t!
+  ansible.builtin.debug:
+    msg:
+     - "**************************************************************************"
+     - "*                                                                        *"
+     - "* SSH into your box. Open up the FreePBX GUI in your web browser. Enjoy! *"
+     - "* You'll probably see some warnings about Unsigned and Tampered Modules. *"
+     - "*                DON'T PANIC. Just be careful :)                         *"
+     - "*                                                                        *"
+     - "* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING *" 
+     - "*       You are running bleeding-edge GIT pulled development code!       *"
+     - "*    Running Online Module Updates will not work very easily at all.     *"
+     - "*       Some modules may not work without some serious hammering.        *"
+     - "*        THIS IS YOUR FREE GIFT/JOKE WITH ABSOLUTELY NO WARRANTY.        *"
+     - "* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING *" 
+     - "*                                                                        *"
+     - "**************************************************************************"
+     - ""
+     - " GUI may be at   http://{{ ansible_ssh_host }}   OR   http://{{ ansible_default_ipv4['address'] }}"
+     - ""
+

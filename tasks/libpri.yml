@@ -1,0 +1,58 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/libpri.yml
+
+- name: Download LibPRI source.
+  when: new_src
+  ansible.builtin.get_url:
+    url: "{{ libpri_urlbase }}/{{ libpri_tarball }}"
+    dest: /tmp/{{ libpri_tarball }}
+    checksum: "{{ libpri_checksum }}"
+
+- name: Unarchive LibPRI source.
+  when: new_src
+  ansible.builtin.unarchive:
+    src: "/tmp/{{ libpri_tarball }}"
+    dest: /tmp
+    remote_src: yes
+
+- name: Copy LibPRI source from temp directory to target install directory.
+  become: yes
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/libpri-{{ libpri_version }}
+    dest: "{{ build_target }}"
+    remote_src: true
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+
+- name: Copy LibPRI tarball from temp directory to target install directory.
+  become: yes
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/{{ libpri_tarball }}
+    dest: "{{ build_target }}"
+    remote_src: true
+
+- name: Clean previous LibPRI build.
+  when: new_src or clean_src
+  ansible.builtin.command: /usr/bin/make -i clean
+  args:
+    chdir: "{{ libpri_target }}"
+  ignore_errors: true
+
+- name: Build LibPRI from source.
+  ansible.builtin.command: /usr/bin/make -j {{ ansible_processor_count | default(2) }} all
+  args:
+    chdir: "{{ libpri_target }}"
+    creates: "{{ libpri_target }}/pri.o"
+
+- name: Install LibPRI.
+  become: yes
+  when: do_asterisk_install
+  ansible.builtin.command: /usr/bin/make install
+  args:
+    chdir: "{{ libpri_target }}"
+

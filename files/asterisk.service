@@ -1,0 +1,38 @@
+[Unit]
+Description=A PenguinpbX.com config for launching the open source Asterisk PBX
+Documentation=man:asterisk(8)
+Wants=network-online.target
+After=network-online.target network.target
+
+[Service]
+Type=notify
+Environment=HOME=/var/lib/asterisk
+#if systemd do not provide hostname and you need to use ${ENV(HOSTNAME)}
+#Environment=HOSTNAME=%H
+WorkingDirectory=/var/lib/asterisk
+User=asterisk
+Group=asterisk
+ExecStart=/usr/sbin/asterisk -mqf -C /etc/asterisk/asterisk.conf
+ExecReload=/usr/sbin/asterisk -rx 'core reload'
+#if /var/run is a tmpfs, this will create /var/run/asterisk on start
+RuntimeDirectory=asterisk
+
+Nice=-20
+#UMask=0002
+LimitCORE=infinity
+LimitNOFILE=65536
+Restart=always
+RestartSec=30
+
+# Prevent duplication of logs with color codes to /var/log/messages
+StandardOutput=null
+
+PrivateTmp=true
+
+ProtectHome=true
+ProtectSystem=strict
+
+ReadWritePaths=/var/lib/asterisk /var/spool/asterisk /var/log/asterisk /var/spool/exim4 /var/log/exim4 /var/run
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,83 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/freepbx-git-extra.yml
+
+# Do the basic modules first and then add these for more features.
+
+- name: Create top temp directory to hold the modules.
+  when: new_src
+  ansible.builtin.file:
+    path: /tmp/{{ freepbx_git_version }}
+    state: directory
+
+- name: Create sub temp directories to hold the modules.
+  when: new_src
+  ansible.builtin.file:
+    path: /tmp/{{ freepbx_git_version }}/{{ item }}
+    state: directory
+  with_items: "{{ freepbx_extra_modules }}"
+
+- name: Download FreePBX module sources from main FREEPBX git repo as zip files.
+  when: new_src
+  ansible.builtin.get_url:
+    url: "{{ freepbx_git_urlbase }}/{{ item }}/{{ freepbx_git_urlpost }}"
+    dest: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
+  with_items: "{{ freepbx_extra_modules }}"
+
+- name: Unarchive FreePBX module sources.
+  when: new_src
+  ansible.builtin.unarchive:
+    src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
+    dest: /tmp/{{ freepbx_git_version }}/{{ item }}
+    remote_src: true
+  with_items: "{{ freepbx_extra_modules }}"
+
+- name: Copy FreePBX module sources from temp directory to target install directory.
+  become: yes
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/{{ freepbx_git_version }}/{{ item }}
+    dest: "{{ freepbx_git_target }}"
+    remote_src: true
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  with_items: "{{ freepbx_extra_modules }}"
+
+- name: Copy FreePBX module zip files from temp directory to target install directory.
+  become: yes
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
+    dest: "{{ freepbx_git_target }}"
+    remote_src: true
+  with_items: "{{ freepbx_extra_modules }}"
+
+- name: Copy in the modules from usr/src to var/www.
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ freepbx_git_target }}/{{ item }}"
+    dest: /var/www/html/admin/modules
+    remote_src: true
+  with_items: "{{ freepbx_extra_modules }}"
+  ignore_errors: true
+
+- name: Install the local modules.
+  become: yes
+  ansible.builtin.command: /sbin/fwconsole ma installlocal
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+   
+- name: Reload FreePBX.
+  become: yes
+  ansible.builtin.command: /sbin/fwconsole reload
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+   
+- name: Restart FreePBX.
+  become: yes
+  ansible.builtin.command: /sbin/fwconsole restart
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+   

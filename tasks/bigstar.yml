@@ -1,0 +1,206 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/bigstar.yml
+
+# Downloads, builds, and installs Asterisk from source.
+
+# TODO: remove old asterisk modules from /usr/lib/asterisk/modules/ when upgrading major versions
+
+- name: Download Asterisk source.
+  when: new_src
+  ansible.builtin.get_url:
+    url: "{{ asterisk_urlbase }}/{{ asterisk_tarball }}"
+    dest: /tmp/{{ asterisk_tarball }}
+    checksum: "{{ asterisk_checksum }}"
+
+- name: Unarchive Asterisk source.
+  when: new_src
+  ansible.builtin.unarchive:
+    src: /tmp/{{ asterisk_tarball }}
+    dest: /tmp
+    remote_src: true
+
+- name: Copy Asterisk source from temp directory to target install directory.
+  become: yes
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/asterisk-{{ asterisk_version }}
+    dest: "{{ build_target }}"
+    remote_src: true
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+
+- name: Copy Asterisk tarball from temp directory to target install directory.
+  become: yes
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/{{ asterisk_tarball }}
+    dest: "{{ build_target }}"
+    remote_src: true
+
+- name: Clean previous Asterisk build. Might not have been one so ignore any errors.
+  when: new_src or clean_src
+  ansible.builtin.command: /usr/bin/make -i distclean
+  args:
+    chdir: "{{ asterisk_target }}"
+  ignore_errors: true
+
+- name: Specify some default build options.
+  become: yes
+  ansible.builtin.copy:
+    src: asterisk-{{ asterisk_major }}.makeopts
+    dest: /etc/asterisk.makeopts
+
+- name: Might not need all these defaults. (But FreePBX uses file-based VoiceMail.)
+  become: yes
+  when: voicemail_type is not defined or voicemail_type == "files"
+  ansible.builtin.lineinfile:
+    path: /etc/asterisk.makeopts
+    regexp: '^MENUSELECT_OPTS_app_voicemail'
+    state: absent
+
+- name: Download MP3 source - per Asterisk contrib/scripts/get_mp3_source.sh file. Ignored if already done.
+  ansible.builtin.command: ./contrib/scripts/get_mp3_source.sh
+  args:
+    chdir: "{{ asterisk_target }}"
+  ignore_errors: true
+
+- name: Configure Asterisk source - version 18.
+  when: asterisk_major == 18
+  ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
+  args:
+    chdir: "{{ asterisk_target }}"
+
+- name: Configure Asterisk source - version 20.
+  when: asterisk_major == 20
+  ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
+  args:
+    chdir: "{{ asterisk_target }}"
+
+- name: Configure Asterisk source - version 21.
+  when: asterisk_major == 21
+  ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled --with-libjwt-bundled
+  args:
+    chdir: "{{ asterisk_target }}"
+
+- name: Make the menuselect.makeopts so the Addons can be added.
+  ansible.builtin.command: /usr/bin/make menuselect.makeopts
+  args:
+    chdir: "{{ asterisk_target }}"
+
+- name: Fix-up the Asterisk Addons so they get built.
+  ansible.builtin.command: ./menuselect/menuselect --enable-category MENUSELECT_ADDONS menuselect.makeopts
+  args:
+    chdir: "{{ asterisk_target }}"
+
+- name: Build Asterisk from source. Threaded make.
+  ansible.builtin.command: /usr/bin/nice -n {{ nicely | default(0) }} /usr/bin/make -j {{ ansible_processor_vcpus | default(2) }} all
+  args:
+    chdir: "{{ asterisk_target }}"
+    creates: "{{ asterisk_target }}/main/asterisk"
+
+- name: Build Asterisk from source. Single make. Sometimes needed if threaded make fails due to improper ordering of objects between threads.
+  ansible.builtin.command: /usr/bin/make all
+  args:
+    chdir: "{{ asterisk_target }}"
+    creates: "{{ asterisk_target }}/main/asterisk"
+
+- name: Install Asterisk.
+  become: yes
+  when: do_asterisk_install
+  ansible.builtin.command: /usr/bin/make install
+  args:
+    chdir: "{{ asterisk_target }}"
+
+- name: Download extra codecs from Digium server (OPUS, SIREN, etc.).
+  ansible.builtin.get_url:
+    url: "{{ digium_urlbase }}/codec_{{ item }}/asterisk-{{ asterisk_major }}.0/{{ ansible_userspace_architecture|replace('_','-') }}/codec_{{ item }}-{{ asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
+    dest: /tmp/codec_{{ item }}.tar.gz
+  with_items: "{{ digium_codecs }}"
+
+- name: Download versioning info for extra codecs from Digium server (OPUS, SIREN, etc.).
+  ansible.builtin.get_url:
+    url: "{{ digium_urlbase }}/codec_{{ item }}/selector-{{ item }}.js"
+    dest: /tmp/selector-{{ item }}.js
+  with_items: "{{ digium_codecs }}"
+
+- name: Register variables for the codec versions.
+  ansible.builtin.command: /usr/bin/grep -m 1 version /tmp/selector-{{ item }}.js
+  register: vcodecs
+  with_items: "{{ digium_codecs }}"
+
+- name: Register variables for the codec source names combined with their version numbers. Quietly.
+  no_log: true
+  ansible.builtin.command: /usr/bin/echo codec_{{ item.0 }}-{{ asterisk_major }}.0_{{ item.1.stdout|regex_replace('[^0-9.]+','') }}-{{ ansible_userspace_architecture }}
+  register: vcodecsources
+  with_together:
+    - "{{ digium_codecs }}"
+    - "{{ vcodecs.results }}"
+
+- name: Unarchive codec sources.
+  ansible.builtin.unarchive:
+    src: /tmp/codec_{{ item }}.tar.gz
+    dest: /tmp
+    remote_src: true
+  with_items: "{{ digium_codecs }}"
+
+- name: Copy codec sources from temp directory to target install directory. Quietly.
+  become: yes
+  no_log: true
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/{{ item.stdout }}
+    dest: "{{ build_target }}"
+    remote_src: true
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+  with_items: "{{ vcodecsources.results }}"
+
+- name: Copy codec tarballs from temp directory to target install directory.
+  become: yes
+  when: new_src
+  ansible.builtin.copy:
+    src: /tmp/codec_{{ item }}.tar.gz
+    dest: "{{ build_target }}"
+    remote_src: true
+  with_items: "{{ digium_codecs }}"
+
+- name: Install extra codecs. Quietly.
+  become: yes
+  no_log: true
+  ansible.builtin.copy:
+    src: "{{ build_target }}/{{ item.0.stdout }}/codec_{{ item.1 }}.so"
+    dest: /usr/lib/asterisk/modules
+    remote_src: true
+  with_together:
+    - "{{ vcodecsources.results }}"
+    - "{{ digium_codecs }}"
+
+- name: Install extra formats. Quietly. Really only OGG OPUS - others will fail and that is okay.
+  become: yes
+  no_log: true
+  ansible.builtin.copy:
+    src: "{{ build_target }}/{{ item.0.stdout }}/format_ogg_{{ item.1 }}.so"
+    dest: /usr/lib/asterisk/modules
+    remote_src: true
+  with_together:
+    - "{{ vcodecsources.results }}"
+    - "{{ digium_codecs }}"
+  ignore_errors: yes
+
+- name: Copy default main configuration file for Asterisk in to /etc/asterisk/.
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ asterisk_target }}/configs/samples/asterisk.conf.sample"
+    dest: /etc/asterisk/asterisk.conf
+    remote_src: true
+
+- name: Modify the default configuration file for Asterisk.
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/asterisk/asterisk.conf
+    regexp: '^\[directories\]\(!\)'
+    replace: '[directories]'
+

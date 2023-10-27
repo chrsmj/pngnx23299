@@ -1,0 +1,74 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/firewall-fail2ban.yml
+
+- name: Stop fail2ban.
+  become: yes
+  ansible.builtin.service:
+    name: fail2ban
+    enabled: yes
+    state: stopped
+
+- name: Don't let fail2ban ban localhost. (ignoreip)
+  become: yes
+  ansible.builtin.ini_file:
+    path: /etc/fail2ban/jail.d/pngnx23299.conf
+    section: DEFAULT
+    option: ignoreip
+    value: 127.0.0.1/8 ::1
+
+- name: Don't let fail2ban ban currently connected SSH user. (ignorecommand)
+  become: yes
+  ansible.builtin.ini_file:
+    path: /etc/fail2ban/jail.d/pngnx23299.conf
+    section: DEFAULT
+    option: ignorecommand
+    value: /usr/bin/who --ips | /usr/bin/grep -m 1 -c -e "<ip>$"
+
+- name: Configure fail2ban to use nftables for banning. Kills connections immediately. (banaction)
+  become: yes
+  ansible.builtin.ini_file:
+    path: /etc/fail2ban/jail.d/pngnx23299.conf
+    section: DEFAULT
+    option: banaction
+    value: nftables[type=allports]
+
+- name: Configure fail2ban to use nftables for banning all ports. Kills connections immediately. (banaction_allports)
+  become: yes
+  ansible.builtin.ini_file:
+    path: /etc/fail2ban/jail.d/pngnx23299.conf
+    section: DEFAULT
+    option: banaction_allports
+    value: nftables[type=allports]
+
+- name: Configure fail2ban to use Asterisk full logfile. (not messages file)
+  become: yes
+  ansible.builtin.ini_file:
+    path: /etc/fail2ban/jail.d/pngnx23299.conf
+    section: asterisk
+    option: logpath
+    value: /var/log/asterisk/full
+
+- name: Enable several jails. (Debian enables sshd jail by default.)
+  become: yes
+  ansible.builtin.ini_file:
+    path: /etc/fail2ban/jail.d/pngnx23299.conf
+    section: "{{ itemf }}"
+    option: enabled
+    value: "true"
+  loop:
+    - apache-badbots
+    - apache-common
+    - asterisk
+  loop_control:
+    loop_var: itemf
+    
+- name: Start fail2ban.
+  become: yes
+  ansible.builtin.service:
+    name: fail2ban
+    enabled: yes
+    state: started
+
