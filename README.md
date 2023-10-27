@@ -133,7 +133,7 @@ Look at the contents of the directory:
 ```
 $ cd ~/ansible-sample
 $ ls
-playbook.yml  roles
+main.zip  playbook.yml  roles
 ```
 
 Look inside of roles/ directory:
@@ -149,7 +149,7 @@ Look inside of roles/pngnx23299/ directory:
 ```
 $ cd ~/ansible-sample
 $ ls roles/pngnx23299
-defaults  files  meta  README.md  tasks
+defaults  files  LICENSE  meta  README.md  tasks  TODO.md
 ```
 
 *The README.md is this file!* :cowboy:
