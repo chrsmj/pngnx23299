@@ -82,7 +82,7 @@ Then things happen (over SSH) on your TARGET machine.
 So on your LOCAL machine...
 
 ```
-$ apt-get install ansible
+$ sudo apt-get install ansible
 ```
 
 ...should be good enough.
@@ -112,7 +112,7 @@ $ mkdir -p ~/ansible-sample/roles
 $ cd ~/ansible-sample
 $ wget https://github.com/chrsmj/pngnx23299/archive/refs/heads/main.zip
 $ unzip main.zip
-$ mv pngnx23299-main roles
+$ mv pngnx23299-main roles/pngnx23299
 ```
 
 Next, make a new file **playbook.yml** in the top directory so it is along-side the roles directory:
@@ -123,7 +123,7 @@ $ cat <<EOF>playbook.yml
 # file: playbook.yml
 - hosts: all
   roles:
-    - roles/pngnx23299-main
+    - roles/pngnx23299
 EOF
 ```
 
