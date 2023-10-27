@@ -178,9 +178,9 @@ Removes most of the FreePBX parts:
 
 ### Tag: splat
 
-Removes most of the Asterisk parts:
+Removes most of the Asterisk parts -- must be in combination with uninstall:
 
-`ansible-playbook -k -K -i TARGET, -t splat playbook.yml`
+`ansible-playbook -k -K -i TARGET, -t uninstall,splat playbook.yml`
 
 ### Tag: gui
 
