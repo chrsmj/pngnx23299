@@ -118,6 +118,7 @@ $ mv pngnx23299-main roles/pngnx23299
 Next, make a new file **playbook.yml** in the top directory so it is along-side the roles directory:
 
 ```
+$ cd ~/ansible-sample
 $ cat <<EOF>playbook.yml
 ---
 # file: playbook.yml
@@ -138,13 +139,18 @@ playbook.yml  roles
 Look inside of roles/ directory:
 
 ```
+$ cd ~/ansible-sample
 $ ls roles
 pngnx23299
 ```
 
 Look inside of roles/pngnx23299/ directory:
 
-`defaults  files  meta  README.md  tasks`
+```
+$ cd ~/ansible-sample
+$ ls roles/pngnx23299
+defaults  files  meta  README.md  tasks
+```
 
 *The README.md is this file!* :cowboy:
 
