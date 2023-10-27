@@ -105,27 +105,25 @@ $ ssh TARGET
 
 ## Sample Ansible Playbook
 
-Make some directories and drop the contents of this download in there:
+Download this role and unzip it:
 
 ```
-$ mkdir ~/ansible-sample
+$ mkdir -p ~/ansible-sample/roles
 $ cd ~/ansible-sample
-$ mkdir roles
-$ cd roles
 $ wget https://github.com/chrsmj/pngnx23299/archive/refs/heads/main.zip
 $ unzip main.zip
+$ mv pngnx23299-main roles
 ```
 
 Next, make a new file **playbook.yml** in the top directory so it is along-side the roles directory:
 
 ```
-$ cd ~/ansible-sample
 $ cat <<EOF>playbook.yml
 ---
 # file: playbook.yml
 - hosts: all
   roles:
-    - roles/pngnx23299
+    - roles/pngnx23299-main
 EOF
 ```
 
