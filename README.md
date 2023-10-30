@@ -168,7 +168,7 @@ Run this on your LOCAL machine:
 
 You will be prompted for your SSH password. Type it in and press Enter. Then you will be prompted for the root password. Type it in and press Enter.
 
-One confirmation prompt question will pop-up at the start of the install. Answer that, wait a minute, possibly restart the TARGET when prompted (if it is a virtual machine), then the rest should take care of itself, providing you a link to access the web GUI when finished.
+One confirmation prompt question will pop-up at the start of the install. Answer that, wait a minute, possibly restart the TARGET when prompted (if it does not reboot cleanly automatically eg. some virtual machines), then the rest should take care of itself, providing you a link to access the web GUI when finished.
 
 ### Tag: extra
 
