@@ -1,0 +1,10 @@
+---
+
+# the script is fairly idempotent but you can still shoot yourself in the foot
+new_src: yes
+clean_src: yes
+do_asterisk_install: yes
+blow_away_config: true
+
+build_target: /usr/local/src
+

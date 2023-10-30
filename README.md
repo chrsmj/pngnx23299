@@ -82,7 +82,7 @@ Then things happen (over SSH) on your TARGET machine.
 So on your LOCAL machine...
 
 ```
-$ sudo apt-get install ansible
+$ sudo apt-get install ansible sshpass
 ```
 
 ...should be good enough.
@@ -170,11 +170,35 @@ You will be prompted for your SSH password. Type it in and press Enter. Then you
 
 A couple of questions will pop-up at the start of the install. Answer those, wait a minute, possibly restart the TARGET when prompted (if it is a virtual machine), then the rest should take care of itself, providing you a link to access the web GUI when finished.
 
-### Tag: uninstall
+### Tag: extra
 
-Removes most of the FreePBX parts:
+Installs only the extra FreePBX modules, beyond basic ones from the default basic installation:
 
-`ansible-playbook -k -K -i TARGET, -t uninstall playbook.yml`
+`ansible-playbook -k -K -i TARGET, -t extra playbook.yml`
+
+### Tag: firewall
+
+Resets only the firewall portions:
+
+`ansible-playbook -k -K -i TARGET, -t firewall playbook.yml`
+
+### Tag: gui
+
+Installs only the FreePBX parts:
+
+`ansible-playbook -k -K -i TARGET, -t gui playbook.yml`
+
+### Tag: nonfree
+
+Installs nonfree Asterisk codecs and DAHDI firmware:
+
+`ansible-playbook -k -K -i TARGET, -t nonfree playbook.yml`
+
+### Tag: plus
+
+Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra:
+
+`ansible-playbook -k -K -i TARGET, -t plus playbook.yml`
 
 ### Tag: splat
 
@@ -182,27 +206,23 @@ Removes most of the Asterisk parts -- must be in combination with uninstall:
 
 `ansible-playbook -k -K -i TARGET, -t uninstall,splat playbook.yml`
 
-### Tag: gui
-
-Installs the FreePBX parts only:
-
-`ansible-playbook -k -K -i TARGET, -t gui playbook.yml`
-
 ### Tag: star
 
-Installs the Asterisk parts only:
+Installs only the Asterisk parts:
 
 `ansible-playbook -k -K -i TARGET, -t star playbook.yml`
 
-### Tag: firewall
+### Tag: uninstall
 
-Resets the firewall portions only:
+Removes most of the FreePBX parts:
 
-`ansible-playbook -k -K -i TARGET, -t firewall playbook.yml`
+`ansible-playbook -k -K -i TARGET, -t uninstall playbook.yml`
 
 ---
 
 #### Notices
+
+This role attempts to install only free software. You will need to explicitly pass command-line tags to install non-free software.
 
 *Various trademarks not owned by Penguin PBX Solutions are property of their respective owners and are descriptively used for commentary, identification purposes and trademark parody; and Penguin PBX Solutions claims no rights in these trademarks. No sponsorship from, endorsement by, approval of, or affiliation with any third parties is to be implied by the links and/or mentions on this site, as these links/mentions are simply fair use points of reference.*
 

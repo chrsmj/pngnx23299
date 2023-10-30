@@ -63,7 +63,7 @@
   with_items: "{{ freepbx_extra_modules }}"
   ignore_errors: true
 
-- name: Install the local modules.
+- name: Install the local modules. As a group.
   become: yes
   ansible.builtin.command: /sbin/fwconsole ma installlocal
   environment:

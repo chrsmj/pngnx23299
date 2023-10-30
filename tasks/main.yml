@@ -22,7 +22,7 @@
 ---
 # file: roles/pngnx23299/tasks/main.yml
 
-# Starts the installation. Asks two questions and then off to the races.
+# Starts the installation. Asks to confirm and then off to the races.
 
 - name: Howdy :)
   tags: [ confirm ]
@@ -86,12 +86,6 @@
     fail_msg: "Install terminated. Adios!"
     success_msg: "Confirmation accepted. Install proceeding. Great!"
 
-- name: Prompting to confirm non-free parts.
-  tags: [ confirm ]
-  ansible.builtin.pause:
-    prompt: Please type YES to install non-free parts eg. more codecs, DAHDI firmware, etc.
-  register: promptnonfree
-
 - name: Uninstall only when tag provided.
   include_tasks: uninstall.yml
   tags: [ never, uninstall ]
@@ -106,10 +100,7 @@
   include_tasks: dahdi.yml
 
 - name: DAHDI non-free firmware installation.
-  tags: nonfree
-  when:
-    - promptnonfree is defined
-    - promptnonfree.user_input == "YES"
+  tags: [ never, nonfree ]
   include_tasks: dahdi.yml
 
 - name: LIBPRI installation.
@@ -123,10 +114,7 @@
   tags: star
 
 - name: Additonal non-free codecs.
-  tags: nonfree
-  when:
-    - promptnonfree is defined
-    - promptnonfree.user_input == "YES"
+  tags: [ never, nonfree ]
   include_tasks: codecs.yml
 
 - name: Adjusting users, groups and permissions.
@@ -143,17 +131,23 @@
   ### tarball not ready yet for prime time
   ###- name: FreePBX from tarball.
   ###  include_tasks: freepbx-tarball.yml
-  - name: Basic FreePBX from GIT.
+  - name: Basic FreePBX from GIT. Enough to register phones and test call the telco.
     include_tasks: freepbx-git-basic.yml
   - name: Database. Partially run again to get ODBC ready now that FreePBX is installed.
     include_tasks: mariadb.yml
     tags: extra
-  - name: Extra FreePBX modules from GIT.
+  - name: Extra FreePBX modules from GIT. Beyond Basic. Includes CDRs, Logs, IVRs, and more.
     include_tasks:
       file: freepbx-git-extra.yml
       apply:
         tags: extra
     tags: extra
+  - name: Plus the rest of the FreePBX modules from GIT. Beyond Basic and Extra.
+    include_tasks:
+      file: freepbx-git-plus.yml
+      apply:
+        tags: plus
+    tags: plus
   - name: Patches. Currently just one PHP 8.2 deprecation is patched for outbound routing.
     include_tasks: patches.yml
   # FreePBX uses fwconsole to start Asterisk and several other things

@@ -1,13 +1,5 @@
 ---
 
-# the script is fairly idempotent but you can still shoot yourself in the foot
-new_src: yes
-clean_src: yes
-do_asterisk_install: yes
-blow_away_config: true
-
-build_target: /usr/local/src
-
 # lots of things deprecated in PHP 8.2, yikes
 php_major: 8
 php_minor: 2
@@ -49,14 +41,6 @@ asterisk_checksum: sha256:05dc5f235da44b69102bedca067bf35a612813502d1e18cd88a22d
 asterisk_tarball: "asterisk-{{ asterisk_version }}.tar.gz"
 asterisk_target: "{{ build_target }}/asterisk-{{ asterisk_version }}"
 
-# extra Digium codecs
-digium_urlbase: "http://downloads.digium.com/pub/telephony"
-digium_codecs:
-  - opus
-  - silk
-  - siren7
-  - siren14
-
 # getting ready for the FreePBX tarball
 freepbx_major: 17
 freepbx_minor: "0-latest"
@@ -70,39 +54,4 @@ freepbx_git_version: freepbx-git-17
 freepbx_git_urlbase: "https://git.freepbx.org/rest/api/latest/projects/FREEPBX/repos"
 freepbx_git_urlpost: "archive?at=refs%2Fheads%2Frelease%2F17.0&format=zip"
 freepbx_git_target: "{{ build_target }}/{{ freepbx_git_version }}"
-
-# minimal install mostly for testing module development
-freepbx_basic_modules:
-  - framework 
-  - backup
-  - core
-  - dashboard
-  - filestore
-  - pm2
-  - sipsettings
-  - voicemail
-
-# more nice things to have
-freepbx_extra_modules:
-  - announcement
-  - arimanager
-  - asteriskinfo
-  - calendar
-  - callrecording
-  - cdr
-  - cel
-  - conferences
-  - customappsreg
-  - featurecodeadmin
-  - ivr
-  - logfiles
-  - manager
-  - miscapps
-  - music
-  - paging
-  - queues
-  - recordings
-  - ringgroups
-  - soundlang
-  - timeconditions
 

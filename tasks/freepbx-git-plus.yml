@@ -2,10 +2,9 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 ---
-# file: roles/pngnx23299/tasks/freepbx-git-basic.yml
+# file: roles/pngnx23299/tasks/freepbx-git-plus.yml
 
-# The minimal FreePBX modules that let you send and receive some calls to and from some extensions.
-# Useful for 3rd-party module development for the next major release before it is released :)
+# Do the basic modules first, then extrra, and then add these for even more features.
 
 - name: Create top temp directory to hold the modules.
   when: new_src
@@ -18,14 +17,15 @@
   ansible.builtin.file:
     path: /tmp/{{ freepbx_git_version }}/{{ item }}
     state: directory
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ freepbx_plus_modules }}"
 
 - name: Download FreePBX module sources from main FREEPBX git repo as zip files.
   when: new_src
   ansible.builtin.get_url:
     url: "{{ freepbx_git_urlbase }}/{{ item }}/{{ freepbx_git_urlpost }}"
     dest: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ freepbx_plus_modules }}"
+  ignore_errors: true
 
 - name: Unarchive FreePBX module sources.
   when: new_src
@@ -33,7 +33,8 @@
     src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
     dest: /tmp/{{ freepbx_git_version }}/{{ item }}
     remote_src: true
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ freepbx_plus_modules }}"
+  ignore_errors: true
 
 - name: Copy FreePBX module sources from temp directory to target install directory.
   become: yes
@@ -44,7 +45,8 @@
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ freepbx_plus_modules }}"
+  ignore_errors: true
 
 - name: Copy FreePBX module zip files from temp directory to target install directory.
   become: yes
@@ -53,47 +55,25 @@
     src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
     dest: "{{ freepbx_git_target }}"
     remote_src: true
-  with_items: "{{ freepbx_basic_modules }}"
-
-- name: Start Asterisk using FreePBX scripts.
-  become: yes
-  ansible.builtin.command: ./start_asterisk start
-  args:
-    chdir: "{{ freepbx_git_target }}/framework"
-
-# the PATH modification is needed to support use of runuser in the install script
-# TODO: maybe: use --dev-links
-- name: Install FreePBX framework. Ignoring errors because even with install script -q option there is a bunch of output.
-  become: yes
-  ansible.builtin.command: ./install -n -f -q
-  args:
-    chdir: "{{ freepbx_git_target }}/framework"
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  with_items: "{{ freepbx_plus_modules }}"
   ignore_errors: true
 
-- name: Copy in the modules from usr/src to var/www. Error on framework during reinstalls is expected.
+- name: Copy in the modules from usr/src to var/www.
   become: yes
   ansible.builtin.copy:
     src: "{{ freepbx_git_target }}/{{ item }}"
     dest: /var/www/html/admin/modules
     remote_src: true
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ freepbx_plus_modules }}"
   ignore_errors: true
 
-- name: Fix perms on PM2 it is a bugger.
+- name: Install the local modules. One-by-one. Ignore errors.
   become: yes
-  ansible.builtin.file:
-    path: /var/www/html/admin/modules/pm2
-    owner: asterisk
-    group: asterisk
-    recurse: true
-
-- name: Install the local modules. As a group.
-  become: yes
-  ansible.builtin.command: /sbin/fwconsole ma installlocal
+  ansible.builtin.command: /sbin/fwconsole ma install {{ item }}
+  with_items: "{{ freepbx_plus_modules }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ignore_errors: true
    
 - name: Reload FreePBX.
   become: yes
