@@ -83,7 +83,6 @@ freepbx_plus_modules:
   - xmpp
 
 # things that do not work currently
-# (can't even find sms module anymore...)
 freepbx_broke_modules:
   - dbmanager
   - devtools
@@ -92,7 +91,6 @@ freepbx_broke_modules:
   - moh_sounds
   - pm2-node
   - queueprio
-  - sms
   - superfecta
   - ttsengines
 
