@@ -1,5 +1,5 @@
 # pngnx23299
-**An Ansible Role for installing FreePBX 17 pre-release on Debian 12**
+**An Ansible Role for installing FreePBX 17 pre-release on Asterisk 20 on Debian 12**
 
 ---
 
