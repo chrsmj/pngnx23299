@@ -185,7 +185,7 @@ Installs system but uses BETA EDGE tarball instead of ZIP files pulled from Free
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=edge playbook.yml`
 
-*Currently (2 November 2023) the edge tarball is not yet installing properly.*
+*Currently (2 November 2023) the edge tarball is installing properly, but some modules are buggy.*
 
 ### Tag: extra
 

@@ -65,16 +65,19 @@
   ansible.builtin.command: /sbin/fwconsole ma install {{ freepbx_basic_modules|flatten }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ignore_errors: true
    
 - name: Reload FreePBX.
   become: yes
   ansible.builtin.command: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ignore_errors: true
    
 - name: Restart FreePBX.
   become: yes
   ansible.builtin.command: /sbin/fwconsole restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ignore_errors: true
    
