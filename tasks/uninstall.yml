@@ -9,7 +9,7 @@
 # splat - Wipes Asterisk, DAHDI and LIBPRI and non-free codecs.
 # nopants - Stops and flushes out the firewall parts. Careful!
 
-- name: Disable and Stop FreePBX, Asterisk, Apache and MariaDB.
+- name: Disable and Stop FreePBX, Asterisk and Apache.
   become: yes
   tags: [ never, uninstall, splat ]
   ansible.builtin.service:
@@ -20,7 +20,6 @@
     - freepbx
     - asterisk
     - apache2
-    - mariadb
   ignore_errors: true
 
 - name: Remove most of the FreePBX parts.
@@ -33,10 +32,8 @@
     - /etc/freepbx.conf
     - /etc/amportal.conf
     - /etc/asterisk
-    - /tmp/{{ freepbx_git_version }}
-    - /tmp/{{ freepbx_tarball }}
     - "{{ freepbx_git_target }}"
-    - "{{ freepbx_target }}"
+    - "{{ freepbx_edge_target }}"
     - /var/www/html/admin
   ignore_errors: true
 
@@ -47,6 +44,18 @@
   with_items:
     - asterisk
     - asteriskcdrdb
+  ignore_errors: true
+
+
+- name: Disable and Stop MariaDB.
+  become: yes
+  tags: [ never, uninstall, splat ]
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  with_items:
+    - mariadb
   ignore_errors: true
 
 - name: Uninstall DAHDI and LIBPRI.

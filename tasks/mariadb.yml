@@ -23,7 +23,6 @@
 
 - name: Prep odbc.ini for FreePBX ODBC connection.
   become: yes
-  tags: extra
   ansible.builtin.ini_file:
     path: /etc/odbc.ini
     section: MySQL-asteriskcdrdb

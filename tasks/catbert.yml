@@ -5,14 +5,15 @@
 # file: roles/pngnx23299/tasks/catbert.yml
 
 # Handles Human and Robot Resource issues such as usernames and permissions.
+# Don't get too carried away because the FreePBX install changes lots of permissions itself.
 
-- name: Create asterisk group.
+- name: Make asterisk group.
   become: yes
   ansible.builtin.group:
     name: asterisk
     state: present
 
-- name: Create asterisk user.
+- name: Make asterisk user.
   become: yes
   ansible.builtin.user:
     name: asterisk
@@ -21,7 +22,7 @@
     shell: /usr/sbin/nologin
     home: /var/lib/asterisk
 
-- name: Create pbx-bots group.
+- name: Make pbx-bots group.
   become: yes
   ansible.builtin.group:
     name: pbx-bots
@@ -34,6 +35,20 @@
     groups: asterisk,www-data,pbx-bots,sudo
     append: yes
 
+- name: Make sure some directories exist.
+  become: yes
+  ignore_errors: yes
+  ansible.builtin.file:
+    path: "{{ item.dir }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: 0750
+    recurse: "{{ item.recurse }}"
+  with_items:
+    - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
+
 - name: Change ownership on certain files and also touch them.
   become: yes
   ignore_errors: yes
@@ -44,12 +59,11 @@
     mode: 0750
     state: touch
   with_items:
-    - /etc/asterisk/asterisk.conf
     - /etc/asterisk/cdr.conf
     - /etc/asterisk/modules.conf
     - /var/lib/asterisk/astdb.sqlite3
 
-- name: Change ownership on certain directories.
+- name: Change ownership on certain directories and make sure they exist.
   become: yes
   ignore_errors: yes
   ansible.builtin.file:
@@ -67,4 +81,34 @@
     - { dir: "/var/spool/asterisk",         owner: "asterisk", group: "asterisk", recurse: "yes" }
     - { dir: "/var/spool/asterisk/monitor", owner: "asterisk", group: "pbx-bots", recurse: "yes" }
     - { dir: "/var/spool/asterisk",         owner: "asterisk", group: "pbx-bots", recurse: "no" }
+
+- name: Copy default main configuration file for Asterisk in to /etc/asterisk/. Do not overwrite if already something there.
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ asterisk_target }}/configs/samples/asterisk.conf.sample"
+    dest: /etc/asterisk/asterisk.conf
+    force: false
+    owner: root
+    group: asterisk
+    mode: 0750
+    remote_src: true
+
+- name: Check if we are dealing with the default Asterisk configuration file. Part 1.
+  ansible.builtin.stat:
+    path: "{{ asterisk_target }}/configs/samples/asterisk.conf.sample"
+  register: st1
+
+- name: Check if we are dealing with the default Asterisk configuration file. Part 2.
+  become: yes
+  ansible.builtin.stat:
+    path: /etc/asterisk/asterisk.conf
+  register: st2
+
+- name: Modify the default configuration file for Asterisk.
+  become: yes
+  when: st1.stat.checksum == st2.stat.checksum
+  ansible.builtin.replace:
+    path: /etc/asterisk/asterisk.conf
+    regexp: '^\[directories\]\(!\)'
+    replace: '[directories]'
 

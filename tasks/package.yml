@@ -4,11 +4,39 @@
 ---
 # file: roles/pngnx23299/tasks/package.yml
 
+- name: Update kernel. If this step is 'ok' then no reboot will happen because kernel is up-to-date.
+  become: yes
+  register: rkrn12
+  when: ansible_architecture == "x86_64"
+  ansible.builtin.apt:
+    update_cache: true
+    state: latest
+    name: linux-image-amd64
+
+- name: Automatically rebooting if necessary. You may need to manually power-up the machine. Script will continue once connection is re-established.
+  become: yes
+  when: rkrn12.changed
+  ansible.builtin.reboot:
+ 
+- name: Reboot status check.
+  when: rkrn12.changed
+  ansible.builtin.debug:
+    msg:
+     - "**************************************************************************"
+     - "* Target rebooted and role should continue automatically until finished. *"
+     - "**************************************************************************"
+
+- name: Stay hydrated.
+  ansible.builtin.debug:
+    msg:
+     - "**************************************************************************"
+     - "*      Maybe go get a drink of water and come back in 15 minutes ?       *" 
+     - "**************************************************************************"
+
 - name: Update packages for Debian 12.
   become: yes
   register: rdeb12
   ansible.builtin.apt:
-    update_cache: true
     upgrade: safe
 
 - name: Install packages for Asterisk 20 - mostly per contrib/source/install_prereq file.
@@ -95,13 +123,12 @@
       - libtiff-tools
       - libxml2-utils
 
-- name: Install packages for DAHDI 3.
+- name: Install DKMS and by extension the kernel header package -- for supporting DAHDI 3.
   become: yes
   register: rdhd3
   ansible.builtin.apt:
     state: latest
-    name:
-      - linux-headers-{{ ansible_kernel }}
+    name: dkms
 
 - name: Install packages for FreePBX 17.
   become: yes
@@ -147,6 +174,7 @@
     state: latest
     name:
       - acl
+      - aptitude
       - conntrack
       - curl
       - dtach
@@ -175,31 +203,3 @@
       - tmux
       - ufw
     
-- name: Automatically rebooting if necessary. You may need to manually power-up the machine. Script will continue once connection is re-established.
-  become: yes
-  when:
-    - rdeb12.changed or
-      rast20.changed or
-      rfax20.changed or
-      rdhd3.changed or
-      rfpbx17.changed or
-      rnpm.changed or
-      rnice.changed
-  ansible.builtin.reboot:
- 
-- name: Reboot status check.
-  when:
-    - rdeb12.changed or
-      rast20.changed or
-      rfax20.changed or
-      rdhd3.changed or
-      rfpbx17.changed or
-      rnpm.changed or
-      rnice.changed
-  ansible.builtin.debug:
-    msg:
-     - "**************************************************************************"
-     - "* Target rebooted and role should continue automatically until finished. *"
-     - "*                    Maybe go get a drink of water?                      *" 
-     - "**************************************************************************"
-

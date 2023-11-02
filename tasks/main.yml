@@ -33,12 +33,12 @@
      - "* Welcome to pngnx23299!  Copyright 2023 GPLv3+ by Penguin PBX Solutions *"
      - "*                                                                        *"
      - "* This Ansible Role helps install software written/copyright by others,  *"
-     - "* mainly Asterisk 20 and FreePBX pre-release 17 on Debian 12, so mostly  *"
+     - "* mainly Asterisk 20 and FreePBX 17 (BETA / GIT) on Debian 12, so mostly *"
      - "* open source, but can be told to install some non-free codecs/firmware. *"
      - "*                                                                        *"
      - "*            BEFORE YOU BEGIN, PLEASE ASK YOURSELF IF YOU:               *"
      - "*                                                                        *"
-     - "* 1. Want to test pre-release of most of FreePBX 17, direct from GIT?    *"
+     - "* 1. Want to test the most recent FreePBX 17, BETA or direct from GIT?   *"
      - "* 2. Got 5GB of disk space free on your brand new Debian 12 testing box? *"
      - "* 3. Can SSH into the box and su to root? (Check your ~/.ssh/config)     *"
      - "* 4. Okay with blowing away everything on the target?  REALLY??? Backup? *"
@@ -46,7 +46,7 @@
      - "*                                                                        *"
      - "*       DO NOT PROCEED UNTIL YOU CAN ANSWER YES TO ALL THE ABOVE.        *"
      - "*                                                                        *"
-     - "* System may reboot automatically if any new/updated packages installed. *"
+     - "*  System may reboot automatically if kernel was updated in first steps. *"
      - "*  Role will continue to run if target comes back online in 10 minutes.  *"
      - "*  But, you may need to manually restart the target eg. Virtual Machine. *"
      - "*                                                                        *"
@@ -94,10 +94,18 @@
   include_tasks: package.yml
 
 - name: Database.
-  include_tasks: mariadb.yml
+  include_tasks:
+    file: mariadb.yml
+    apply:
+      tags: db
+  tags: db
 
 - name: DAHDI hardware installation.
-  include_tasks: dahdi.yml
+  include_tasks:
+    file: dahdi.yml
+    apply:
+      tags: dahdi
+  tags: dahdi
 
 - name: DAHDI non-free firmware installation.
   tags: [ never, nonfree ]
@@ -117,34 +125,39 @@
   tags: [ never, nonfree ]
   include_tasks: codecs.yml
 
-- name: Adjusting users, groups and permissions.
-  include_tasks: catbert.yml
+- name: Adjusting users, groups and permissions; and some files needed for FreePBX install.
+  include_tasks:
+    file: catbert.yml
+    apply:
+      tags: catbert
+  tags: catbert
 
 - name: Apache2 installation.
-  include_tasks: apache2.yml
+  include_tasks:
+    file: apache2.yml
+    apply:
+      tags: apache
+  tags: apache
 
 ### not used by FreePBX
 ###- name: SystemD start up for Asterisk.
 ###  include_tasks: systemd-asterisk.yml
 
 - block:
-  ### tarball not ready yet for prime time
-  ###- name: FreePBX from tarball.
-  ###  include_tasks: freepbx-tarball.yml
-  - name: Basic FreePBX from GIT. Enough to register phones and test call the telco.
-    include_tasks: freepbx-git-basic.yml
-  - name: Database. Partially run again to get ODBC ready now that FreePBX is installed.
-    include_tasks: mariadb.yml
-    tags: extra
-  - name: Extra FreePBX modules from GIT. Beyond Basic. Includes CDRs, Logs, IVRs, and more.
+  - name: Installing FreePBX.
+    ansible.builtin.debug:
+      msg: freepbx_upstream set to {{ freepbx_upstream }}
+  - name: Basic FreePBX from either EDGE or GIT. Enough to register phones and test call the telco.
+    include_tasks: freepbx-{{ freepbx_upstream }}-basic.yml
+  - name: Extra FreePBX modules from either EDGE or GIT. Beyond Basic. Includes CDRs, Logs, IVRs, and more.
     include_tasks:
-      file: freepbx-git-extra.yml
+      file: freepbx-{{ freepbx_upstream }}-extra.yml
       apply:
         tags: extra
     tags: extra
-  - name: Plus the rest of the FreePBX modules from GIT. Beyond Basic and Extra.
+  - name: Plus the rest of the FreePBX modules from either EDGE or GIT. Beyond Basic and Extra.
     include_tasks:
-      file: freepbx-git-plus.yml
+      file: freepbx-{{ freepbx_upstream }}-plus.yml
       apply:
         tags: plus
     tags: plus
@@ -173,7 +186,12 @@
      - "**************************************************************************"
      - "*                                                                        *"
      - "* SSH into your box. Open up the FreePBX GUI in your web browser. Enjoy! *"
+     - "*                                                                        *"
+     - "*   YOU MUST IMMEDIATELY CONNECT TO THE WEB GUI AND SET YOUR PASSWORDS.  *"
+     - "*   YOU MUST IMMEDIATELY CONNECT TO THE WEB GUI AND SET YOUR PASSWORDS.  *"
+     - "*                                                                        *"
      - "* You'll probably see some warnings about Unsigned and Tampered Modules. *"
+     - "*                                                                        *"
      - "*                DON'T PANIC. Just be careful :)                         *"
      - "*                                                                        *"
      - "* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING *" 

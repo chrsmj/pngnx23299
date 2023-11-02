@@ -2,28 +2,36 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 ---
-# file: roles/pngnx23299/tasks/freepbx-tarball.yml
+# file: roles/pngnx23299/tasks/freepbx-edge-basic.yml
 
-# This might work as soon as the tarball is out.
+# The minimal FreePBX modules that let you send and receive some calls to and from some extensions.
+# Useful for 3rd-party module development for the next major release before it is released :)
+
+- name: Make a place for the FreePBX source.
+  when: new_src
+  ansible.builtin.tempfile:
+    suffix: ".{{ freepbx_edge_basename }}"
+    state: directory
+  register: tmpedge
 
 - name: Download FreePBX source.
   when: new_src
   ansible.builtin.get_url:
-    url: "{{ freepbx_urlbase }}/{{ freepbx_tarball }}"
-    dest: /tmp
+    url: "{{ freepbx_edge_urlbase }}/{{ freepbx_edge_tarball }}"
+    dest: "{{ tmpedge.path }}"
 
 - name: Unarchive FreePBX source.
   when: new_src
   ansible.builtin.unarchive:
-    src: "/tmp/{{ freepbx_tarball }}"
-    dest: /tmp
+    src: "{{ tmpedge.path }}/{{ freepbx_edge_tarball }}"
+    dest: "{{ tmpedge.path }}"
     remote_src: true
 
 - name: Copy FreePBX source from temp directory to target install directory.
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/freepbx-{{ freepbx_version }}
+    src: "{{ tmpedge.path }}/freepbx"
     dest: "{{ build_target }}"
     remote_src: true
 
@@ -31,7 +39,7 @@
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/{{ freepbx_tarball }}
+    src: "{{ tmpedge.path }}/{{ freepbx_edge_tarball }}"
     dest: "{{ build_target }}"
     remote_src: true
 
@@ -39,30 +47,22 @@
   become: yes
   ansible.builtin.command: ./start_asterisk start
   args:
-    chdir: "{{ freepbx_git_target }}/framework"
+    chdir: "{{ freepbx_edge_target }}"
 
 # the PATH modification is needed to support use of runuser in the install script
-# ignoring errors because even with install script -q option there is a bunch of output
-- name: Install FreePBX framework.
+# TODO: maybe: use --dev-links
+- name: Install FreePBX. Ignoring errors because even with install script -q option there is a bunch of output.
   become: yes
-  ansible.builtin.command: ./install --dev-links -n -f -q
+  ansible.builtin.command: ./install -n -f -q
   args:
-    chdir: "{{ freepbx_git_target }}/framework"
+    chdir: "{{ freepbx_edge_target }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
 
-- name: Fix perms on PM2 it is a bugger.
+- name: Install the basic local modules. As a group.
   become: yes
-  ansible.builtin.file:
-    path: /var/www/html/admin/modules/pm2
-    owner: asterisk
-    group: asterisk
-    recurse: true
-
-- name: Install the local modules.
-  become: yes
-  ansible.builtin.command: /sbin/fwconsole ma installlocal
+  ansible.builtin.command: /sbin/fwconsole ma install {{ freepbx_basic_modules|flatten }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    

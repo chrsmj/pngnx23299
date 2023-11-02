@@ -6,25 +6,30 @@
 
 # Downloads and installs non-free codecs from Digium.
 
-# TODO: remove old asterisk modules from /usr/lib/asterisk/modules/ when upgrading major versions
+- name: Make a place for the codec source.
+  when: new_src
+  ansible.builtin.tempfile:
+    suffix: ".non-free-codecs"
+    state: directory
+  register: tmpcodecs
 
 - name: Download extra codecs from Digium server (OPUS, SIREN, etc.).
   tags: nonfree
   ansible.builtin.get_url:
     url: "{{ digium_urlbase }}/codec_{{ item }}/asterisk-{{ asterisk_major }}.0/{{ ansible_userspace_architecture|replace('_','-') }}/codec_{{ item }}-{{ asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
-    dest: /tmp/codec_{{ item }}.tar.gz
+    dest: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
   with_items: "{{ digium_codecs }}"
 
 - name: Download versioning info for extra codecs from Digium server (OPUS, SIREN, etc.).
   tags: nonfree
   ansible.builtin.get_url:
     url: "{{ digium_urlbase }}/codec_{{ item }}/selector-{{ item }}.js"
-    dest: /tmp/selector-{{ item }}.js
+    dest: "{{ tmpcodecs.path }}/selector-{{ item }}.js"
   with_items: "{{ digium_codecs }}"
 
 - name: Register variables for the codec versions.
   tags: nonfree
-  ansible.builtin.command: /usr/bin/grep -m 1 version /tmp/selector-{{ item }}.js
+  ansible.builtin.command: /usr/bin/grep -m 1 version "{{ tmpcodecs.path }}/selector-{{ item }}.js"
   register: vcodecs
   with_items: "{{ digium_codecs }}"
 
@@ -40,8 +45,8 @@
 - name: Unarchive codec sources.
   tags: nonfree
   ansible.builtin.unarchive:
-    src: /tmp/codec_{{ item }}.tar.gz
-    dest: /tmp
+    src: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
+    dest: "{{ tmpcodecs.path }}"
     remote_src: true
   with_items: "{{ digium_codecs }}"
 
@@ -51,7 +56,7 @@
   no_log: true
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/{{ item.stdout }}
+    src: "{{ tmpcodecs.path }}/{{ item.stdout }}"
     dest: "{{ build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
@@ -63,7 +68,7 @@
   tags: nonfree
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/codec_{{ item }}.tar.gz
+    src: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
     dest: "{{ build_target }}"
     remote_src: true
   with_items: "{{ digium_codecs }}"

@@ -7,16 +7,23 @@
 # The minimal FreePBX modules that let you send and receive some calls to and from some extensions.
 # Useful for 3rd-party module development for the next major release before it is released :)
 
-- name: Create top temp directory to hold the modules.
+- name: Make a place for the FreePBX source.
+  when: new_src
+  ansible.builtin.tempfile:
+    suffix: ".{{ freepbx_git_basename }}-basic"
+    state: directory
+  register: tmpfbgit
+
+- name: Make top temp directory to hold the modules.
   when: new_src
   ansible.builtin.file:
-    path: /tmp/{{ freepbx_git_version }}
+    path: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}"
     state: directory
 
-- name: Create sub temp directories to hold the modules.
+- name: Make sub temp directories to hold the modules.
   when: new_src
   ansible.builtin.file:
-    path: /tmp/{{ freepbx_git_version }}/{{ item }}
+    path: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
     state: directory
   with_items: "{{ freepbx_basic_modules }}"
 
@@ -24,14 +31,14 @@
   when: new_src
   ansible.builtin.get_url:
     url: "{{ freepbx_git_urlbase }}/{{ item }}/{{ freepbx_git_urlpost }}"
-    dest: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
+    dest: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
   with_items: "{{ freepbx_basic_modules }}"
 
 - name: Unarchive FreePBX module sources.
   when: new_src
   ansible.builtin.unarchive:
-    src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
-    dest: /tmp/{{ freepbx_git_version }}/{{ item }}
+    src: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
+    dest: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
     remote_src: true
   with_items: "{{ freepbx_basic_modules }}"
 
@@ -39,7 +46,7 @@
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/{{ freepbx_git_version }}/{{ item }}
+    src: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
     dest: "{{ freepbx_git_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
@@ -50,7 +57,7 @@
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
+    src: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
     dest: "{{ freepbx_git_target }}"
     remote_src: true
   with_items: "{{ freepbx_basic_modules }}"

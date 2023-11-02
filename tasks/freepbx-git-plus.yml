@@ -4,18 +4,19 @@
 ---
 # file: roles/pngnx23299/tasks/freepbx-git-plus.yml
 
-# Do the basic modules first, then extrra, and then add these for even more features.
+# Do the basic modules first, then extra, and then add these for even more features.
 
-- name: Create top temp directory to hold the modules.
+- name: Make top temp directory to hold the modules.
   when: new_src
-  ansible.builtin.file:
-    path: /tmp/{{ freepbx_git_version }}
+  ansible.builtin.tempfile:
+    suffix: ".{{ freepbx_git_basename }}-plus"
     state: directory
+  register: tmpfpgit
 
-- name: Create sub temp directories to hold the modules.
+- name: Make sub temp directories to hold the modules.
   when: new_src
   ansible.builtin.file:
-    path: /tmp/{{ freepbx_git_version }}/{{ item }}
+    path: "{{ tmpfpgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
     state: directory
   with_items: "{{ freepbx_plus_modules }}"
 
@@ -23,15 +24,15 @@
   when: new_src
   ansible.builtin.get_url:
     url: "{{ freepbx_git_urlbase }}/{{ item }}/{{ freepbx_git_urlpost }}"
-    dest: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
+    dest: "{{ tmpfpgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
   with_items: "{{ freepbx_plus_modules }}"
   ignore_errors: true
 
 - name: Unarchive FreePBX module sources.
   when: new_src
   ansible.builtin.unarchive:
-    src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
-    dest: /tmp/{{ freepbx_git_version }}/{{ item }}
+    src: "{{ tmpfpgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
+    dest: "{{ tmpfpgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
     remote_src: true
   with_items: "{{ freepbx_plus_modules }}"
   ignore_errors: true
@@ -40,7 +41,7 @@
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/{{ freepbx_git_version }}/{{ item }}
+    src: "{{ tmpfpgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
     dest: "{{ freepbx_git_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
@@ -52,7 +53,7 @@
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/{{ freepbx_git_version }}/{{ item }}.zip
+    src: "{{ tmpfpgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
     dest: "{{ freepbx_git_target }}"
     remote_src: true
   with_items: "{{ freepbx_plus_modules }}"

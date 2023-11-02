@@ -4,25 +4,32 @@
 ---
 # file: roles/pngnx23299/tasks/libpri.yml
 
+- name: Make a place for the LIBPRI source.
+  when: new_src
+  ansible.builtin.tempfile:
+    suffix: ".libpri"
+    state: directory
+  register: tmplibpri
+
 - name: Download LibPRI source.
   when: new_src
   ansible.builtin.get_url:
     url: "{{ libpri_urlbase }}/{{ libpri_tarball }}"
-    dest: /tmp/{{ libpri_tarball }}
+    dest: "{{ tmplibpri.path }}/{{ libpri_tarball }}"
     checksum: "{{ libpri_checksum }}"
 
 - name: Unarchive LibPRI source.
   when: new_src
   ansible.builtin.unarchive:
-    src: "/tmp/{{ libpri_tarball }}"
-    dest: /tmp
+    src: "{{ tmplibpri.path }}/{{ libpri_tarball }}"
+    dest: "{{ tmplibpri.path }}"
     remote_src: yes
 
 - name: Copy LibPRI source from temp directory to target install directory.
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/libpri-{{ libpri_version }}
+    src: "{{ tmplibpri.path }}/libpri-{{ libpri_version }}"
     dest: "{{ build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
@@ -32,7 +39,7 @@
   become: yes
   when: new_src
   ansible.builtin.copy:
-    src: /tmp/{{ libpri_tarball }}
+    src: "{{ tmplibpri.path }}/{{ libpri_tarball }}"
     dest: "{{ build_target }}"
     remote_src: true
 

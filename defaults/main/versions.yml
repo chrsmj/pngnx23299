@@ -41,17 +41,21 @@ asterisk_checksum: sha256:05dc5f235da44b69102bedca067bf35a612813502d1e18cd88a22d
 asterisk_tarball: "asterisk-{{ asterisk_version }}.tar.gz"
 asterisk_target: "{{ build_target }}/asterisk-{{ asterisk_version }}"
 
-# getting ready for the FreePBX tarball
-freepbx_major: 17
-freepbx_minor: "0-latest"
-freepbx_version: "{{ freepbx_major }}.{{ freepbx_minor }}"
-freepbx_urlbase: "http://mirror.freepbx.org/modules/packages/freepbx"
-freepbx_tarball: "freepbx-{{ freepbx_version }}.tgz"
-freepbx_target: "{{ build_target }}/freepbx-{{ freepbx_version }}"
+# BETA FreePBX tarball
+freepbx_edge_major: 17
+freepbx_edge_minor: "0-latest-EDGE"
+freepbx_edge_version: "{{ freepbx_edge_major }}.{{ freepbx_edge_minor }}"
+freepbx_edge_basename: "freepbx-{{ freepbx_edge_version }}"
+freepbx_edge_urlbase: "http://mirror.freepbx.org/modules/packages/freepbx"
+freepbx_edge_tarball: "{{ freepbx_edge_basename }}.tgz"
+freepbx_edge_target: "{{ build_target }}/freepbx"
 
-# but at least with FreePBX git zips we get something to test
-freepbx_git_version: freepbx-git-17
+# FreePBX git zips
+freepbx_git_major: 17
+freepbx_git_minor: 0
+freepbx_git_version: "{{ freepbx_git_major }}.{{ freepbx_git_minor }}"
+freepbx_git_basename: "freepbx-git-{{ freepbx_git_version }}"
 freepbx_git_urlbase: "https://git.freepbx.org/rest/api/latest/projects/FREEPBX/repos"
-freepbx_git_urlpost: "archive?at=refs%2Fheads%2Frelease%2F17.0&format=zip"
-freepbx_git_target: "{{ build_target }}/{{ freepbx_git_version }}"
+freepbx_git_urlpost: "archive?at=refs%2Fheads%2Frelease%2F{{ freepbx_git_version }}&format=zip"
+freepbx_git_target: "{{ build_target }}/{{ freepbx_git_basename }}"
 
