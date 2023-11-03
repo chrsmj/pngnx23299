@@ -9,3 +9,4 @@
 * move libdir to 64 bits (or whatever the target is)
 * outbound exim email server setup
 * letsencrypt setup for HTTPS
+* T.38 faxing and PDF conversion
