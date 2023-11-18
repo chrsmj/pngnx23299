@@ -1,8 +1,8 @@
 ---
 
 # extra Digium codecs
-digium_urlbase: "http://downloads.digium.com/pub/telephony"
-digium_codecs:
+pngnx_digium_urlbase: "http://downloads.digium.com/pub/telephony"
+pngnx_digium_codecs:
   - opus
   - silk
   - siren7

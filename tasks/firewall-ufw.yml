@@ -61,10 +61,24 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ ssh_port|default('22') }}"
+    port: "{{ pngnx_ssh_port|default('22') }}"
     proto: tcp
     log: yes
     comment: Allow limited SSH.
+
+- name: Only certain IPs can make IAX attempts.
+  when: pngnx_iax_hosts is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ pngnx_iax_port|default('4569') }}"
+    proto: udp
+    from: "{{ item }}"
+    log: no
+    comment: Allow IAX (a VoiP protocol) for communicating with other PBXes.
+  loop: "{{ pngnx_iax_hosts }}"
 
 - name: Limit SIP UDP attempts on the LAN/VPNs.
   become: yes
@@ -72,13 +86,12 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ sip_port_range|default('5060:5069') }}"
+    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
     src: "{{ itemx }}"
     proto: udp
     log: yes
-    comment: Allow limited SIP via UDP for phone signal layer on LAN.
-  loop:
-    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+    comment: Allow limited SIP via UDP for phone signal layer on LAN/VPNs.
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)|split }}"
   loop_control:
     loop_var: itemx
 
@@ -88,13 +101,12 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ sip_port_range|default('5060:5069') }}"
+    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: yes
-    comment: Allow limited SIP via TCP for phone signal layer on LAN.
-  loop:
-    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+    comment: Allow limited SIP via TCP for phone signal layer on LAN/VPNs.
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)|split }}"
   loop_control:
     loop_var: itemx
 
@@ -104,13 +116,12 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ rtp_port_range|default('10000:20000') }}"
+    port: "{{ pngnx_rtp_port_range|default('10000:20000') }}"
     src: "{{ itemx }}"
     proto: udp
     log: no
-    comment: Allow RTP for phone media channels on LAN.
-  loop:
-    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+    comment: Allow RTP for phone media channels on LAN/VPNs.
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)|split }}"
   loop_control:
     loop_var: itemx
 
@@ -120,179 +131,335 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ t38_port_range|default('4000:4999') }}"
+    port: "{{ pngnx_t38_port_range|default('4000:4999') }}"
     src: "{{ itemx }}"
     proto: udp
     log: no
-    comment: Allow RTP for T38 FAX on LAN.
-  loop:
-    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+    comment: Allow RTP for T38 FAX on LAN/VPNs.
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)|split }}"
   loop_control:
     loop_var: itemx
 
-- name: Only certain IPs can make IAX attempts.
-  when: iax_hosts is defined
+- name: Apache might get in on HTTP 80. Allow from friendlies/LAN/VPNs because GUI is a hog with requests.
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ iax_port|default('4569') }}"
-    proto: udp
-    from: "{{ item }}"
-    log: no
-    comment: Allow IAX (a VoiP protocol) for communicating with other PBXes.
-  loop: "{{ iax_hosts }}"
-
-- name: Apache might get in on HTTP 80. Allow from friendlies/LANs because GUI is a hog with requests.
-  become: yes
-  environment:
-    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-  ansible.builtin.ufw:
-    rule: allow
-    port: "{{ http_port|default('80') }}"
+    port: "{{ pngnx_http_port|default('80') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: no
-    comment: Allow friendly/LAN access to the PBX Webserver - HTTP.
-  loop:
-    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+    comment: Allow friendly/LAN/VPNs access to the PBX Webserver - HTTP.
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)|split }}"
   loop_control:
     loop_var: itemx
 
-- name: Apache might get in on HTTPS 443. Allow from friendlies/LANs because GUI is a hog with requests.
+- name: Apache might get in on HTTPS 443. Allow from friendlies/LAN/VPNs because GUI is a hog with requests.
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ https_port|default('443') }}"
+    port: "{{ pngnx_https_port|default('443') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: no
-    comment: Allow friendly/LAN access to the PBX Webserver - HTTPS.
-  loop:
-    - "{{ friendly_lans|flatten if friendly_lans is defined else ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask }}"
+    comment: Allow friendly/LAN/VPNs access to the PBX Webserver - HTTPS.
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)|split }}"
   loop_control:
     loop_var: itemx
 
-- name: Asterisk serves up phone provisioning on 8088 usually. But limit it to VLAN if defined; otherwise, the LAN. And log it!
+- name: Limit SIP UDP attempts on the VLANs.
+  become: yes
   when:
-    - phoneprov_port is defined
-    - phone_vlans is defined
-  become: yes
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
-    rule: allow
-    port: "{{ phoneprov_port|default('8088') }}"
-    src: "{{ item }}"
+    rule: limit
+    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
+    src: "{{ itemx }}"
+    proto: udp
+    log: yes
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
+    direction: in
+    comment: Allow limited SIP via UDP for phone signal layer on VLANs.
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Limit SIP TCP attempts on the VLANs.
+  become: yes
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
+    src: "{{ itemx }}"
     proto: tcp
     log: yes
-    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
+    direction: in
+    comment: Allow limited SIP via TCP for phone signal layer on VLANs.
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Open RTP to the VLANs.
+  become: yes
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ pngnx_rtp_port_range|default('10000:20000') }}"
+    src: "{{ itemx }}"
+    proto: udp
+    log: no
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
+    direction: in
+    comment: Allow RTP for phone media channels on VLANs.
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Open RTP for T38 FAX to the VLANs.
+  become: yes
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ pngnx_t38_port_range|default('4000:4999') }}"
+    src: "{{ itemx }}"
+    proto: udp
+    log: no
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
+    direction: in
+    comment: Allow RTP for T38 FAX on VLANs.
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Apache might get in on HTTP 80. Allow from friendlies/VLANs because GUI is a hog with requests.
+  become: yes
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ pngnx_http_port|default('80') }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: no
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
+    direction: in
+    comment: Allow VLANs access to the PBX Webserver - HTTP.
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Apache might get in on HTTPS 443. Allow from friendlies/VLANs because GUI is a hog with requests.
+  become: yes
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ pngnx_https_port|default('443') }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: no
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
+    direction: in
+    comment: Allow VLANs access to the PBX Webserver - HTTPS.
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Asterisk serves up phone provisioning on 8088 usually (but we might be proxying). Limit it to VLAN if defined; otherwise, the LAN. And log it!
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ pngnx_phoneprov_proxy_port|default(pngnx_phoneprov_port|default('8088')) }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: yes
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
     direction: in
     comment: Allow access to the PBX phone provisioning server to the VLAN.
-  loop: "{{ phone_vlans }}"
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
 
-- name: Asterisk serves up phone provisioning on 8088 usually. Trying it on the LAN if no VLAN. Log it!
+- name: Asterisk serves up phone provisioning on 8088 usually (but might be proxying). Trying it on the LAN if no VLAN. Log it!
   when:
-    - phoneprov_port is defined
-    - phone_vlans is not defined
-    - friendly_lans is defined
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is not defined
+    - pngnx_friendly_lans is defined
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ phoneprov_port|default('8088') }}"
-    src: "{{ item }}"
+    port: "{{ pngnx_phoneprov_proxy_port|default(pngnx_phoneprov_port|default('8088')) }}"
+    src: "{{ itemx }}"
     proto: tcp
     log: yes
     comment: Limit access to the PBX phone provisioning server to the friendly nets.
-  loop: "{{ friendly_lans }}"
+  loop: "{{ pngnx_friendly_lans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Phone book might be proxied. VLAN check.
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: allow
+    port: "{{ pngnx_phonebook_proxy_port|default('8088') }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: yes
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
+    direction: in
+    comment: Allow access to the PBX phone book server to the VLAN.
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
+
+- name: Phone book might be proxied. LAN check.
+  when:
+    - pngnx_phoneprov
+    - pngnx_phone_vlans is not defined
+    - pngnx_friendly_lans is defined
+  become: yes
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+  ansible.builtin.ufw:
+    rule: limit
+    port: "{{ pngnx_phonebook_proxy_port|default('8088') }}"
+    src: "{{ itemx }}"
+    proto: tcp
+    log: yes
+    comment: Limit access to the PBX phone book server to the friendly nets.
+  loop: "{{ pngnx_friendly_lans }}"
+  loop_control:
+    loop_var: itemx
 
 - name: Acting as NTP server only on VLAN, if defined.
-  when: phone_vlans is defined
+  when: pngnx_phone_vlans is defined
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
     port: 123
-    src: "{{ item }}"
+    src: "{{ itemx }}"
     proto: udp
     log: no
-    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
     direction: in
     comment: ChronyD NTP service. On the VLAN.
-  loop: "{{ phone_vlans }}"
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
 
 - name: Acting as NTP server on the friendly local networks, if no VLAN.
   when:
-    - phone_vlans is not defined
-    - friendly_lans is defined
+    - pngnx_phone_vlans is not defined
+    - pngnx_friendly_lans is defined
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
     port: 123
-    src: "{{ item }}"
+    src: "{{ itemx }}"
     proto: udp
     log: no
     comment: ChronyD NTP service. On friendly nets.
-  loop: "{{ friendly_lans }}"
+  loop: "{{ pngnx_friendly_lans }}"
+  loop_control:
+    loop_var: itemx
 
 - name: TFTP gets in on 69. VLAN vs friendly nets. Very Limited. Logged!
-  when: phone_vlans is defined
+  when: pngnx_phone_vlans is defined
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
     port: 69
-    src: "{{ item }}"
+    src: "{{ itemx }}"
     proto: udp
     log: yes
-    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
     direction: in
     comment: TFTP for phone provisioning. On the VLAN.
-  loop: "{{ phone_vlans }}"
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
 
 - name: TFTP gets in on 69. VLAN vs friendly nets. Very Limited. Logged!
   when:
-    - phone_vlans is not defined
-    - friendly_lans is defined
+    - pngnx_phone_vlans is not defined
+    - pngnx_friendly_lans is defined
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
     port: 69
-    src: "{{ item }}"
+    src: "{{ itemx }}"
     proto: udp
     log: yes
     comment: TFTP for phone provisioning. On friendly nets.
-  loop: "{{ friendly_lans }}"
+  loop: "{{ pngnx_friendly_lans }}"
+  loop_control:
+    loop_var: itemx
 
 - name: Run DNS server on VLAN, if any.
-  when: phone_vlans is defined
+  when: pngnx_phone_vlans is defined
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
     port: 53
-    src: "{{ item }}"
+    src: "{{ itemx }}"
     proto: udp
     log: yes
-    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
     direction: in
     comment: DNS server on the VLAN.
-  loop: "{{ phone_vlans }}"
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
 
 - name: Run DHCP server on VLAN, if any.
-  when: phone_vlans is defined
+  when: pngnx_phone_vlans is defined
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -301,10 +468,12 @@
     port: 67
     proto: udp
     log: yes
-    interface: "{{ vlan_interface }}.{{ vlan_id }}"
+    interface: "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
     direction: in
     comment: DHCP server on the VLAN.
-  loop: "{{ phone_vlans }}"
+  loop: "{{ pngnx_phone_vlans }}"
+  loop_control:
+    loop_var: itemx
 
 - name: Switch from Allow to Deny default policy. This disallows everything else not explicity allowed already. Double-check SSH still works!
   become: yes

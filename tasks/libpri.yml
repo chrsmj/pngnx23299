@@ -5,61 +5,61 @@
 # file: roles/pngnx23299/tasks/libpri.yml
 
 - name: Make a place for the LIBPRI source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.tempfile:
     suffix: ".libpri"
     state: directory
   register: tmplibpri
 
 - name: Download LibPRI source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.get_url:
-    url: "{{ libpri_urlbase }}/{{ libpri_tarball }}"
-    dest: "{{ tmplibpri.path }}/{{ libpri_tarball }}"
-    checksum: "{{ libpri_checksum }}"
+    url: "{{ pngnx_libpri_urlbase }}/{{ pngnx_libpri_tarball }}"
+    dest: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
+    checksum: "{{ pngnx_libpri_checksum }}"
 
 - name: Unarchive LibPRI source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.unarchive:
-    src: "{{ tmplibpri.path }}/{{ libpri_tarball }}"
+    src: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
     dest: "{{ tmplibpri.path }}"
     remote_src: yes
 
 - name: Copy LibPRI source from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmplibpri.path }}/libpri-{{ libpri_version }}"
-    dest: "{{ build_target }}"
+    src: "{{ tmplibpri.path }}/libpri-{{ pngnx_libpri_version }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
 
 - name: Copy LibPRI tarball from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmplibpri.path }}/{{ libpri_tarball }}"
-    dest: "{{ build_target }}"
+    src: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
 
 - name: Clean previous LibPRI build.
-  when: new_src or clean_src
+  when: pngnx_new_src or pngnx_clean_src
   ansible.builtin.command: /usr/bin/make -i clean
   args:
-    chdir: "{{ libpri_target }}"
+    chdir: "{{ pngnx_libpri_target }}"
   ignore_errors: true
 
 - name: Build LibPRI from source.
   ansible.builtin.command: /usr/bin/make -j {{ ansible_processor_count | default(2) }} all
   args:
-    chdir: "{{ libpri_target }}"
-    creates: "{{ libpri_target }}/pri.o"
+    chdir: "{{ pngnx_libpri_target }}"
+    creates: "{{ pngnx_libpri_target }}/pri.o"
 
 - name: Install LibPRI.
   become: yes
-  when: do_asterisk_install
+  when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make install
   args:
-    chdir: "{{ libpri_target }}"
+    chdir: "{{ pngnx_libpri_target }}"
 

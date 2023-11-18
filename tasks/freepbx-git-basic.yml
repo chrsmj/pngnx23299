@@ -8,65 +8,65 @@
 # Useful for 3rd-party module development for the next major release before it is released :)
 
 - name: Make a place for the FreePBX source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.tempfile:
-    suffix: ".{{ freepbx_git_basename }}-basic"
+    suffix: ".{{ pngnx_freepbx_git_basename }}-basic"
     state: directory
   register: tmpfbgit
 
 - name: Make top temp directory to hold the modules.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.file:
-    path: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}"
+    path: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}"
     state: directory
 
 - name: Make sub temp directories to hold the modules.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.file:
-    path: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
+    path: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
     state: directory
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Download FreePBX module sources from main FREEPBX git repo as zip files.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.get_url:
-    url: "{{ freepbx_git_urlbase }}/{{ item }}/{{ freepbx_git_urlpost }}"
-    dest: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
-  with_items: "{{ freepbx_basic_modules }}"
+    url: "{{ pngnx_freepbx_git_urlbase }}/{{ item }}/{{ pngnx_freepbx_git_urlpost }}"
+    dest: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
+  with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Unarchive FreePBX module sources.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.unarchive:
-    src: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
-    dest: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
+    src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
+    dest: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
     remote_src: true
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Copy FreePBX module sources from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}"
-    dest: "{{ freepbx_git_target }}"
+    src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
+    dest: "{{ pngnx_freepbx_git_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Copy FreePBX module zip files from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpfbgit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
-    dest: "{{ freepbx_git_target }}"
+    src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
+    dest: "{{ pngnx_freepbx_git_target }}"
     remote_src: true
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Start Asterisk using FreePBX scripts.
   become: yes
   ansible.builtin.command: ./start_asterisk start
   args:
-    chdir: "{{ freepbx_git_target }}/framework"
+    chdir: "{{ pngnx_freepbx_git_target }}/framework"
 
 # the PATH modification is needed to support use of runuser in the install script
 # TODO: maybe: use --dev-links
@@ -74,7 +74,7 @@
   become: yes
   ansible.builtin.command: ./install -n -f -q
   args:
-    chdir: "{{ freepbx_git_target }}/framework"
+    chdir: "{{ pngnx_freepbx_git_target }}/framework"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
@@ -82,10 +82,10 @@
 - name: Copy in the modules from usr/src to var/www. Error on framework during reinstalls is expected.
   become: yes
   ansible.builtin.copy:
-    src: "{{ freepbx_git_target }}/{{ item }}"
+    src: "{{ pngnx_freepbx_git_target }}/{{ item }}"
     dest: /var/www/html/admin/modules
     remote_src: true
-  with_items: "{{ freepbx_basic_modules }}"
+  with_items: "{{ pngnx_freepbx_basic_modules }}"
   ignore_errors: true
 
 - name: Fix perms on PM2 it is a bugger.

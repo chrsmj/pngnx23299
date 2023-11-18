@@ -9,3 +9,9 @@
     msg: "{{ ansible_default_ipv4['address'] }}"
   tags: tests
 
+#- name: SystemD start up for FreePBX.
+#  ansible.builtin.include_tasks:
+#    file: systemd-freepbx.yml
+#    apply:
+#      tags: tests
+#  tags: tests

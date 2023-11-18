@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/freepbx-polish.yml
+
+- name: Use the internal Asterisk phoneprov and pjsip_phoneprov_provider modules.
+  become: yes
+  when: pngnx_phoneprov
+  ansible.builtin.lineinfile:
+    path: /etc/asterisk/modules.conf
+    regexp: "{{ item }}"
+    line: "load = {{ item }}"
+  loop:
+    - res_phoneprov.so
+    - res_pjsip_phoneprov_provider.so
+
+- name: Enable the Asterisk mini-HTTP server for use by phone provisioning subsystem.
+  become: yes
+  when: pngnx_phoneprov
+  ansible.builtin.command: /sbin/fwconsole setting HTTPENABLED true
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+
+- name: Forces a prefix for the Asterisk mini-HTTP server.
+  become: yes
+  when: pngnx_phoneprov
+  ansible.builtin.command: /sbin/fwconsole setting HTTPPREFIX asterisk
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+
+- name: Allows mini-HTTP server to listen on all IPs. Do not drop the firewall!
+  become: yes
+  when: pngnx_phoneprov
+  ansible.builtin.command: /sbin/fwconsole setting HTTPBINDADDRESS 0.0.0.0
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+
+- name: Reload FreePBX.
+  become: yes
+  ansible.builtin.command: /sbin/fwconsole reload
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+   
+- name: Restart FreePBX.
+  become: yes
+  ansible.builtin.command: /sbin/fwconsole restart
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+   

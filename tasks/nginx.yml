@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/nginx.yml
+
+- name: Create nginx directories, if needed.
+  become: yes
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /etc/nginx/
+    - /etc/nginx/sites-available/
+    - /etc/nginx/sites-enabled/
+
+- name: Configure the site in available-sites.
+  become: yes
+  ansible.builtin.template:
+    src: nginx-site.pngnx.j2
+    dest: /etc/nginx/sites-available/pngnx.site
+
+- name: Install nginx as web proxy and apache utils for passwords with nginx.
+  become: yes
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - nginx
+      - apache2-utils
+
+- name: Stop the default site.
+  become: yes
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  ignore_errors: yes
+
+- name: Activate the site.
+  become: yes
+  ansible.builtin.file:
+    src: ../sites-available/pngnx.site
+    path: /etc/nginx/sites-enabled/pngnx.site
+    state: link
+
+- name: Restart nginx.
+  become: yes
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+

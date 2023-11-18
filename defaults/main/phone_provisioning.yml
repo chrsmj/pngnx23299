@@ -1,0 +1,24 @@
+---
+
+# check network as well for the ports
+
+pngnx_phoneprov: no
+
+# for local per client files, otherwise generics are used
+# pngnx_private_asterisk_phoneprov_dir: 
+
+# define what phones are being used, only template them
+# pngnx_phoneprov_polycom:
+# pngnx_phoneprov_aastra:
+# pngnx_phoneprov_snom:
+
+pngnx_time_zone_name: US-Mountain
+pngnx_time_zone_code: MST
+pngnx_tone_set: US
+pngnx_utc_offset_seconds: -25200
+
+pngnx_polycom_mb_proto: http://
+pngnx_polycom_mb_home_page: :{{ pngnx_phonebook_proxy_port|default('28088') }}/nginx-proxy/pollypbxdirectory.html
+pngnx_polycom_idle_img_spip450: /pngnx_logo_spip450.bmp
+pngnx_polycom_idle_img_spip550: /pngnx_logo_spip550.bmp
+

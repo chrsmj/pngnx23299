@@ -11,6 +11,7 @@
     enabled: yes
     state: stopped
 
+# TODO: consider loosening the rules for VLANs as well
 - name: Don't let fail2ban ban localhost. (ignoreip)
   become: yes
   ansible.builtin.ini_file:

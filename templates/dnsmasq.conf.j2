@@ -1,0 +1,68 @@
+# this PBX is serving up DHCP and DNS to the VoiP phones on a VLAN
+
+bogus-priv
+no-resolv
+no-poll
+
+#log-queries
+#log-dhcp
+
+domain={{ pngnx_vlan_fqdn }}
+
+listen-address={{ pngnx_vlan_ip }}
+bind-interfaces
+
+# no routing
+dhcp-option=3
+# ip-forwarding off
+dhcp-option=19,0
+# NTP same as PBX
+dhcp-option=42,0.0.0.0
+
+
+# Polycom
+dhcp-mac=set:polly,00:04:f2:*:*:*
+
+# Aastra
+dhcp-mac=set:asstra,00:08:5d:*:*:*
+
+# Snom
+dhcp-mac=set:nomnom,00:04:13:*:*:*
+
+# Grandstream
+dhcp-mac=set:grands,00:0b:82:*:*:*
+
+# these are phones
+tag-if=set:phone,tag:polly
+tag-if=set:phone,tag:asstra
+tag-if=set:phone,tag:nomnom
+tag-if=set:phone,tag:grands
+
+# only phones get a reply!
+dhcp-ignore=tag:!phone
+
+# user defined, but good range for 246 phones is .5-.250 to leave room for statics
+dhcp-range=tag:phone,{{ pngnx_vlan_dhcp_start }},{{ pngnx_vlan_dhcp_stop }},72h
+
+
+# on to the phone autoprovisioning...
+
+# c'mon Grandstream!
+dhcp-option=tag:grands,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}/nginx-proxy"
+#dhcp-option=tag:grands,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}/asterisk/phoneprov"
+
+# Polycom used to work like this
+dhcp-option=tag:polly,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}/nginx-proxy"
+#dhcp-option=tag:polly,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}/asterisk/phoneprov"
+
+# Aastra does it well
+dhcp-option=tag:asstra,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}/nginx-proxy"
+#dhcp-option=tag:asstra,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}/asterisk/phoneprov"
+
+# Snom only does 66/67 or 43 tunneling - see the encoding script
+dhcp-option=tag:nomnom,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}"
+dhcp-option=tag:nomnom,67,"nginx-proxy/{mac}.cfg"
+#dhcp-option=tag:nomnom,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}"
+#dhcp-option=tag:nomnom,67,"asterisk/phoneprov/{mac}.cfg"
+#dhcp-option=nomnom,43,42:0F:68:74:74:70:3A:2F:2F:70:62:78:3A:38:30:38:38:43:1C:61:73:74:65:72:69:73:6B:2F:70:68:6F:6E:65:70:72:6F:76:2F:7B:6D:61:63:7D:2E:63:66:67
+

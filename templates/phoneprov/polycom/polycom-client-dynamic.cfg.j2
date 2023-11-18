@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<polycomConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="polycomConfig.xsd">
+  <tcpIpApp>
+    <tcpIpApp.sntp tcpIpApp.sntp.address="${SERVER}" tcpIpApp.sntp.AQuery="0" tcpIpApp.sntp.gmtOffset="{{ pngnx_utc_offset_seconds }}" tcpIpApp.sntp.resyncPeriod="86400" tcpIpApp.sntp.retryDnsPeriod="86400">
+      <tcpIpApp.sntp.address tcpIpApp.sntp.address.overrideDHCP="0">
+      </tcpIpApp.sntp.address>
+      <tcpIpApp.sntp.gmtOffset tcpIpApp.sntp.gmtOffset.overrideDHCP="0">
+      </tcpIpApp.sntp.gmtOffset>
+    </tcpIpApp.sntp>
+  </tcpIpApp>
+  <mb>
+    <mb.main mb.main.home="{{ pngnx_polycom_mb_proto }}${SERVER}{{ pngnx_polycom_mb_home_page }}" />
+  </mb>
+</polycomConfig>

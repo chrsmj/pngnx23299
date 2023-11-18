@@ -7,7 +7,7 @@
 # Downloads and installs non-free codecs from Digium.
 
 - name: Make a place for the codec source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.tempfile:
     suffix: ".non-free-codecs"
     state: directory
@@ -16,30 +16,30 @@
 - name: Download extra codecs from Digium server (OPUS, SIREN, etc.).
   tags: nonfree
   ansible.builtin.get_url:
-    url: "{{ digium_urlbase }}/codec_{{ item }}/asterisk-{{ asterisk_major }}.0/{{ ansible_userspace_architecture|replace('_','-') }}/codec_{{ item }}-{{ asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
+    url: "{{ pngnx_digium_urlbase }}/codec_{{ item }}/asterisk-{{ pngnx_asterisk_major }}.0/{{ ansible_userspace_architecture|replace('_','-') }}/codec_{{ item }}-{{ pngnx_asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
     dest: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
-  with_items: "{{ digium_codecs }}"
+  with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Download versioning info for extra codecs from Digium server (OPUS, SIREN, etc.).
   tags: nonfree
   ansible.builtin.get_url:
-    url: "{{ digium_urlbase }}/codec_{{ item }}/selector-{{ item }}.js"
+    url: "{{ pngnx_digium_urlbase }}/codec_{{ item }}/selector-{{ item }}.js"
     dest: "{{ tmpcodecs.path }}/selector-{{ item }}.js"
-  with_items: "{{ digium_codecs }}"
+  with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Register variables for the codec versions.
   tags: nonfree
   ansible.builtin.command: /usr/bin/grep -m 1 version "{{ tmpcodecs.path }}/selector-{{ item }}.js"
   register: vcodecs
-  with_items: "{{ digium_codecs }}"
+  with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Register variables for the codec source names combined with their version numbers. Quietly.
   tags: nonfree
   no_log: true
-  ansible.builtin.command: /usr/bin/echo codec_{{ item.0 }}-{{ asterisk_major }}.0_{{ item.1.stdout|regex_replace('[^0-9.]+','') }}-{{ ansible_userspace_architecture }}
+  ansible.builtin.command: /usr/bin/echo codec_{{ item.0 }}-{{ pngnx_asterisk_major }}.0_{{ item.1.stdout|regex_replace('[^0-9.]+','') }}-{{ ansible_userspace_architecture }}
   register: vcodecsources
   with_together:
-    - "{{ digium_codecs }}"
+    - "{{ pngnx_digium_codecs }}"
     - "{{ vcodecs.results }}"
 
 - name: Unarchive codec sources.
@@ -48,16 +48,16 @@
     src: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
     dest: "{{ tmpcodecs.path }}"
     remote_src: true
-  with_items: "{{ digium_codecs }}"
+  with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Copy codec sources from temp directory to target install directory. Quietly.
   become: yes
   tags: nonfree
   no_log: true
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpcodecs.path }}/{{ item.stdout }}"
-    dest: "{{ build_target }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
@@ -66,35 +66,35 @@
 - name: Copy codec tarballs from temp directory to target install directory.
   become: yes
   tags: nonfree
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
-    dest: "{{ build_target }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
-  with_items: "{{ digium_codecs }}"
+  with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Install extra codecs. Quietly.
   become: yes
   tags: nonfree
   no_log: true
   ansible.builtin.copy:
-    src: "{{ build_target }}/{{ item.0.stdout }}/codec_{{ item.1 }}.so"
+    src: "{{ pngnx_build_target }}/{{ item.0.stdout }}/codec_{{ item.1 }}.so"
     dest: /usr/lib/asterisk/modules
     remote_src: true
   with_together:
     - "{{ vcodecsources.results }}"
-    - "{{ digium_codecs }}"
+    - "{{ pngnx_digium_codecs }}"
 
 - name: Install extra formats. Quietly. Really only OGG OPUS - others will fail and that is okay.
   become: yes
   tags: nonfree
   no_log: true
   ansible.builtin.copy:
-    src: "{{ build_target }}/{{ item.0.stdout }}/format_ogg_{{ item.1 }}.so"
+    src: "{{ pngnx_build_target }}/{{ item.0.stdout }}/format_ogg_{{ item.1 }}.so"
     dest: /usr/lib/asterisk/modules
     remote_src: true
   with_together:
     - "{{ vcodecsources.results }}"
-    - "{{ digium_codecs }}"
+    - "{{ pngnx_digium_codecs }}"
   ignore_errors: yes
 

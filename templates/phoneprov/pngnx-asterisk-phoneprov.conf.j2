@@ -1,0 +1,90 @@
+[general]
+default_profile=polycom
+
+[aastra]
+staticdir => statics/aastra/
+mime_type => plain/text
+static_file => aastra.cfg
+static_file => 53i.cfg
+static_file => 55i.cfg
+static_file => 57i.cfg
+static_file => 6753i.cfg
+static_file => 6755i.cfg
+static_file => 6757i.cfg
+static_file => directory.csv
+${MAC}.cfg => aastra-mac-template.cfg
+${TOLOWER(${MAC})}.cfg => aastra-mac-template.cfg
+
+[polycom]
+staticdir => statics/polycom/
+mime_type => text/xml
+static_file => 000000000000.cfg
+static_file => polycom-client.cfg
+polycom-client-dynamic.cfg => dynamics/polycom/polycom-client-dynamic.cfg
+polycom-client-dynamic-SPIP450.cfg => dynamics/polycom/polycom-client-dynamic-SPIP450.cfg
+polycom-client-dynamic-SPIP550.cfg => dynamics/polycom/polycom-client-dynamic-SPIP550.cfg
+polycom-client-dynamic-SPIP650.cfg => dynamics/polycom/polycom-client-dynamic-SPIP650.cfg
+polycom-${MAC}-reg.cfg => polycom-mac-template.cfg
+polycom-${TOLOWER(${MAC})}-reg.cfg => polycom-mac-template.cfg
+pollypbxdirectory.html => polycom_directory.html,text/html
+
+[snom320]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template.cfg
+
+[snom320-fkeys0_11]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template-fkeys0_11.cfg
+
+[snom320-fkeys2_11]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template-fkeys2_11.cfg
+
+[snom320-fkeys3_11]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template-fkeys3_11.cfg
+
+[snom320-fkeys3_11-blfs6_7]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template-fkeys3_11-blfs6_7.cfg
+
+[snom320-fkeys3_11-blf6]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template-fkeys3_11-blf6.cfg
+
+[snom320-fkeys3_11-blf7]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template-fkeys3_11-blf7.cfg
+
+[snom320-fkeys6_11]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom320-mac-template-fkeys6_11.cfg
+
+[snom715]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom715-mac-template.cfg
+
+[snom715-fkeys0_4]
+staticdir => statics/snom/
+mime_type => text/xml
+static_file => snom-dialplan.xml
+${MAC}.cfg => snom715-mac-template-fkeys0_4.cfg
+

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<polycomConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="polycomConfig.xsd">
+  <call call.callsPerLineKey="2" call.ringBackTimeOut="120">
+    <call.hold>
+      <call.hold.localReminder call.hold.localReminder.enabled="1" />
+    </call.hold>
+  </call>
+  <dialplan dialplan.digitmap="[2-9]11|933|988|0T|011xxx.T|00xxx.T|1[2-9]xxxxxxxxx|[2-9]xxxxxxxxx|[6-7]xxT|[3-4]xxxT" dialplan.digitmap.timeOut="3|3|3|3|3|3|3|3|3|3" />
+  <efk>
+    <efk.efklist efk.efklist.1.mname="efkpark" efk.efklist.1.status="1" efk.efklist.2.mname="efkx2vm" efk.efklist.2.status="1" efk.efklist.3.mname="efkpage" efk.efklist.3.status="1" efk.efklist.4.mname="efkx2ext" efk.efklist.4.status="1" efk.efklist.5.mname="efkrec" efk.efklist.5.status="1">
+      <efk.efklist.1.action efk.efklist.1.action.string="610$Trefer$" />
+      <efk.efklist.2.action efk.efklist.2.action.string="***$P2N3$$Trefer$" />
+      <efk.efklist.3.action efk.efklist.3.action.string="*63$P3N3$$Tinvite$" />
+      <efk.efklist.4.action efk.efklist.4.action.string="$P4N3$$Trefer$" />
+      <efk.efklist.5.action efk.efklist.5.action.string="*1$Tdtmf$" />
+    </efk.efklist>
+    <efk.efkprompt efk.efkprompt.2.label="x2vm Voicemail Ext #:" efk.efkprompt.2.status="1" efk.efkprompt.2.type="numeric" efk.efkprompt.3.label="Page Ext # (0 for All):" efk.efkprompt.3.status="1" efk.efkprompt.3.type="numeric" efk.efkprompt.4.label="x2ext Direct Ext #:" efk.efkprompt.4.status="1" efk.efkprompt.4.type="numeric" />
+  </efk>
+  <feature>
+    <feature.enhancedFeatureKeys feature.enhancedFeatureKeys.enabled="1" />
+    <feature.lastCallReturn feature.lastCallReturn.enabled="1" />
+    <feature.messaging feature.messaging.enabled="1" />
+    <feature.presence feature.presence.enabled="1" />
+    <feature.urlDialing feature.urlDialing.enabled="0" />
+  </feature>
+  <httpd httpd.enabled="0" />
+  <qos>
+    <qos.ip>
+      <qos.ip.callControl qos.ip.callControl.dscp="EF" />
+      <qos.ip.rtp qos.ip.rtp.dscp="EF" />
+    </qos.ip>
+  </qos>
+  <saf saf.1="ascending-2tone.wav" saf.2="descending-2tone.wav" saf.3="tt-monkeys.wav" />
+  <se>
+    <se.pat>
+      <se.pat.misc>
+        <se.pat.misc.messageWaiting>
+          <se.pat.misc.messageWaiting.inst se.pat.misc.messageWaiting.inst.1.type="silence" se.pat.misc.messageWaiting.inst.2.type="silence" se.pat.misc.messageWaiting.inst.3.type="silence" />
+        </se.pat.misc.messageWaiting>
+      </se.pat.misc>
+    </se.pat>
+    <se.rt>
+      <se.rt.internal se.rt.internal.ringer="ringer16" />
+      <se.rt.ringAutoAnswer se.rt.ringAutoAnswer.ringer="ringer14" se.rt.ringAutoAnswer.timeout="1000" />
+    </se.rt>
+  </se>
+  <softkey softkey.1.action="!efkpark" softkey.1.enable="1" softkey.1.label="Park" softkey.1.precede="1" softkey.2.action="!efkx2vm" softkey.2.enable="1" softkey.2.label="x2vm" softkey.2.precede="1" softkey.3.action="!efkpage" softkey.3.enable="1" softkey.3.label="Page" softkey.4.action="!efkx2ext" softkey.4.enable="1" softkey.4.label="x2ext" softkey.4.precede="1">
+    <softkey.1.use softkey.1.use.active="1" />
+    <softkey.2.use softkey.2.use.active="1" />
+    <softkey.3.use softkey.3.use.dialtone="1" softkey.3.use.idle="1" />
+    <softkey.4.use softkey.4.use.active="1" />
+    <softkey.feature softkey.feature.buddies="0" softkey.feature.callers="1" softkey.feature.mystatus="0">
+      <softkey.feature.basicCallManagement softkey.feature.basicCallManagement.redundant="0" />
+    </softkey.feature>
+  </softkey>
+  <tcpIpApp>
+    <tcpIpApp.port>
+      <tcpIpApp.port.rtp tcpIpApp.port.rtp.mediaPortRangeStart="{{ pngnx_rtp_port_start|default('10000') }}" />
+    </tcpIpApp.port>
+  </tcpIpApp>
+  <tone>
+    <tone.chord>
+      <tone.chord.callProg>
+        <tone.chord.callProg.callWaiting>
+          <tone.chord.callProg.callWaiting.level tone.chord.callProg.callWaiting.level.1="-25" />
+        </tone.chord.callProg.callWaiting>
+      </tone.chord.callProg>
+    </tone.chord>
+  </tone>
+  <up up.oneTouchVoiceMail="1" up.welcomeSoundOnWarmBootEnabled="1">
+    <up.backlight up.backlight.idleIntensity="0" />
+  </up>
+  <voIpProt>
+    <voIpProt.SIP>
+      <voIpProt.SIP.alertInfo voIpProt.SIP.alertInfo.1.class="ringAutoAnswer" voIpProt.SIP.alertInfo.1.value="Ring Answer" voIpProt.SIP.alertInfo.2.class="internal" voIpProt.SIP.alertInfo.2.value="Internal" voIpProt.SIP.alertInfo.3.class="external" voIpProt.SIP.alertInfo.3.value="External" />
+      <voIpProt.SIP.requestValidation voIpProt.SIP.requestValidation.1.method="source" voIpProt.SIP.requestValidation.1.request="INVITE" voIpProt.SIP.requestValidation.10.method="source" voIpProt.SIP.requestValidation.10.request="NOTIFY" voIpProt.SIP.requestValidation.11.method="source" voIpProt.SIP.requestValidation.11.request="REFER" voIpProt.SIP.requestValidation.12.method="source" voIpProt.SIP.requestValidation.12.request="PRACK" voIpProt.SIP.requestValidation.13.method="source" voIpProt.SIP.requestValidation.13.request="UPDATE" voIpProt.SIP.requestValidation.2.method="source" voIpProt.SIP.requestValidation.2.request="ACK" voIpProt.SIP.requestValidation.3.method="source" voIpProt.SIP.requestValidation.3.request="BYE" voIpProt.SIP.requestValidation.4.method="source" voIpProt.SIP.requestValidation.4.request="REGISTER" voIpProt.SIP.requestValidation.5.method="source" voIpProt.SIP.requestValidation.5.request="CANCEL" voIpProt.SIP.requestValidation.6.method="source" voIpProt.SIP.requestValidation.6.request="OPTIONS" voIpProt.SIP.requestValidation.7.method="source" voIpProt.SIP.requestValidation.7.request="INFO" voIpProt.SIP.requestValidation.8.method="source" voIpProt.SIP.requestValidation.8.request="MESSAGE" voIpProt.SIP.requestValidation.9.method="source" voIpProt.SIP.requestValidation.9.request="SUBSCRIBE" />
+    </voIpProt.SIP>
+  </voIpProt>
+  <voice>
+    <voice.volume>
+      <voice.volume.persist voice.volume.persist.handset="1" voice.volume.persist.headset="1" />
+    </voice.volume>
+  </voice>
+</polycomConfig>

@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/phoneprov-aastra.yml
+
+- name: Prep the static directory.
+  become: yes
+  ansible.builtin.file:
+    path: /var/lib/asterisk/phoneprov/statics/aastra
+    state: directory
+    owner: root
+    group: asterisk
+    recurse: yes
+
+- name: Aastra templates.
+  become: yes
+  when: pngnx_private_asterisk_phoneprov_dir is not defined
+  ansible.builtin.template:
+    src: phoneprov/aastra/{{ item }}.j2
+    dest: /var/lib/asterisk/phoneprov/statics/aastra/{{ item }}
+  loop:
+    - aastra.cfg
+

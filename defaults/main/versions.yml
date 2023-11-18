@@ -1,61 +1,61 @@
 ---
 
 # lots of things deprecated in PHP 8.2, yikes
-php_major: 8
-php_minor: 2
-php_version: "{{ php_major }}.{{ php_minor }}"
+pngnx_php_major: 8
+pngnx_php_minor: 2
+pngnx_php_version: "{{ pngnx_php_major }}.{{ pngnx_php_minor }}"
 
 # latest DAHDI Linux
-dahdilinux_major: 3
-dahdilinux_minor: 3.0-rc1
-dahdilinux_version: "{{ dahdilinux_major }}.{{ dahdilinux_minor }}"
-dahdilinux_urlbase: "https://github.com/asterisk/dahdi-linux/releases/download/v{{ dahdilinux_version }}"
-dahdilinux_checksum: sha256:453b4cb81396d8215d193a7bb6987a8d1cfdbd28cf12e4bfaca7ecf702d2dc76
-dahdilinux_tarball: "dahdi-linux-{{ dahdilinux_version }}.tar.gz"
-dahdilinux_target: "{{ build_target }}/dahdi-linux-{{ dahdilinux_version }}"
+pngnx_dahdilinux_major: 3
+pngnx_dahdilinux_minor: 3.0-rc1
+pngnx_dahdilinux_version: "{{ pngnx_dahdilinux_major }}.{{ pngnx_dahdilinux_minor }}"
+pngnx_dahdilinux_urlbase: "https://github.com/asterisk/dahdi-linux/releases/download/v{{ pngnx_dahdilinux_version }}"
+pngnx_dahdilinux_checksum: sha256:453b4cb81396d8215d193a7bb6987a8d1cfdbd28cf12e4bfaca7ecf702d2dc76
+pngnx_dahdilinux_tarball: "dahdi-linux-{{ pngnx_dahdilinux_version }}.tar.gz"
+pngnx_dahdilinux_target: "{{ pngnx_build_target }}/dahdi-linux-{{ pngnx_dahdilinux_version }}"
 
 # latest DAHDI Tools
-dahditools_major: 3
-dahditools_minor: 3.0-rc1
-dahditools_version: "{{ dahditools_major }}.{{ dahditools_minor }}"
-dahditools_urlbase: "https://github.com/asterisk/dahdi-tools/releases/download/v{{ dahditools_version }}"
-dahditools_checksum: sha256:00bb02ea8d9aa5761da82fe578059aa73dee1e6f2a4a475b2e2ab602e1eed01f
-dahditools_tarball: "dahdi-tools-{{ dahditools_version }}.tar.gz"
-dahditools_target: "{{ build_target }}/dahdi-tools-{{ dahditools_version }}"
+pngnx_dahditools_major: 3
+pngnx_dahditools_minor: 3.0-rc1
+pngnx_dahditools_version: "{{ pngnx_dahditools_major }}.{{ pngnx_dahditools_minor }}"
+pngnx_dahditools_urlbase: "https://github.com/asterisk/dahdi-tools/releases/download/v{{ pngnx_dahditools_version }}"
+pngnx_dahditools_checksum: sha256:00bb02ea8d9aa5761da82fe578059aa73dee1e6f2a4a475b2e2ab602e1eed01f
+pngnx_dahditools_tarball: "dahdi-tools-{{ pngnx_dahditools_version }}.tar.gz"
+pngnx_dahditools_target: "{{ pngnx_build_target }}/dahdi-tools-{{ pngnx_dahditools_version }}"
 
 # latest LIBPRI
-libpri_major: 1
-libpri_minor: 6.1
-libpri_version: "{{ libpri_major }}.{{ libpri_minor }}"
-libpri_urlbase: "https://github.com/asterisk/libpri/releases/download/{{ libpri_version }}"
-libpri_checksum: sha256:d4d1a62766695455f1b616f5f7603458e6d23df787ebabc31ffda1c6298d0509
-libpri_tarball: "libpri-{{ libpri_version }}.tar.gz"
-libpri_target: "{{ build_target }}/libpri-{{ libpri_version }}"
+pngnx_libpri_major: 1
+pngnx_libpri_minor: 6.1
+pngnx_libpri_version: "{{ pngnx_libpri_major }}.{{ pngnx_libpri_minor }}"
+pngnx_libpri_urlbase: "https://github.com/asterisk/libpri/releases/download/{{ pngnx_libpri_version }}"
+pngnx_libpri_checksum: sha256:d4d1a62766695455f1b616f5f7603458e6d23df787ebabc31ffda1c6298d0509
+pngnx_libpri_tarball: "libpri-{{ pngnx_libpri_version }}.tar.gz"
+pngnx_libpri_target: "{{ pngnx_build_target }}/libpri-{{ pngnx_libpri_version }}"
 
 # latest Asterisk
-asterisk_major: 20
-asterisk_minor: 5.0
-asterisk_version: "{{ asterisk_major }}.{{ asterisk_minor }}"
-asterisk_urlbase: "https://github.com/asterisk/asterisk/releases/download/{{ asterisk_version }}"
-asterisk_checksum: sha256:05dc5f235da44b69102bedca067bf35a612813502d1e18cd88a22d9e4c25c5e7
-asterisk_tarball: "asterisk-{{ asterisk_version }}.tar.gz"
-asterisk_target: "{{ build_target }}/asterisk-{{ asterisk_version }}"
+pngnx_asterisk_major: 20
+pngnx_asterisk_minor: 5.0
+pngnx_asterisk_version: "{{ pngnx_asterisk_major }}.{{ pngnx_asterisk_minor }}"
+pngnx_asterisk_urlbase: "https://github.com/asterisk/asterisk/releases/download/{{ pngnx_asterisk_version }}"
+pngnx_asterisk_checksum: sha256:05dc5f235da44b69102bedca067bf35a612813502d1e18cd88a22d9e4c25c5e7
+pngnx_asterisk_tarball: "asterisk-{{ pngnx_asterisk_version }}.tar.gz"
+pngnx_asterisk_target: "{{ pngnx_build_target }}/asterisk-{{ pngnx_asterisk_version }}"
 
 # BETA FreePBX tarball
-freepbx_edge_major: 17
-freepbx_edge_minor: "0-latest-EDGE"
-freepbx_edge_version: "{{ freepbx_edge_major }}.{{ freepbx_edge_minor }}"
-freepbx_edge_basename: "freepbx-{{ freepbx_edge_version }}"
-freepbx_edge_urlbase: "http://mirror.freepbx.org/modules/packages/freepbx"
-freepbx_edge_tarball: "{{ freepbx_edge_basename }}.tgz"
-freepbx_edge_target: "{{ build_target }}/freepbx"
+pngnx_freepbx_edge_major: 17
+pngnx_freepbx_edge_minor: "0-latest-EDGE"
+pngnx_freepbx_edge_version: "{{ pngnx_freepbx_edge_major }}.{{ pngnx_freepbx_edge_minor }}"
+pngnx_freepbx_edge_basename: "freepbx-{{ pngnx_freepbx_edge_version }}"
+pngnx_freepbx_edge_urlbase: "http://mirror.freepbx.org/modules/packages/freepbx"
+pngnx_freepbx_edge_tarball: "{{ pngnx_freepbx_edge_basename }}.tgz"
+pngnx_freepbx_edge_target: "{{ pngnx_build_target }}/freepbx"
 
 # FreePBX git zips
-freepbx_git_major: 17
-freepbx_git_minor: 0
-freepbx_git_version: "{{ freepbx_git_major }}.{{ freepbx_git_minor }}"
-freepbx_git_basename: "freepbx-git-{{ freepbx_git_version }}"
-freepbx_git_urlbase: "https://git.freepbx.org/rest/api/latest/projects/FREEPBX/repos"
-freepbx_git_urlpost: "archive?at=refs%2Fheads%2Frelease%2F{{ freepbx_git_version }}&format=zip"
-freepbx_git_target: "{{ build_target }}/{{ freepbx_git_basename }}"
+pngnx_freepbx_git_major: 17
+pngnx_freepbx_git_minor: 0
+pngnx_freepbx_git_version: "{{ pngnx_freepbx_git_major }}.{{ pngnx_freepbx_git_minor }}"
+pngnx_freepbx_git_basename: "freepbx-git-{{ pngnx_freepbx_git_version }}"
+pngnx_freepbx_git_urlbase: "https://git.freepbx.org/rest/api/latest/projects/FREEPBX/repos"
+pngnx_freepbx_git_urlpost: "archive?at=refs%2Fheads%2Frelease%2F{{ pngnx_freepbx_git_version }}&format=zip"
+pngnx_freepbx_git_target: "{{ pngnx_build_target }}/{{ pngnx_freepbx_git_basename }}"
 

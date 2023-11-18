@@ -8,46 +8,46 @@
 # Useful for 3rd-party module development for the next major release before it is released :)
 
 - name: Make a place for the FreePBX source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.tempfile:
-    suffix: ".{{ freepbx_edge_basename }}"
+    suffix: ".{{ pngnx_freepbx_edge_basename }}"
     state: directory
   register: tmpedge
 
 - name: Download FreePBX source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.get_url:
-    url: "{{ freepbx_edge_urlbase }}/{{ freepbx_edge_tarball }}"
+    url: "{{ pngnx_freepbx_edge_urlbase }}/{{ pngnx_freepbx_edge_tarball }}"
     dest: "{{ tmpedge.path }}"
 
 - name: Unarchive FreePBX source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.unarchive:
-    src: "{{ tmpedge.path }}/{{ freepbx_edge_tarball }}"
+    src: "{{ tmpedge.path }}/{{ pngnx_freepbx_edge_tarball }}"
     dest: "{{ tmpedge.path }}"
     remote_src: true
 
 - name: Copy FreePBX source from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpedge.path }}/freepbx"
-    dest: "{{ build_target }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
 
 - name: Copy FreePBX tarball from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpedge.path }}/{{ freepbx_edge_tarball }}"
-    dest: "{{ build_target }}"
+    src: "{{ tmpedge.path }}/{{ pngnx_freepbx_edge_tarball }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
 
 - name: Start Asterisk using FreePBX scripts.
   become: yes
   ansible.builtin.command: ./start_asterisk start
   args:
-    chdir: "{{ freepbx_edge_target }}"
+    chdir: "{{ pngnx_freepbx_edge_target }}"
 
 # the PATH modification is needed to support use of runuser in the install script
 # TODO: maybe: use --dev-links
@@ -55,14 +55,14 @@
   become: yes
   ansible.builtin.command: ./install -n -f -q
   args:
-    chdir: "{{ freepbx_edge_target }}"
+    chdir: "{{ pngnx_freepbx_edge_target }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
 
 - name: Install the basic local modules. As a group.
   become: yes
-  ansible.builtin.command: /sbin/fwconsole ma install {{ freepbx_basic_modules|flatten }}
+  ansible.builtin.command: /sbin/fwconsole ma install {{ pngnx_freepbx_basic_modules|flatten }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true

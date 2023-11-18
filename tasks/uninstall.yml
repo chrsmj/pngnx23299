@@ -16,7 +16,7 @@
     name: "{{ item }}"
     state: stopped
     enabled: false
-  with_items:
+  loop:
     - freepbx
     - asterisk
     - apache2
@@ -28,12 +28,12 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
-  with_items:
+  loop:
     - /etc/freepbx.conf
     - /etc/amportal.conf
     - /etc/asterisk
-    - "{{ freepbx_git_target }}"
-    - "{{ freepbx_edge_target }}"
+    - "{{ pngnx_freepbx_git_target }}"
+    - "{{ pngnx_freepbx_edge_target }}"
     - /var/www/html/admin
   ignore_errors: true
 
@@ -41,7 +41,7 @@
   become: yes
   tags: [ never, uninstall, splat ]
   ansible.builtin.command: mysqladmin -f drop {{ item }}
-  with_items:
+  loop:
     - asterisk
     - asteriskcdrdb
   ignore_errors: true
@@ -54,7 +54,7 @@
     name: "{{ item }}"
     state: stopped
     enabled: false
-  with_items:
+  loop:
     - mariadb
   ignore_errors: true
 
@@ -64,10 +64,10 @@
   ansible.builtin.command: /usr/bin/make uninstall
   args:
     chdir: "{{ item }}"
-  with_items:
-    - "{{ libpri_target }}"
-    - "{{ dahditools_target }}"
-    - "{{ dahdilinux_target }}"
+  loop:
+    - "{{ pngnx_libpri_target }}"
+    - "{{ pngnx_dahditools_target }}"
+    - "{{ pngnx_dahdilinux_target }}"
   ignore_errors: true
 
 - name: Completely uninstall and remove all parts of Asterisk install.
@@ -75,7 +75,7 @@
   tags: [ never, splat ]
   ansible.builtin.command: /usr/bin/make uninstall-all
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
   ignore_errors: true
   
 - name: Remove source trees for Asterisk, DAHDI and LIBPRI.
@@ -84,11 +84,11 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
-  with_items:
-    - "{{ asterisk_target }}"
-    - "{{ libpri_target }}"
-    - "{{ dahditools_target }}"
-    - "{{ dahdilinux_target }}"
+  loop:
+    - "{{ pngnx_asterisk_target }}"
+    - "{{ pngnx_libpri_target }}"
+    - "{{ pngnx_dahditools_target }}"
+    - "{{ pngnx_dahdilinux_target }}"
   ignore_errors: true
  
 - name: Remove some more files.
@@ -97,15 +97,15 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
-  with_items:
+  loop:
     - /etc/asterisk.makeopts
   ignore_errors: true
  
 - name: Removes non-free codecs if any. Uses rm (yuck).
   become: yes
   tags: [ never, splat ]
-  ansible.builtin.command: /usr/bin/rm -Rf {{ build_target }}/codec_{{ item }}-*
-  with_items: "{{ digium_codecs }}"
+  ansible.builtin.command: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-*
+  with_items: "{{ pngnx_digium_codecs }}"
   ignore_errors: true
 
 - name: Stop and disable fail2ban, ufw, and nftables. Careful!
@@ -114,7 +114,7 @@
   ansible.builtin.service:
     state: stopped
     enabled: false
-  with_items:
+  loop:
     - fail2ban
     - ufw
     - nftables

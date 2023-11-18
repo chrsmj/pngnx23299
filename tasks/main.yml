@@ -60,7 +60,7 @@
      - "**************************************************************************"
 
 - name: Testing. Testing. Check. Check.
-  include_tasks: tests.yml
+  ansible.builtin.include_tasks: tests.yml
   tags: [ never, tests ]
 
 - name: Checking if Debian 12 target.
@@ -70,7 +70,7 @@
       - ansible_distribution == "Debian"
       - ansible_distribution_major_version == "12"
     fail_msg: "Install terminated. Role currently only works with Debian 12, sorry."
-    success_msg: "{{ ansible_lsb.description }} detected on {{ ansible_ssh_host }}. Great!"
+    success_msg: "{{ ansible_lsb.description }} detected on {{ ansible_host }}. Great!"
 
 - name: Prompting to confirm installation.
   tags: [ confirm ]
@@ -83,25 +83,29 @@
   ansible.builtin.assert:
     that: 
       - promptconfirmed.user_input == "YES"
-    fail_msg: "Install terminated. Adios!"
-    success_msg: "Confirmation accepted. Install proceeding. Great!"
+    fail_msg: "Install terminated. You did not type YES. So, Adios!"
+    success_msg: "Confirmation accepted. You typed YES. Install proceeding. Vamanos!"
 
 - name: Uninstall only when tag provided.
-  include_tasks: uninstall.yml
+  ansible.builtin.include_tasks: uninstall.yml
   tags: [ never, uninstall ]
  
 - name: Packages.
-  include_tasks: package.yml
+  ansible.builtin.include_tasks:
+    file: packages.yml
+    apply:
+      tags: packages
+  tags: packages
 
 - name: Database.
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: mariadb.yml
     apply:
       tags: db
   tags: db
 
 - name: DAHDI hardware installation.
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: dahdi.yml
     apply:
       tags: dahdi
@@ -109,13 +113,13 @@
 
 - name: DAHDI non-free firmware installation.
   tags: [ never, nonfree ]
-  include_tasks: dahdi.yml
+  ansible.builtin.include_tasks: dahdi.yml
 
 - name: LIBPRI installation.
-  include_tasks: libpri.yml
+  ansible.builtin.include_tasks: libpri.yml
 
 - name: Asterisk installation.
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: bigstar.yml
     apply:
       tags: star
@@ -123,69 +127,109 @@
 
 - name: Additonal non-free codecs.
   tags: [ never, nonfree ]
-  include_tasks: codecs.yml
+  ansible.builtin.include_tasks: codecs.yml
 
 - name: Adjusting users, groups and permissions; and some files needed for FreePBX install.
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: catbert.yml
     apply:
       tags: catbert
   tags: catbert
 
 - name: Apache2 installation.
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: apache2.yml
     apply:
       tags: apache
   tags: apache
 
-### not used by FreePBX
-###- name: SystemD start up for Asterisk.
-###  include_tasks: systemd-asterisk.yml
+- name: VLAN with dnsmasq support for PBX to drive the phones.
+  tags: vlan
+  when: pngnx_phone_vlans is defined
+  ansible.builtin.include_tasks:
+    file: vlan-dnsmasq.yml
+    apply:
+      tags: vlan
 
-- block:
-  - name: Installing FreePBX.
-    ansible.builtin.debug:
-      msg: freepbx_upstream set to {{ freepbx_upstream }}
-  - name: Basic FreePBX from either EDGE or GIT. Enough to register phones and test call the telco.
-    include_tasks: freepbx-{{ freepbx_upstream }}-basic.yml
-  - name: Extra FreePBX modules from either EDGE or GIT. Beyond Basic. Includes CDRs, Logs, IVRs, and more.
-    include_tasks:
-      file: freepbx-{{ freepbx_upstream }}-extra.yml
-      apply:
-        tags: extra
-    tags: extra
-  - name: Plus the rest of the FreePBX modules from either EDGE or GIT. Beyond Basic and Extra.
-    include_tasks:
-      file: freepbx-{{ freepbx_upstream }}-plus.yml
-      apply:
-        tags: plus
-    tags: plus
-  - name: Patches. Currently just one PHP 8.2 deprecation is patched for outbound routing.
-    include_tasks: patches.yml
-  # FreePBX uses fwconsole to start Asterisk and several other things
-  - name: SystemD start up for FreePBX.
-    include_tasks: systemd-freepbx.yml
-  tags: gui
+- name: ChronyD for PBX to tell the time, if asked.
+  tags: drwho
+  ansible.builtin.include_tasks:
+    file: chrony.yml
+    apply:
+      tags: drwho
 
 - name: Firewall protection.
   tags: firewall
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: "{{ item }}"
     apply:
       tags: firewall
-  with_items:
+  loop:
     - firewall-qos-iptables-nft.yml
     - firewall-ufw.yml
     - firewall-fail2ban.yml
     - firewall-ssh.yml
+
+### not used by FreePBX
+###- name: SystemD start up for Asterisk.
+###  ansible.builtin.include_tasks: systemd-asterisk.yml
+
+- block:
+  - name: Installing FreePBX.
+    ansible.builtin.debug:
+      msg: pngnx_freepbx_upstream set to {{ pngnx_freepbx_upstream }}
+  - name: Basic FreePBX from either EDGE or GIT. Enough to register phones and test call the telco.
+    ansible.builtin.include_tasks: freepbx-{{ pngnx_freepbx_upstream }}-basic.yml
+  - name: Extra FreePBX modules from either EDGE or GIT. Beyond Basic. Includes CDRs, Logs, IVRs, and more.
+    ansible.builtin.include_tasks:
+      file: freepbx-{{ pngnx_freepbx_upstream }}-extra.yml
+      apply:
+        tags: extra
+    tags: extra
+  - name: Plus the rest of the FreePBX modules from either EDGE or GIT. Beyond Basic and Extra.
+    ansible.builtin.include_tasks:
+      file: freepbx-{{ pngnx_freepbx_upstream }}-plus.yml
+      apply:
+        tags: plus
+    tags: plus
+  - name: Patches. Currently just one PHP 8.2 deprecation is patched for outbound routing.
+    ansible.builtin.include_tasks: patches.yml
+  - name: FreePBX database customizations.
+    ansible.builtin.include_tasks: freepbx-polish.yml
+  # FreePBX uses fwconsole to start Asterisk and several other things
+  - name: SystemD start up for FreePBX.
+    ansible.builtin.include_tasks: systemd-freepbx.yml
+  tags: gui
+
+- block:
+  - name: Phone provisioning with NGINX proxy in front of the Asterisk HTTP port.
+    ansible.builtin.include_tasks: nginx.yml
+    when: pngnx_phoneprov_polycom is defined
+  - name: Phone provisioning template files.
+    ansible.builtin.include_tasks: phoneprov.yml
+    when: pngnx_phoneprov_polycom is defined
+  tags: phoneprov
+
+- name: Log rotation policies for things in /var/log/asterisk/ tree.
+  tags: logrotate
+  ansible.builtin.include_tasks:
+    file: logrotate.yml
+    apply:
+      tags: logrotate
+
+- name: Did you try turning it off and then back on again?
+  become: yes
+  ansible.builtin.service:
+    name: "{{ pngnx_distro }}"
+    enabled: yes   
+    state: restarted
 
 - name: W00t!
   ansible.builtin.debug:
     msg:
      - "**************************************************************************"
      - "*                                                                        *"
-     - "* SSH into your box. Open up the FreePBX GUI in your web browser. Enjoy! *"
+     - "* Test new SSH connection! Open FreePBX GUI in your web browser! Enjoy!  *"
      - "*                                                                        *"
      - "*   YOU MUST IMMEDIATELY CONNECT TO THE WEB GUI AND SET YOUR PASSWORDS.  *"
      - "*   YOU MUST IMMEDIATELY CONNECT TO THE WEB GUI AND SET YOUR PASSWORDS.  *"
@@ -203,6 +247,6 @@
      - "*                                                                        *"
      - "**************************************************************************"
      - ""
-     - " GUI may be at   http://{{ ansible_ssh_host }}   OR   http://{{ ansible_default_ipv4['address'] }}"
+     - " GUI may be at   http://{{ ansible_host }}   OR   http://{{ ansible_default_ipv4['address'] }}"
      - ""
 

@@ -21,7 +21,7 @@
     path: /etc/systemd/system/asterisk.service
     section: Service
     option: ExecStart
-    value: /usr/sbin/asterisk -mqf -M {{ max_calls | default(7) }} -C /etc/asterisk/asterisk.conf
+    value: /usr/sbin/asterisk -mqf -M {{ pngnx_max_calls | default(7) }} -C /etc/asterisk/asterisk.conf
     no_extra_spaces: yes
 
 - name: Reload SystemD to catch new Asterisk service changes.
@@ -53,7 +53,7 @@
  
 - name: Restart Asterisk. Only when new source build.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.service:
     name: asterisk
     enabled: yes   

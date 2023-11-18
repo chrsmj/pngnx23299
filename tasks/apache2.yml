@@ -9,14 +9,14 @@
 - name: Increase Apache PHP max upload size.
   become: yes
   ansible.builtin.lineinfile:
-    path: /etc/php/{{ php_version }}/apache2/php.ini
+    path: /etc/php/{{ pngnx_php_version }}/apache2/php.ini
     regexp: '^upload_max_filesize'
     line: 'upload_max_filesize = 120M'
 
 - name: Increase Apache PHP memory limit.
   become: yes
   ansible.builtin.lineinfile:
-    path: /etc/php/{{ php_version }}/apache2/php.ini
+    path: /etc/php/{{ pngnx_php_version }}/apache2/php.ini
     regexp: '^memory_limit'
     line: 'memory_limit = 1256M'
 

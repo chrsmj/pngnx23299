@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/phoneprov-polycom.yml
+
+- name: Prep the static directory.
+  become: yes
+  ansible.builtin.file:
+    path: /var/lib/asterisk/phoneprov/statics/polycom
+    state: directory
+    owner: root
+    group: asterisk
+    recurse: yes
+
+- name: Prep the dynamic directory.
+  become: yes
+  ansible.builtin.file:
+    path: /var/lib/asterisk/phoneprov/dynamics/polycom
+    state: directory
+    owner: root
+    group: asterisk
+    recurse: yes
+
+- name: Polycom templates - all balls.
+  become: yes
+  ansible.builtin.template:
+    src: phoneprov/polycom/{{ item }}.j2
+    dest: /var/lib/asterisk/phoneprov/statics/polycom/{{ item }}
+    owner: root
+    group: asterisk
+  loop:
+    - 000000000000.cfg
+
+- name: Polycom templates - all balls.
+  become: yes
+  ansible.builtin.template:
+    src: phoneprov/polycom/{{ item }}.j2
+    dest: /var/lib/asterisk/phoneprov/statics/polycom/{{ item }}
+    owner: root
+    group: asterisk
+  loop:
+    - polycom-client.cfg
+
+- name: Dynamic Polycom templates.
+  become: yes
+  ansible.builtin.template:
+    src: phoneprov/polycom/{{ item }}.j2
+    dest: /var/lib/asterisk/phoneprov/dynamics/polycom/{{ item }}
+    owner: root
+    group: asterisk
+  loop:
+    - polycom-client-dynamic.cfg
+    - polycom-client-dynamic-SPIP450.cfg
+    - polycom-client-dynamic-SPIP550.cfg
+    - polycom-client-dynamic-SPIP650.cfg
+

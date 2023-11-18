@@ -4,63 +4,63 @@
 ---
 # file: roles/pngnx23299/tasks/bigstar.yml
 
-# Downloads, builds, and installs Asterisk from source.
+# Downloads, builds, and (if do_asterisk_install is true) installs Asterisk from source.
 
 - name: Make a place for the Asterisk source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.tempfile:
-    suffix: ".asterisk-{{ asterisk_version }}"
+    suffix: ".asterisk-{{ pngnx_asterisk_version }}"
     state: directory
   register: tmpast
 
 - name: Download Asterisk source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.get_url:
-    url: "{{ asterisk_urlbase }}/{{ asterisk_tarball }}"
-    dest: "{{ tmpast.path }}/{{ asterisk_tarball }}"
-    checksum: "{{ asterisk_checksum }}"
+    url: "{{ pngnx_asterisk_urlbase }}/{{ pngnx_asterisk_tarball }}"
+    dest: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
+    checksum: "{{ pngnx_asterisk_checksum }}"
 
 - name: Unarchive Asterisk source.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.unarchive:
-    src: "{{ tmpast.path }}/{{ asterisk_tarball }}"
+    src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ tmpast.path }}"
     remote_src: true
 
 - name: Copy Asterisk source from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpast.path }}/asterisk-{{ asterisk_version }}"
-    dest: "{{ build_target }}"
+    src: "{{ tmpast.path }}/asterisk-{{ pngnx_asterisk_version }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
 
 - name: Copy Asterisk tarball from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpast.path }}/{{ asterisk_tarball }}"
-    dest: "{{ build_target }}"
+    src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
+    dest: "{{ pngnx_build_target }}"
     remote_src: true
 
 - name: Clean previous Asterisk build. Might not have been one so ignore any errors.
-  when: new_src or clean_src
+  when: pngnx_new_src or pngnx_clean_src
   ansible.builtin.command: /usr/bin/make -i distclean
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
   ignore_errors: true
 
 - name: Specify some default build options.
   become: yes
   ansible.builtin.copy:
-    src: asterisk-{{ asterisk_major }}.makeopts
+    src: asterisk-{{ pngnx_asterisk_major }}.makeopts
     dest: /etc/asterisk.makeopts
 
 - name: Might not need all these defaults. (But FreePBX uses file-based VoiceMail.)
   become: yes
-  when: voicemail_type is not defined or voicemail_type == "files"
+  when: pngnx_voicemail_type is not defined or pngnx_voicemail_type == "files"
   ansible.builtin.lineinfile:
     path: /etc/asterisk.makeopts
     regexp: '^MENUSELECT_OPTS_app_voicemail'
@@ -69,54 +69,54 @@
 - name: Download MP3 source - per Asterisk contrib/scripts/get_mp3_source.sh file. Ignored if already done.
   ansible.builtin.command: ./contrib/scripts/get_mp3_source.sh
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
   ignore_errors: true
 
 # TODO: ansible.builtin.command: ./configure --libdir=/lib/{{ ansible_architecture }}-linux-gnu --with-pjproject-bundled --with-jansson-bundled
 - name: Configure Asterisk source - version 18.
-  when: asterisk_major == 18
+  when: pngnx_asterisk_major == 18
   ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
 
 - name: Configure Asterisk source - version 20.
-  when: asterisk_major == 20
+  when: pngnx_asterisk_major == 20
   ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
 
 - name: Configure Asterisk source - version 21.
-  when: asterisk_major == 21
+  when: pngnx_asterisk_major == 21
   ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled --with-libjwt-bundled
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
 
 - name: Make the menuselect.makeopts so the Addons can be added.
   ansible.builtin.command: /usr/bin/make menuselect.makeopts
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
 
 - name: Fix-up the Asterisk Addons so they get built.
   ansible.builtin.command: ./menuselect/menuselect --enable-category MENUSELECT_ADDONS menuselect.makeopts
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
 
 - name: Build Asterisk from source. Threaded make.
   ansible.builtin.command: /usr/bin/nice -n {{ nicely | default(0) }} /usr/bin/make -j {{ ansible_processor_vcpus | default(2) }} all
   args:
-    chdir: "{{ asterisk_target }}"
-    creates: "{{ asterisk_target }}/main/asterisk"
+    chdir: "{{ pngnx_asterisk_target }}"
+    creates: "{{ pngnx_asterisk_target }}/main/asterisk"
 
 - name: Build Asterisk from source. Single make. Sometimes needed if threaded make fails due to improper ordering of objects between threads.
   ansible.builtin.command: /usr/bin/make all
   args:
-    chdir: "{{ asterisk_target }}"
-    creates: "{{ asterisk_target }}/main/asterisk"
+    chdir: "{{ pngnx_asterisk_target }}"
+    creates: "{{ pngnx_asterisk_target }}/main/asterisk"
 
 - name: Install Asterisk.
   become: yes
-  when: do_asterisk_install
+  when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make install
   args:
-    chdir: "{{ asterisk_target }}"
+    chdir: "{{ pngnx_asterisk_target }}"
 

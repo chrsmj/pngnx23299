@@ -1,12 +1,25 @@
 ---
 
+pngnx_distro: pngnx23299
+
 # the script is fairly idempotent but you can still shoot yourself in the foot
-new_src: yes
-clean_src: yes
-do_asterisk_install: yes
-blow_away_config: true
-build_target: /usr/local/src
+pngnx_new_src: yes
+pngnx_clean_src: yes
+pngnx_do_asterisk_install: yes
+pngnx_build_target: /usr/local/src
 
 # where to pull freepbx from
-freepbx_upstream: git
-#freepbx_upstream: edge
+# freepbx upstream git is broken in November 2023
+#pngnx_freepbx_upstream: git
+pngnx_freepbx_upstream: edge
+
+# SSH pubkey can be from a file or an URL - if specified, all other keys will be removed
+#pngnx_installer_sshpubkey: https://penguinpbx.com/muh.keys
+#pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+#pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-sk.pub') }}"
+#pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-' + ansible_host + '.pub') }}"
+
+# if key is defined, then logins can be limited to only public keys - no more password logins
+# note this does nothing UNLESS you specify a value for pngnx_installer_sshpubkey
+pngnx_allow_ssh_passwords: no
+

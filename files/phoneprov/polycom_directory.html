@@ -1,0 +1,12 @@
+<html>
+<head>
+<title>Phone Book</title>
+</head>
+<body>
+<i>Please use arrow keys to move and check mark to dial.</i>
+<ul>
+${PP_EACH_USER(<li><a href=\"tel://%{USERNAME}/\">%{USERNAME} %{DISPLAY_NAME}</a></li>)}
+<li><a href="tel://17203242729/">720-32-42-72-9 Penguin PBX Solutions</a></li>
+</ul>
+</body>
+</html>

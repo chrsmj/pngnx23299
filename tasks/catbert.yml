@@ -45,7 +45,7 @@
     group: "{{ item.group }}"
     mode: 0750
     recurse: "{{ item.recurse }}"
-  with_items:
+  loop:
     - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
     - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
 
@@ -58,7 +58,7 @@
     group: asterisk
     mode: 0750
     state: touch
-  with_items:
+  loop:
     - /etc/asterisk/cdr.conf
     - /etc/asterisk/modules.conf
     - /var/lib/asterisk/astdb.sqlite3
@@ -73,7 +73,7 @@
     group: "{{ item.group }}"
     mode: 0750
     recurse: "{{ item.recurse }}"
-  with_items:
+  loop:
     - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
     - { dir: "/var/lib/asterisk/sounds",    owner: "asterisk", group: "asterisk", recurse: "yes" }
     - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
@@ -85,7 +85,7 @@
 - name: Copy default main configuration file for Asterisk in to /etc/asterisk/. Do not overwrite if already something there.
   become: yes
   ansible.builtin.copy:
-    src: "{{ asterisk_target }}/configs/samples/asterisk.conf.sample"
+    src: "{{ pngnx_asterisk_target }}/configs/samples/asterisk.conf.sample"
     dest: /etc/asterisk/asterisk.conf
     force: false
     owner: root
@@ -95,7 +95,7 @@
 
 - name: Check if we are dealing with the default Asterisk configuration file. Part 1.
   ansible.builtin.stat:
-    path: "{{ asterisk_target }}/configs/samples/asterisk.conf.sample"
+    path: "{{ pngnx_asterisk_target }}/configs/samples/asterisk.conf.sample"
   register: st1
 
 - name: Check if we are dealing with the default Asterisk configuration file. Part 2.

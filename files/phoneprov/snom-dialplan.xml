@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<settings>
+    <dialplan>
+        <template match="*." timeout="2" scheme="sip" user="phone" rewrite="" />
+        <template match="*.." timeout="2" scheme="sip" user="phone" rewrite="" />
+        <template match="*..." timeout="2" scheme="sip" user="phone" rewrite="" />
+        <template match="*...." timeout="2" scheme="sip" user="phone" rewrite="" />
+        <template match="911" timeout="0" scheme="sip" user="phone" rewrite="" />
+        <template match="[2-8]11" timeout="0" scheme="sip" user="phone" rewrite="" />
+        <template match="0" timeout="2" scheme="sip" user="phone" rewrite="" />
+        <template match="011*" timeout="4" scheme="sip" user="phone" rewrite="" />
+        <template match="[2-9]......" timeout="2" scheme="sip" user="phone" rewrite="" />
+        <template match="[2-9]......#" timeout="0" scheme="sip" user="phone" rewrite="" />
+        <template match="[2-9]........." timeout="0" scheme="sip" user="phone" rewrite="" />
+        <template match="1[2-9]........." timeout="0" scheme="sip" user="phone" rewrite="" />
+        <template match="[1-4]..#" timeout="0" scheme="sip" user="phone" rewrite="" />
+    </dialplan>
+</settings>

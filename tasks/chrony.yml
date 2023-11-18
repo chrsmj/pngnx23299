@@ -1,0 +1,68 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/chrony.yml
+
+- name: Install the Chrony package.
+  become: yes
+  ansible.builtin.apt:
+    update_cache: true
+    state: latest
+    name:
+      - chrony
+
+- name: Stop Chrony from listening for everything. Chrony is an NTP time server. (Doctor Who is a Time Lord.)
+  become: yes
+  ansible.builtin.replace:
+    path: /etc/chrony/chrony.conf
+    regexp: '^allow*$'
+
+- name: Enable listening for Chrony on friendly LANs, if no VLAN defined.
+  become: yes
+  when:
+    - pngnx_phone_vlans is not defined
+    - pngnx_friendly_lans is defined
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^allow {{ item }}'
+    line: 'allow {{ item }}'
+  loop: "{{ pngnx_friendly_lans }}"
+
+- name: Enable listening for Chrony on the VLANs.
+  become: yes
+  when:
+    - pngnx_phone_vlans is defined
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^allow {{ item }}'
+    line: 'allow {{ item }}'
+  loop: "{{ pngnx_phone_vlans }}"
+
+- name: By default Chrony does not listen on the standard NTP port.
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^port'
+    line: 'port 123'
+
+- name: Disable remote command connections to Chrony.
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^cmdport'
+    line: 'cmdport 0'
+
+- name: Enable boss mode on the LAN - will act as NTP server even if not synced.
+  become: yes
+  ansible.builtin.lineinfile:
+    path: /etc/chrony/chrony.conf
+    regexp: '^local'
+    line: 'local'
+
+- name: Restart Chrony.
+  become: yes
+  ansible.builtin.service:
+    name: chrony
+    state: restarted
+

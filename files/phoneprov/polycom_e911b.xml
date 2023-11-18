@@ -1,0 +1,3 @@
+dialplan.routing.emergency.1.server.${LINE}="${LINE}"
+dialplan.routing.emergency.2.server.${LINE}="${LINE}"
+${IF($["x${LINE}"="x1"]?dialplan.routing.emergency.outboundIdentity=\"${E911CALLERID}\")}

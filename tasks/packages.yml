@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 ---
-# file: roles/pngnx23299/tasks/package.yml
+# file: roles/pngnx23299/tasks/packages.yml
 
 - name: Update kernel. If this step is 'ok' then no reboot will happen because kernel is up-to-date.
   become: yes
@@ -144,16 +144,16 @@
       - mpg123
       - odbc-mariadb
       - nodejs
-      - php{{ php_version }}
-      - php{{ php_version }}-curl
-      - php{{ php_version }}-cli
-      - php{{ php_version }}-common
-      - php{{ php_version }}-mysql
-      - php{{ php_version }}-pgsql
-      - php{{ php_version }}-gd
-      - php{{ php_version }}-mbstring
-      - php{{ php_version }}-intl
-      - php{{ php_version }}-xml
+      - php{{ pngnx_php_version }}
+      - php{{ pngnx_php_version }}-curl
+      - php{{ pngnx_php_version }}-cli
+      - php{{ pngnx_php_version }}-common
+      - php{{ pngnx_php_version }}-mysql
+      - php{{ pngnx_php_version }}-pgsql
+      - php{{ pngnx_php_version }}-gd
+      - php{{ pngnx_php_version }}-mbstring
+      - php{{ pngnx_php_version }}-intl
+      - php{{ pngnx_php_version }}-xml
       - sox
       - sqlite3
       - unixodbc
@@ -175,14 +175,21 @@
     name:
       - acl
       - aptitude
+      - bc
       - conntrack
       - curl
+      - dnsutils
       - dtach
+      - ethtool
       - fail2ban
       - gnupg2
       - haveged
+      - hwinfo
+      - info
       - irqbalance
       - locate
+      - lshw
+      - man
       - mime-construct
       - mc
       - mutt
@@ -191,8 +198,10 @@
       - openssh-server
       - opus-tools
       - python3-pymysql
+      - rsync
       - rsyslog
       - sip-tester
+      - sipsak
       - sngrep
       - snmp
       - sudo
@@ -202,4 +211,17 @@
       - tcpdump
       - tmux
       - ufw
-    
+      - vim
+
+# TODO: only when not virtualized
+- name: Install packages that are more useful on physical hardware.
+  become: yes
+  register: rphys
+  ansible.builtin.apt:
+    state: latest
+    name:
+      - beep
+      - irqbalance
+      - lm-sensors
+      - smartmontools
+ 

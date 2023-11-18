@@ -1,0 +1,92 @@
+# separate instances because Asterisk phoneprov populates the SERVER variable based on the IP that receives the request
+# TODO: modify res_phoneprov.c upstream to use the Host or some other header value instead eg. when empty localhost/SERVER
+
+# TODO: auth required for provisioning
+server {
+	listen                          localhost:{{ pngnx_phoneprov_proxy_port|default('18088') }};
+
+	location /nginx-proxy {
+		proxy_pass                            http://localhost:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov;
+		proxy_buffering                       off;
+		proxy_set_header Host                 $http_host;
+		proxy_set_header X-Real-IP            $remote_addr;
+		proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto    $scheme;
+		#auth_basic                            "Username and Password Required";
+		#auth_basic_user_file                  /etc/apache2/passwords;
+	}
+}
+
+# no auth required for phonebook home page
+server {
+	listen                          localhost:{{ pngnx_phonebook_proxy_port|default('28088') }};
+
+	location /nginx-proxy/pollypbxdirectory.html {
+		proxy_pass                            http://localhost:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov/pollypbxdirectory.html;
+		proxy_buffering                       off;
+		proxy_set_header Host                 $http_host;
+		proxy_set_header X-Real-IP            $remote_addr;
+		proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto    $scheme;
+	}
+}
+
+# TODO: auth required for provisioning
+server {
+	listen                          {{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port|default('18088') }};
+
+	location /nginx-proxy {
+		proxy_pass                            http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov;
+		proxy_buffering                       off;
+		proxy_set_header Host                 $http_host;
+		proxy_set_header X-Real-IP            $remote_addr;
+		proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto    $scheme;
+		#auth_basic                            "Username and Password Required";
+		#auth_basic_user_file                  /etc/apache2/passwords;
+	}
+}
+
+# no auth required for phonebook home page
+server {
+	listen                          {{ pngnx_vlan_ip }}:{{ pngnx_phonebook_proxy_port|default('28088') }};
+
+	location /nginx-proxy/pollypbxdirectory.html {
+		proxy_pass                            http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov/pollypbxdirectory.html;
+		proxy_buffering                       off;
+		proxy_set_header Host                 $http_host;
+		proxy_set_header X-Real-IP            $remote_addr;
+		proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto    $scheme;
+	}
+}
+
+# TODO: auth required for provisioning
+server {
+	listen                          {{ pngnx_ip }}:{{ pngnx_phoneprov_proxy_port|default('18088') }};
+
+	location /nginx-proxy {
+		proxy_pass                            http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov;
+		proxy_buffering                       off;
+		proxy_set_header Host                 $http_host;
+		proxy_set_header X-Real-IP            $remote_addr;
+		proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto    $scheme;
+		#auth_basic                            "Username and Password Required";
+		#auth_basic_user_file                  /etc/apache2/passwords;
+	}
+}
+
+# no auth required for phonebook home page
+server {
+	listen                          {{ pngnx_ip }}:{{ pngnx_phonebook_proxy_port|default('28088') }};
+
+	location /nginx-proxy/pollypbxdirectory.html {
+		proxy_pass                            http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov/pollypbxdirectory.html;
+		proxy_buffering                       off;
+		proxy_set_header Host                 $http_host;
+		proxy_set_header X-Real-IP            $remote_addr;
+		proxy_set_header X-Forwarded-For      $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto    $scheme;
+	}
+}

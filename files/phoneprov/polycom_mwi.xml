@@ -1,0 +1,3 @@
+msg.mwi.${LINE}.callBackMode="contact"
+msg.mwi.${LINE}.callBack="*97"
+msg.mwi.${LINE}.led="1"

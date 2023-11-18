@@ -58,15 +58,15 @@
 
 ## New to Asterisk ?
 
-[Asterisk](https://www.asterisk.org) as an open source telecommunications toolkit for VoiP and more, written mostly in C.
+[Asterisk](https://www.asterisk.org) is an open source telecommunications toolkit for VoiP and more, written mostly in C.
 
 ## New to FreePBX ?
 
 [FreePBX](https://www.freepbx.org) is a Web GUI for Asterisk, written mostly in PHP and SQL.
 
-With this role, you can install either the BETA EDGE tarball or the GIT ZIP files. These are downloaded by the role from the latest version 17 branches.
+With this role, you can install either the FreePBX BETA EDGE tarball or the FreePBX Bitbucket GIT ZIP files. These are downloaded by the role from the latest version 17 branches.
 
-By default, the GIT ZIPs will be installed. You can change this by setting an Ansible variable
+By default, the BETA EDGE TARBALL will be installed. You can change this by setting an Ansible variable
 in various locations eg. global, per host, on the command line, etc. (See Variables section below.)
 
 Also by default, this role will only install FLOSS components eg. no non-free or commercial licenses. This may mean that some things you are used to seeing on FreePBX distros and other installers are missing. (See Tags section below to change this.)
@@ -104,7 +104,7 @@ $ ansible --version
 
 This role was tested initially with ansible version 2.10.8 on Debian 11 and currently with version 2.14.3 on Debian 12.
 
-**PRO-TIP:** Add an entry for TARGET in the ~/.ssh/config file on your LOCAL machine. Ansible uses SSH Host names. The following basic ssh command should work with only your password needed on most new Debian 12 installs:
+**PRO-TIP:** Add an entry for TARGET in the ~/.ssh/config file on your LOCAL machine. This works because Ansible and SSH are friends! Ansible uses SSH Host names. The following basic ssh command should work with only your password needed on most new Debian 12 installs:
 
 ```
 $ ssh TARGET
@@ -112,80 +112,45 @@ $ ssh TARGET
 
 *If you can SSH to the TARGET, then Ansible can do the rest.*
 
-## Sample Ansible Playbook
+**PRO-TIP 2:** Now is a good time to setup SSH keys and add those to the IdentityFile line in your ~/.ssh/config file.
 
-Download this role and unzip it:
+## Basic First Installation Sample Ansible Playbook <-- TL;DR ? #HELPME #START #HERE
 
-```
-$ mkdir -p ~/ansible-sample/roles
-$ cd ~/ansible-sample
-$ wget https://github.com/chrsmj/pngnx23299/archive/refs/heads/main.zip
-$ unzip main.zip
-$ mv pngnx23299-main roles/pngnx23299
-```
-
-Next, make a new file **playbook.yml** in the top directory so it is along-side the roles directory:
+Replace TARGET with the SSH Host name you will be installing on, and run these commands:
 
 ```
-$ cd ~/ansible-sample
-$ cat <<EOF>playbook.yml
----
-# file: playbook.yml
-- hosts: all
-  roles:
-    - roles/pngnx23299
-EOF
+$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.23.17-alpha.tar.gz
+$ tar xvzf v0.23.17-alpha.tar.gz
+$ cd pngnx23299-0.23.17-alpha
+$ ansible-playbook --become-method=su -k -K -i TARGET, playbook.yml
 ```
-
-Look at the contents of the directory:
-
-```
-$ cd ~/ansible-sample
-$ ls
-main.zip  playbook.yml  roles
-```
-
-Look inside of roles/ directory:
-
-```
-$ cd ~/ansible-sample
-$ ls roles
-pngnx23299
-```
-
-Look inside of roles/pngnx23299/ directory:
-
-```
-$ cd ~/ansible-sample
-$ ls roles/pngnx23299
-defaults  files  LICENSE  meta  README.md  tasks  TODO.md
-```
-
-*The README.md is this file!* :cowboy:
-
----
-
-## Sample Invocations
-
-Different tags in this role allow finer-grained control of the operations.
-
-### Basic Installation
-
-Run this on your LOCAL machine:
-
-`$ ansible-playbook --become-method=su -k -K -i TARGET, playbook.yml`
 
 You will be prompted for your SSH password. Type it in and press Enter. Then you will be prompted for the root password. Type it in and press Enter.
 
-One confirmation prompt question will pop-up at the start of the install. Answer that, wait a minute, possibly restart the TARGET if prompted (or if it does not reboot cleanly automatically eg. some virtual machines), then the rest should take care of itself, providing you a link to access the web GUI when finished (in about 15 minutes on modern hardware.)
+One confirmation prompt question will pop-up at the start of the install. Answer that, wait a minute, possibly restart the TARGET if prompted (or if it does not reboot cleanly automatically eg. some virtual machines), then the rest should take care of itself, providing you a link to access the web GUI when finished (in about 15-30 minutes on modern PBX DIY'er hardware.)
 
-### Variable: freepbx_upstream=edge
+**PRO-TIP 3:** Always keep an SSH connection alive in another terminal when making changes that involve SSH eg. installing this system. Then test-drive a new SSH connection when done, just to make sure you can still get in.
 
-Installs system but uses BETA EDGE tarball instead of ZIP files pulled from FreePBX GIT:
+---
+
+## Advanced Invocations
+
+Different tags in this role allow finer-grained control of the operations.
+
+### Variable: freepbx_upstream=edge (or freepbx_upstream=git)
+
+Installs system but changes upstream source.
+
+So uses either BETA EDGE tarball:
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=edge playbook.yml`
 
-*Currently (2 November 2023) the edge tarball is installing properly, but some modules are buggy.*
+Or, ZIP files pulled from FreePBX GIT:
+
+`$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=edge playbook.yml`
+
+*Currently (17 November 2023) the edge tarball is installing properly, but some modules are buggy;
+although the GIT pull is not working at all due to upstream being down, so default is edge this week.*
 
 ### Tag: extra
 

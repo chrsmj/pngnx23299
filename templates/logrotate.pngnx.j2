@@ -1,0 +1,45 @@
+/var/log/asterisk/queue_log
+{
+	daily
+	rotate {{ pngnx_log_queue_days|default('365') }}
+	missingok
+	notifempty
+	create 0640 asterisk asterisk
+	su asterisk asterisk
+}
+/var/log/asterisk/debug
+/var/log/asterisk/dtmf
+/var/log/asterisk/errors
+/var/log/asterisk/full
+/var/log/asterisk/messages
+/var/log/asterisk/security
+/var/log/asterisk/verbose
+/var/log/asterisk/event_log
+/var/log/asterisk/minivm.log
+/var/log/asterisk/iax2netstats.log
+/var/log/asterisk/f*eepb*.log
+/var/log/asterisk/core-*.log
+/var/log/asterisk/fwjobs.log
+{
+	weekly
+	rotate {{ pngnx_log_star_weeks|default('12') }}
+	missingok
+	notifempty
+	sharedscripts
+	create 0640 asterisk asterisk
+	su asterisk asterisk
+	postrotate
+		/usr/sbin/asterisk -rx "logger reload" > /dev/null 2> /dev/null
+	endscript
+}
+/var/log/asterisk/cdr-csv/*.csv
+/var/log/asterisk/cdr-custom/*.csv
+/var/log/asterisk/cel-csv/*.csv
+/var/log/asterisk/cel-custom/*.csv
+{
+	monthly
+	rotate {{ pngnx_log_cdrcel_months|default('12') }}
+	missingok
+	create 0640 asterisk asterisk
+	su asterisk asterisk
+}

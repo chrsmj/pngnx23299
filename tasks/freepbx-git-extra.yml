@@ -7,61 +7,61 @@
 # Do the basic modules first and then add these for more features.
 
 - name: Make top temp directory to hold the modules.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.tempfile:
-    suffix: ".{{ freepbx_git_basename }}-extra"
+    suffix: ".{{ pngnx_freepbx_git_basename }}-extra"
     state: directory
   register: tmpfegit
 
 - name: Make sub temp directories to hold the modules.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.file:
-    path: "{{ tmpfegit.path }}/{{ freepbx_git_basename }}/{{ item }}"
+    path: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
     state: directory
-  with_items: "{{ freepbx_extra_modules }}"
+  with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Download FreePBX module sources from main FREEPBX git repo as zip files.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.get_url:
-    url: "{{ freepbx_git_urlbase }}/{{ item }}/{{ freepbx_git_urlpost }}"
-    dest: "{{ tmpfegit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
-  with_items: "{{ freepbx_extra_modules }}"
+    url: "{{ pngnx_freepbx_git_urlbase }}/{{ item }}/{{ pngnx_freepbx_git_urlpost }}"
+    dest: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
+  with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Unarchive FreePBX module sources.
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.unarchive:
-    src: "{{ tmpfegit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
-    dest: "{{ tmpfegit.path }}/{{ freepbx_git_basename }}/{{ item }}"
+    src: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
+    dest: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
     remote_src: true
-  with_items: "{{ freepbx_extra_modules }}"
+  with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Copy FreePBX module sources from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpfegit.path }}/{{ freepbx_git_basename }}/{{ item }}"
-    dest: "{{ freepbx_git_target }}"
+    src: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
+    dest: "{{ pngnx_freepbx_git_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-  with_items: "{{ freepbx_extra_modules }}"
+  with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Copy FreePBX module zip files from temp directory to target install directory.
   become: yes
-  when: new_src
+  when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpfegit.path }}/{{ freepbx_git_basename }}/{{ item }}.zip"
-    dest: "{{ freepbx_git_target }}"
+    src: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
+    dest: "{{ pngnx_freepbx_git_target }}"
     remote_src: true
-  with_items: "{{ freepbx_extra_modules }}"
+  with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Copy in the modules from usr/src to var/www.
   become: yes
   ansible.builtin.copy:
-    src: "{{ freepbx_git_target }}/{{ item }}"
+    src: "{{ pngnx_freepbx_git_target }}/{{ item }}"
     dest: /var/www/html/admin/modules
     remote_src: true
-  with_items: "{{ freepbx_extra_modules }}"
+  with_items: "{{ pngnx_freepbx_extra_modules }}"
   ignore_errors: true
 
 - name: Install the extra local modules. All that were downloaded, as a group.

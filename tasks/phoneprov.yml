@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/phoneprov.yml
+
+- name: Get custom Asterisk phone provisioning in place.
+  when: pngnx_private_asterisk_phoneprov_dir is defined
+  become: yes
+  ansible.builtin.copy:
+    src: "{{ pngnx_private_asterisk_phoneprov_dir }}"
+    dest: /var/lib/asterisk/phoneprov/
+
+- name: Get generic Asterisk phone provisioning in place.
+  when: pngnx_private_asterisk_phoneprov_dir is not defined
+  become: yes
+  ansible.builtin.copy:
+    src: ../files/phoneprov/
+    dest: /var/lib/asterisk/phoneprov/
+
+- name: Copy the phone wallpaper to the Apache webroot because it is easier to serve.
+  become: yes
+  ansible.builtin.copy:
+    src: phoneprov/pngnx_logo_spip550.bmp
+    dest: /var/www/html
+
+- name: Asterisk phone provisioning config file.
+  become: yes
+  ansible.builtin.template:
+    src: phoneprov/pngnx-asterisk-phoneprov.conf.j2
+    dest: /etc/asterisk/phoneprov.conf
+
+- include_tasks: phoneprov-polycom.yml
+  when: pngnx_phoneprov_polycom|default(false)
+
+- include_tasks: phoneprov-aastra.yml
+  when: pngnx_phoneprov_aastra|default(false)
+
+- include_tasks: phoneprov-snom.yml
+  when: pngnx_phoneprov_snom|default(false)
+
+- name: Place a small sample FreePBX Endpoint PJSIP config file in /etc/asterisk/pjsip.endpoint_custom_post.conf
+  become: yes
+  ansible.builtin.blockinfile:
+    path: /etc/asterisk/pjsip.endpoint_custom_post.conf
+    insertbefore: BOF
+    marker: "; {mark} sample for how to configure your phones to auto-provision"
+    block: |
+      ; ; -------------------
+      ; [555]
+      ; type=phoneprov
+      ; ;little mac NOT BIG MAC
+      ; MAC=012345abcdef
+      ; PROFILE=polycom
+      ; SECRET=copied_from_freepbx_gui_extensions_page
+      ; DISPLAY_NAME=My Test Phone
+      ; CUSTLABEL=x555
+      ; ; -------------------
+

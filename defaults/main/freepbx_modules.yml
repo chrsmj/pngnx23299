@@ -1,7 +1,7 @@
 ---
 
 # minimal install mostly for testing module development
-freepbx_basic_modules:
+pngnx_freepbx_basic_modules:
   - framework 
   - backup
   - core
@@ -12,7 +12,7 @@ freepbx_basic_modules:
   - voicemail
 
 # more nice things to have
-freepbx_extra_modules:
+pngnx_freepbx_extra_modules:
   - announcement
   - arimanager
   - asteriskinfo
@@ -36,7 +36,7 @@ freepbx_extra_modules:
   - timeconditions
 
 # many more things
-freepbx_plus_modules:
+pngnx_freepbx_plus_modules:
   - amd
   - api
   - asterisk-cli
@@ -83,7 +83,7 @@ freepbx_plus_modules:
   - xmpp
 
 # things that do not work currently
-freepbx_broke_modules:
+pngnx_freepbx_broke_modules:
   - dbmanager
   - devtools
   - extensionsettings
@@ -95,7 +95,7 @@ freepbx_broke_modules:
   - ttsengines
 
 # these are in FreePBX GIT but not part of the main supported modules
-freepbx_contributed_modules:
+pngnx_freepbx_contributed_modules:
   - a2billing
   - accountcodepreserve
   - agentadministration
@@ -161,7 +161,7 @@ freepbx_contributed_modules:
   - weather
 
 # need licenses
-freepbx_nonfree_modules:
+pngnx_freepbx_nonfree_modules:
   - adv_recovery
   - broadcast
   - callaccounting
@@ -200,6 +200,6 @@ freepbx_nonfree_modules:
 
 # Modules elsewhere
 # smsconnector is FLOSS but requires sms which is non-free
-freepbx_rogue_modules:
+pngnx_freepbx_rogue_modules:
   - smsconnector
 

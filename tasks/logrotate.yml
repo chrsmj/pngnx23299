@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/logrotate.yml
+
+- name: Copy over the templated rotation policies.
+  become: yes
+  ansible.builtin.template:
+    src: logrotate.pngnx.j2
+    dest: /etc/logrotate.d/pngnx
+  

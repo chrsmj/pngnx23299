@@ -1,0 +1,8 @@
+---
+
+# These are the default time periods to rotate logs,
+# defaulted in the logrotate template file.
+
+#pngnx_log_queue_days: 365
+#pngnx_log_star_weeks: 12
+#pngnx_log_cdrcel_months: 12

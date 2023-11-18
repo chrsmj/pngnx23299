@@ -29,7 +29,7 @@
     option: "{{ item.k }}"
     value: "{{ item.v }}"
     no_extra_spaces: yes
-  with_items:
+  loop:
     - { k: "Description", v: "MySQL connection to 'asteriskcdrdb' database" }
     - { k: "driver",      v: "MariaDB Unicode" }
     - { k: "server",      v: "localhost" }

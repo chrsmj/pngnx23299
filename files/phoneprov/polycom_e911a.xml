@@ -1,0 +1,1 @@
+${IF($["x${LINE}"="x1"]?dialplan.routing.server.${LINE}.address=\"${E911SERVER}\")}

@@ -1,0 +1,134 @@
+# Main Aastra config shared by all phones
+
+# testing - keep this line, it is used to toggle reboots
+
+# Use TFTP to bootstrap to HTTP
+download protocol: HTTP
+http server: ${SERVER}
+http path: /asterisk/phoneprov
+http port: {{ pngnx_phoneprov_proxy_port|default(pngnx_phoneprov_port|default('8088')) }}
+
+#Disable contact rcs
+contact rcs: 0 
+
+#Enable DHCP
+dhcp: 1
+
+#time Server
+time server disabled: 0
+time server1: ${SERVER} # Enable time server and enter at
+
+#TFTP Server
+#download protocol: TFTP
+#tftp server: ${SERVER}
+#http server: ${SERVER}
+#http path: ${SERVER}
+
+#TimeZone Settings
+time zone name: {{ pngnx_time_zone_name|default('US-Mountain') }}
+time zone code: {{ pngnx_time_zone_code|default('MST') }}
+
+# Date and time format
+time format: 0
+date format: 0
+
+# Localization
+tone set: {{ pngnx_tone_set|default('US') }}
+language 1: 
+language 2: 
+language 3: 
+language 4: 
+language: 
+input language: 
+web language:
+
+# Unlock keys on 6730i, 6731i anf 6753i
+prgkey1 locked: 0
+prgkey2 locked: 0
+prgkey5 locked: 0
+prgkey6 locked: 0
+
+live dialpad: 1 #enabled
+
+sip vmail: *97 # the number to reach voicemail on
+sip mode: 0 # line type:
+
+sip proxy ip: ${SERVER} # IP address or FQDN of proxy
+sip proxy port: 5060 # port used for SIP messages on the
+
+sip registrar ip: ${SERVER} # IP address or FQDN of registrar
+sip registrar port: 5060 # as proxy port, but for the registrar
+sip registration period: 3600 # registration period in seconds
+sip registration timeout retry timer: 30
+sip registration retry timer: 30
+sip registration renewal timer: 600
+
+sip intercom warning tone: 1
+sip intercom play warning tone: 1
+sip allow auto answer: 1
+sip intercom allow auto answer: 1
+sip intercom allow barge in: 0
+sip intercom type: 2
+sip intercom prefix code: *80
+sip intercom mute mic: 0
+
+# Merged most of this from the old PBX per-user files.
+sip line1 proxy ip: ${SERVER} # IP address or FQDN of proxy
+sip line1 proxy port: 5060 # port used for SIP messages on the
+sip line1 registrar ip: ${SERVER} # IP address or FQDN of registrar
+sip line1 registrar port: 5060 # as proxy port, but for the registrar
+sip line1 registration period: 3600 # registration period in seconds
+sip line1 registration timeout retry timer: 30
+sip line1 registration retry timer: 30
+sip line1 registration renewal timer: 600
+# user/pass info is in the template files (up one directory)
+sip line1 vmail: *97
+sip line1 mode: 0
+
+# set the inter-digit timeout in seconds
+sip digit timeout: 6
+
+# this is the default dial string, note
+sip dial plan: "x+#|xx+*"
+
+sip use basic codecs: 0
+#sip customized codec: payload=9;ptime=20;silsupp=off,payload=0;ptime=20;silsupp=off
+#sip customized codec: payload=9;ptime=30;silsupp=on,payload=18;ptime=30;silsupp=on, payload=0;ptime=30; silsupp=on, payload=8;ptime=30;silsupp=on
+sip customized codec: payload=9;ptime=20;silsupp=off,payload=0;ptime=20;silsupp=off
+sip mode: 0
+sip vmail: *97
+
+paging group listening: {{ pngnx_paging_multicast_addr }}:{{ pngnx_paging_multicast_port }}
+xml application post list: ${SERVER}
+sip whitelist: 1
+log server ip: ${SERVER}
+log server port: 514
+# intense logging
+#log module sip: 7 
+#log module rtpt: 23
+#log module snd: 23
+log module sip: 1
+log module rtpt: 1
+log module snd: 1
+
+lldp: 0
+sip cancel after blind transfer: 0
+sip refer-to with replaces: 1
+sip update callerid: 1
+confxfer live dial: 1
+
+#xml scripts start
+#xml scripts end
+
+!emergency dial plan: 911|933
+
+# check for config file changes nightly
+auto resync mode: 1
+auto resync time: 01:00
+auto resync max delay: 90
+auto resync days: 1
+directory 1: http://${SERVER}:{{ pngnx_phoneprov_proxy_port|default(pngnx_phoneprov_port|default('8088')) }}/aastra-directorylist.csv
+
+# Attempt to fix Contact Mismatch error on version 3.2.2 firmwares
+# Symptom is that phone cannot receive calls, only place them
+#sip rport: 0
