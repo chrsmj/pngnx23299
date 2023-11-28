@@ -33,12 +33,11 @@ With this role, you can install either the FreePBX BETA EDGE tarball or the Free
 These are downloaded by the role from the latest version 17 branches.
 
 By default, the FreePBX GIT ZIPs from GitHub will be installed.
-You can change this by setting an Ansible variable in various locations eg. global, per host, on the command line, etc.
-(See Variables section below.)
+You can change this by setting an Ansible variable called '[freepbx_upstream](#variable-freepbx_upstream)' in various locations eg. global, per host, on the command line, etc.
 
 Also by default, this role will only install FLOSS components eg. no non-free or commercial licenses.
 This may mean that some things you are used to seeing on FreePBX distros and other installers are missing.
-(See Tags section below to change this.)
+You can change this by running the role again post-install using an Ansible tag called '[nonfree](#tag-nonfree)'.
 
 ## New to Debian ?
 
@@ -150,7 +149,7 @@ The rest of these examples assume that you have passwordless sudo working on TAR
 
 ### Tag: extra
 
-Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this tag previously because you only wanted the basic FreePBX modules -- see above in the Intermediate Installation Methods section):
+Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this tag previously because you only wanted the basic FreePBX modules -- see above in the [Intermediate Installation Methods](#intermediate-installation-methods) section):
 
 `$ ansible-playbook -i TARGET, -t extra playbook.yml`
 
