@@ -66,7 +66,7 @@
   become: yes
   ansible.builtin.command: ./start_asterisk start
   args:
-    chdir: "{{ pngnx_freepbx_git_target }}/framework"
+    chdir: "{{ pngnx_freepbx_git_target }}/framework/framework-release-{{ pngnx_freepbx_git_version }}"
 
 # the PATH modification is needed to support use of runuser in the install script
 # TODO: maybe: use --dev-links
@@ -74,7 +74,7 @@
   become: yes
   ansible.builtin.command: ./install -n -f -q
   args:
-    chdir: "{{ pngnx_freepbx_git_target }}/framework"
+    chdir: "{{ pngnx_freepbx_git_target }}/framework/framework-release-{{ pngnx_freepbx_git_version }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
@@ -82,8 +82,8 @@
 - name: Copy in the modules from usr/src to var/www. Error on framework during reinstalls is expected.
   become: yes
   ansible.builtin.copy:
-    src: "{{ pngnx_freepbx_git_target }}/{{ item }}"
-    dest: /var/www/html/admin/modules
+    src: "{{ pngnx_freepbx_git_target }}/{{ item }}/{{ item }}-release-{{ pngnx_freepbx_git_version }}/"
+    dest: /var/www/html/admin/modules/{{ item }}/
     remote_src: true
   with_items: "{{ pngnx_freepbx_basic_modules }}"
   ignore_errors: true

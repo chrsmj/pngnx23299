@@ -55,7 +55,7 @@ pngnx_freepbx_git_major: 17
 pngnx_freepbx_git_minor: 0
 pngnx_freepbx_git_version: "{{ pngnx_freepbx_git_major }}.{{ pngnx_freepbx_git_minor }}"
 pngnx_freepbx_git_basename: "freepbx-git-{{ pngnx_freepbx_git_version }}"
-pngnx_freepbx_git_urlbase: "https://git.freepbx.org/rest/api/latest/projects/FREEPBX/repos"
-pngnx_freepbx_git_urlpost: "archive?at=refs%2Fheads%2Frelease%2F{{ pngnx_freepbx_git_version }}&format=zip"
+pngnx_freepbx_git_urlbase: "https://github.com/FreePBX"
+pngnx_freepbx_git_urlpost: "archive/refs/heads/release/{{ pngnx_freepbx_git_version }}.zip"
 pngnx_freepbx_git_target: "{{ pngnx_build_target }}/{{ pngnx_freepbx_git_basename }}"
 

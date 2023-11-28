@@ -6,11 +6,11 @@
 
 # Provides automatic start up of FreePBX at boot via SystemD.
 
-- name: Copy SystemD service config template file for FreePBX, named {{ pngnx_distro }}.
+- name: Copy SystemD service config template file for FreePBX, named {{ pngnx_freepbx_systemd_name }}.
   become: yes
   ansible.builtin.template:
     src: freepbx.service.j2
-    dest: /etc/systemd/system/{{ pngnx_distro }}.service
+    dest: /etc/systemd/system/{{ pngnx_freepbx_systemd_name }}.service
     owner: root
     group: root
     mode: 0444
@@ -28,7 +28,7 @@
 - name: Enable FreePBX service via SystemD.
   become: yes
   ansible.builtin.systemd:
-    name: "{{ pngnx_distro }}"
+    name: "{{ pngnx_freepbx_systemd_name }}"
     enabled: true
 
 - name: Give SystemD another moment to catch-up.
@@ -39,13 +39,13 @@
 - name: Start FreePBX service via SystemD.
   become: yes
   ansible.builtin.systemd:
-    name: "{{ pngnx_distro }}"
+    name: "{{ pngnx_freepbx_systemd_name }}"
     state: started
  
 - name: Restart FreePBX.
   become: yes
   ansible.builtin.service:
-    name: "{{ pngnx_distro }}"
+    name: "{{ pngnx_freepbx_systemd_name }}"
     enabled: yes   
     state: restarted
 

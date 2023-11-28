@@ -63,7 +63,6 @@ pngnx_freepbx_plus_modules:
   - iaxsettings
   - infoservices
   - languages
-  - missedcall
   - outroutemsg
   - parking
   - pbdirectory
@@ -93,6 +92,10 @@ pngnx_freepbx_broke_modules:
   - queueprio
   - superfecta
   - ttsengines
+
+# not version 17 yet
+pngnx_freepbx_outdated_modules:
+  - missedcall
 
 # these are in FreePBX GIT but not part of the main supported modules
 pngnx_freepbx_contributed_modules:

@@ -62,8 +62,8 @@
 - name: Copy in the modules from usr/src to var/www.
   become: yes
   ansible.builtin.copy:
-    src: "{{ pngnx_freepbx_git_target }}/{{ item }}"
-    dest: /var/www/html/admin/modules
+    src: "{{ pngnx_freepbx_git_target }}/{{ item }}/{{ item }}-release-{{ pngnx_freepbx_git_version }}/"
+    dest: /var/www/html/admin/modules/{{ item }}/
     remote_src: true
   with_items: "{{ pngnx_freepbx_plus_modules }}"
   ignore_errors: true

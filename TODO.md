@@ -15,6 +15,7 @@
 * TFTP separated out in firewall, controlled probably in the network.yml defaults var file
 * /etc/hosts needs adjustment when domain name changes (only issue in cloned test VMs ??)
 * reduce number of FreePBX reloads/restarts
+* use git clone for development environment in addition to git zip downloads (maybe in /srv or /home ?)
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX

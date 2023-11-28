@@ -49,20 +49,20 @@ dhcp-range=tag:phone,{{ pngnx_vlan_dhcp_start }},{{ pngnx_vlan_dhcp_stop }},72h
 
 # c'mon Grandstream!
 dhcp-option=tag:grands,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}/nginx-proxy"
-#dhcp-option=tag:grands,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}/asterisk/phoneprov"
+#dhcp-option=tag:grands,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov"
 
 # Polycom used to work like this
 dhcp-option=tag:polly,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}/nginx-proxy"
-#dhcp-option=tag:polly,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}/asterisk/phoneprov"
+#dhcp-option=tag:polly,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov"
 
 # Aastra does it well
 dhcp-option=tag:asstra,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}/nginx-proxy"
-#dhcp-option=tag:asstra,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}/asterisk/phoneprov"
+#dhcp-option=tag:asstra,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port|default('8088') }}/asterisk/phoneprov"
 
 # Snom only does 66/67 or 43 tunneling - see the encoding script
 dhcp-option=tag:nomnom,66,"http://{{ pngnx_vlan_ip }}:{{ pngnx_phoneprov_proxy_port }}"
 dhcp-option=tag:nomnom,67,"nginx-proxy/{mac}.cfg"
-#dhcp-option=tag:nomnom,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port }}"
+#dhcp-option=tag:nomnom,66,"http://{{ pngnx_ip }}:{{ pngnx_phoneprov_port|default('8088') }}"
 #dhcp-option=tag:nomnom,67,"asterisk/phoneprov/{mac}.cfg"
 #dhcp-option=nomnom,43,42:0F:68:74:74:70:3A:2F:2F:70:62:78:3A:38:30:38:38:43:1C:61:73:74:65:72:69:73:6B:2F:70:68:6F:6E:65:70:72:6F:76:2F:7B:6D:61:63:7D:2E:63:66:67
 

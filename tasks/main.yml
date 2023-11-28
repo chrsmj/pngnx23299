@@ -220,7 +220,7 @@
 - name: Did you try turning it off and then back on again?
   become: yes
   ansible.builtin.service:
-    name: "{{ pngnx_distro }}"
+    name: "{{ pngnx_freepbx_systemd_name }}"
     enabled: yes   
     state: restarted
 

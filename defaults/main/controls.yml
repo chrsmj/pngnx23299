@@ -9,9 +9,13 @@ pngnx_do_asterisk_install: yes
 pngnx_build_target: /usr/local/src
 
 # where to pull freepbx from
-# freepbx upstream git is broken in November 2023
-#pngnx_freepbx_upstream: git
-pngnx_freepbx_upstream: edge
+pngnx_freepbx_upstream: git
+#pngnx_freepbx_upstream: edge
+
+# probably what people will be looking for is freepbx
+pngnx_freepbx_systemd_name: freepbx
+# alternatively...
+#pngnx_freepbx_systemd_name: "{{ pngnx_distro }}"
 
 # SSH pubkey can be from a file or an URL - if specified, all other keys will be removed
 #pngnx_installer_sshpubkey: https://penguinpbx.com/muh.keys
