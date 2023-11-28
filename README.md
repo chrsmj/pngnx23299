@@ -66,7 +66,7 @@
 
 With this role, you can install either the FreePBX BETA EDGE tarball or the FreePBX Bitbucket GIT ZIP files. These are downloaded by the role from the latest version 17 branches.
 
-By default, the BETA EDGE TARBALL will be installed. You can change this by setting an Ansible variable
+By default, the FreePBX GIT ZIPs from GitHub will be installed. You can change this by setting an Ansible variable
 in various locations eg. global, per host, on the command line, etc. (See Variables section below.)
 
 Also by default, this role will only install FLOSS components eg. no non-free or commercial licenses. This may mean that some things you are used to seeing on FreePBX distros and other installers are missing. (See Tags section below to change this.)
@@ -119,13 +119,13 @@ $ ssh TARGET
 Replace TARGET with the SSH Host name you will be installing on, and run these commands:
 
 ```
-$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.23.17-alpha.tar.gz
-$ tar xvzf v0.23.17-alpha.tar.gz
-$ cd pngnx23299-0.23.17-alpha
+$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.23.28-alpha.tar.gz
+$ tar xvzf v0.23.28-alpha.tar.gz
+$ cd pngnx23299-0.23.28-alpha
 $ ansible-playbook --become-method=su -k -K -i TARGET, playbook.yml
 ```
 
-You will be prompted for your SSH password. Type it in and press Enter. Then you will be prompted for the root password. Type it in and press Enter.
+You will be prompted for your SSH password for TARGET. Type it in and press Enter. Then you will be prompted for the root password. Type it in and press Enter.
 
 One confirmation prompt question will pop-up at the start of the install. Answer that, wait a minute, possibly restart the TARGET if prompted (or if it does not reboot cleanly automatically eg. some virtual machines), then the rest should take care of itself, providing you a link to access the web GUI when finished (in about 15-30 minutes on modern PBX DIY'er hardware.)
 
@@ -145,12 +145,11 @@ So uses either BETA EDGE tarball:
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=edge playbook.yml`
 
-Or, ZIP files pulled from FreePBX GIT:
+Or, ZIP files pulled from new FreePBX GIT repo on GitHub (this is the default if not specified):
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=edge playbook.yml`
+`$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=git playbook.yml`
 
-*Currently (17 November 2023) the edge tarball is installing properly, but some modules are buggy;
-although the GIT pull is not working at all due to upstream being down, so default is edge this week.*
+*Currently (28 November 2023) both the edge tarball and the new github zips are installing properly, but some modules are buggy.*
 
 ### Tag: extra
 
