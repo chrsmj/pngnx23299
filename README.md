@@ -21,41 +21,6 @@
 
 ---
 
-```
-**************************************************************************
-*                                                                        *
-* Welcome to pngnx23299!  Copyright 2023 GPLv3+ by Penguin PBX Solutions *
-*                                                                        *
-* This Ansible Role helps install software written/copyright by others,  *
-* mainly Asterisk 20 and FreePBX 17 (BETA / GIT) on Debian 12, so mostly *
-* open source, but can be told to install some non-free codecs/firmware. *
-*                                                                        *
-*            BEFORE YOU BEGIN, PLEASE ASK YOURSELF IF YOU:               *
-*                                                                        *
-* 1. Want to test the most recent FreePBX 17, BETA or direct from GIT?   *
-* 2. Got 5GB of disk space free on your brand new Debian 12 testing box? *
-* 3. Can SSH into the box and su to root? (Check your ~/.ssh/config)     *
-* 4. Okay with blowing away everything on the target?  REALLY??? Backup? *
-* 5. Accept full liability/responsibility for everything that happens?   *
-*                                                                        *
-*       DO NOT PROCEED UNTIL YOU CAN ANSWER YES TO ALL THE ABOVE.        *
-*                                                                        *
-*  System may reboot automatically if kernel was updated in first steps. *
-*  Role will continue to run if target comes back online in 10 minutes.  *
-*  But, you may need to manually restart the target eg. Virtual Machine. *
-*                                                                        *
-* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING * 
-*   You are installing bleeding-edge BETA/GIT pulled development code!   *
-*    Running Online Module Updates will not work very easily at all.     *
-*       Some modules may not work without some serious hammering.        *
-*       Please do not use outside of your test bench environment.        *
-* WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING! WARNING * 
-*                                                                        *
-**************************************************************************
-```
-
----
-
 ## New to Asterisk ?
 
 [Asterisk](https://www.asterisk.org) is an open source telecommunications toolkit for VoiP and more, written mostly in C.
@@ -152,29 +117,42 @@ Then test-drive a new SSH connection when done, just to make sure you can still 
 
 ---
 
-## Advanced Invocations
+## Intermediate Installation Methods
 
-Different tags in this role allow finer-grained control of the operations.
+Different variables and tags in this role allow finer-grained control of the operations.
 
-### Variable: freepbx_upstream=edge (or freepbx_upstream=git)
+### Variable: freepbx_upstream
 
-Installs system but changes upstream source.
+Installs system but changes upstream source, to either 'edge' or 'git'.
 
-So uses either BETA EDGE tarball:
+To use the BETA EDGE tarball:
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=edge playbook.yml`
 
-Or, ZIP files pulled from new FreePBX GIT repo on GitHub (this is the default if not specified):
+Or, to use ZIP files pulled from new FreePBX GIT repo on GitHub (this is the default if not specified):
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=git playbook.yml`
 
 *Currently (28 November 2023) both the edge tarball and the new github zips are installing properly, but some modules are buggy.*
 
+### Skip Tags: extra,plus
+
+Installs but with limited FreePBX modules -- just enough to send and receive calls:
+
+`$ ansible-playbook --become-method=su -k -K -i TARGET, --skip-tags extra,plus playbook.yml`
+
+*See detailed list of modules in the default/main/freepbx_modules.yml file.*
+
+## Advanced Invocations
+
+Idempotence is not perfectly supported, but it is fairly well-respected by this role, and so with certain tags you can re-run portions of the role at different times.
+The rest of these examples assume that you have passwordless sudo working on TARGET and are connecting to TARGET using currently in-memory SSH keys.
+
 ### Tag: extra
 
-Installs only the extra FreePBX modules, beyond basic ones from the default basic installation:
+Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this tag previously because you only wanted the basic FreePBX modules -- see above in the Intermediate Installation Methods section):
 
-`$ ansible-playbook -k -K -i TARGET, -t extra playbook.yml`
+`$ ansible-playbook -i TARGET, -t extra playbook.yml`
 
 *See detailed list of modules in the default/main/freepbx_modules.yml file.*
 
@@ -182,15 +160,15 @@ Installs only the extra FreePBX modules, beyond basic ones from the default basi
 
 Resets only the firewall portions:
 
-`$ ansible-playbook -k -K -i TARGET, -t firewall playbook.yml`
+`$ ansible-playbook -i TARGET, -t firewall playbook.yml`
 
 *Firewalling via UFW with limited SSH from anywhere and only LAN access to SIP and HTTP/S.*
 
 ### Tag: gui
 
-Installs only the FreePBX parts.
+Installs only the FreePBX parts -- potentially useful if you already installed Asterisk, MySQL/MariaDB, Apache, and all other FreePBX package dependencies:
 
-`$ ansible-playbook -k -K -i TARGET, -t gui playbook.yml`
+`$ ansible-playbook -i TARGET, -t gui playbook.yml`
 
 *You need to set the web interface admin user/pass using the web GUI immediately after this role is played out.*
 
@@ -198,7 +176,7 @@ Installs only the FreePBX parts.
 
 Installs nonfree Asterisk codecs and DAHDI firmware:
 
-`$ ansible-playbook -k -K -i TARGET, -t nonfree playbook.yml`
+`$ ansible-playbook -i TARGET, -t nonfree playbook.yml`
 
 *This role attempts to install only FLOSS software. You will need to explicitly pass command-line tag "nonfree" to install non-free software.*
 
@@ -206,7 +184,7 @@ Installs nonfree Asterisk codecs and DAHDI firmware:
 
 Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra:
 
-`$ ansible-playbook -k -K -i TARGET, -t plus playbook.yml`
+`$ ansible-playbook -i TARGET, -t plus playbook.yml`
 
 *See detailed list of modules in the default/main/freepbx_modules.yml file.*
 
@@ -214,27 +192,19 @@ Installs only the rest of the main-line FreePBX modules, beyond basic gui and ex
 
 Removes most of the Asterisk parts -- must be in combination with uninstall:
 
-`$ ansible-playbook -k -K -i TARGET, -t uninstall,splat playbook.yml`
+`$ ansible-playbook -i TARGET, -t uninstall,splat playbook.yml`
 
 ### Tag: star
 
 Installs only the Asterisk parts:
 
-`$ ansible-playbook -k -K -i TARGET, -t star playbook.yml`
+`$ ansible-playbook -i TARGET, -t star playbook.yml`
 
 ### Tag: uninstall
 
 Removes most of the FreePBX parts:
 
-`$ ansible-playbook -k -K -i TARGET, -t uninstall playbook.yml`
-
-### Skip Tags: extra,plus
-
-Installs but with limited FreePBX modules -- just enough to send and receive calls:
-
-`$ ansible-playbook -k -K -i TARGET, --skip-tags extra,plus playbook.yml`
-
-*See detailed list of modules in the default/main/freepbx_modules.yml file.*
+`$ ansible-playbook -i TARGET, -t uninstall playbook.yml`
 
 ---
 
