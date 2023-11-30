@@ -1,6 +1,8 @@
 # pngnx23299
 **An Ansible Role for installing FreePBX 17 on Asterisk 20 on Debian 12**
+
 Currently for testing purposes only.
+
 Designed to get a few desk phones quickly ringing by manually configuring them in FreePBX and then allowing the PBX to (mostly) auto-provision them on a private, dedicated voice VLAN where the PBX acts as the DHCP and NTP server.
 
 ---
