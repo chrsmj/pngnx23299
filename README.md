@@ -11,8 +11,8 @@ Designed to get a few desk phones quickly ringing by manually configuring them i
 
 1. [License](#license)
 2. New to ... [Asterisk ?](#new-to-asterisk-) [FreePBX ?](#new-to-freepbx-) [Debian ?](#new-to-debian-) [Ansible ?](#new-to-ansible-)
-3. [Basic Installations](#basic-installations)
-4. [Advanced Installations](#advanced-installations): [Variable: freepbx_upstream](#variable-freepbx_upstream) | [Skip Tags: extra,plus](#skip-tags-extraplus)
+3. [Basic Installation](#basic-installation)
+4. [Advanced Installation](#advanced-installation): [Variable: freepbx_upstream](#variable-freepbx_upstream) | [Skip Tags: extra,plus](#skip-tags-extraplus)
 5. [Fine Tuning with Tags](#fine-tuning-with-tags): [apache](#tag-apache) | [catbert](#tag-catbert) | [confirm](#tag-confirm) | [dahdi](#tag-dahdi) | [db](#tag-db) | [drwho](#tag-drwho) | [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [logrotate](#tag-logrotate) | [nonfree](#tag-nonfree) | [nopants](#tag-nopants) | [packages](#tag-packages) | [phoneprov](#tag-phoneprov) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [tests](#tag-tests) | [uninstall](#tag-uninstall) | [vlan](#tag-vlan)
 
 ---
@@ -109,7 +109,7 @@ Now is a good time to setup SSH keys and add those to the IdentityFile line in y
 
 ---
 
-## Basic Installations
+## Basic Installation
 
 Replace TARGET with the SSH Host name you will be installing on, and run these commands:
 
@@ -136,7 +136,7 @@ Then test-drive a new SSH connection when done, just to make sure you can still 
 
 ---
 
-## Advanced Installations
+## Advanced Installation
 
 Different variables and tags in this role allow finer-grained control of the operations.
 
@@ -207,7 +207,7 @@ Installs and configures ChronyD as the Network Time Protocol (NTP) server on LAN
 
 ### Tag: extra
 
-Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this tag previously because you only wanted the basic FreePBX modules -- see above in the [Intermediate Installation Methods](#intermediate-installation-methods) section). *See detailed list of modules in the default/main/freepbx_modules.yml file*:
+Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this tag previously because you only wanted the basic FreePBX modules -- see above in the [Advanced Installation](#advanced-installation) section). *See detailed list of modules in the default/main/freepbx_modules.yml file*:
 
 `$ ansible-playbook -i TARGET, -t extra playbook.yml`
 
