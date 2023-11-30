@@ -51,7 +51,7 @@ With this Role, you can install either the FreePBX BETA EDGE tarball or the Free
 These are downloaded by the Role from the latest version 17 branches.
 
 By default, the FreePBX GIT ZIPs from GitHub will be installed.
-You can change this by setting an Ansible variable called '[pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream)' in various locations eg. global, per host, on the command line, etc.
+You can change this by setting an Ansible Variable called '[pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream)' in various locations eg. global, per host, on the command line, etc.
 
 Also by default, this Role will only install FLOSS components eg. no non-free or commercial licenses.
 This may mean that some things you are used to seeing on FreePBX distros and other installers are missing.
@@ -194,7 +194,7 @@ Or later on, you can (re-)run Tasks specified by the firewall Tag to do several 
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=https://penguinpbx.com/shiny.pub playbook.yml`
 
-...or keep password logins working alongside the key-based logins, using an additional variable 'pngnx_allow_ssh_passwords' (not recommended):
+...or keep password logins working alongside the key-based logins, using an additional Variable 'pngnx_allow_ssh_passwords' (not recommended):
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_rsa.pub,pngnx_allow_ssh_passwords=yes playbook.yml`
 
@@ -210,7 +210,7 @@ You may find that this Tag-by-Tag approach is helpful during development and tes
 by allowing you to focus more on what "broke" upstream, instead of what "broke" in your installer script.
 And when you do find the issue, you can jump ahead to that Tag, right from the command-line, and atomically execute just the Tagged portion(s) again (and again, and again, and again... :)
 
-*Note that the rest of these examples assume that you have passwordless sudo working on TARGET and are connecting to TARGET using currently in-memory SSH keys [previously installed on TARGET](#variable-pngnx_installer_sshpubkey).*
+*Note that the rest of these examples assume that you have passwordless sudo working on TARGET and are connecting to TARGET using currently in-memory SSH keys [previously installed on TARGET](#ssh-keys).*
 
 ### Tag: apache
 
@@ -328,7 +328,7 @@ Removes most of the FreePBX parts:
 
 ### Tag: vlan
 
-Installs and configures dnsmasq to provide DHCP server functions on a VLAN to help the phones auto-provision. *Ideally you should only need to configure the phone on to the VLAN, wait as it reboots, and in a few minutes start making calls. See the defaults/main/network.yml variables file in this Role for configuration options*:
+Installs and configures dnsmasq to provide DHCP server functions on a VLAN to help the phones auto-provision. *Ideally you should only need to configure the phone on to the VLAN, wait as it reboots, and in a few minutes start making calls. See the defaults/main/network.yml Variables file in this Role for configuration options*:
 
 `$ ansible-playbook -i TARGET, -t vlan playbook.yml`
 
