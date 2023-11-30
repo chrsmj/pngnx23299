@@ -51,7 +51,7 @@ With this Role, you can install either the FreePBX BETA EDGE tarball or the Free
 These are downloaded by the Role from the latest version 17 branches.
 
 By default, the FreePBX GIT ZIPs from GitHub will be installed.
-You can change this by setting an Ansible variable called '[freepbx_upstream](#variable-freepbx_upstream)' in various locations eg. global, per host, on the command line, etc.
+You can change this by setting an Ansible variable called '[pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream)' in various locations eg. global, per host, on the command line, etc.
 
 Also by default, this Role will only install FLOSS components eg. no non-free or commercial licenses.
 This may mean that some things you are used to seeing on FreePBX distros and other installers are missing.
