@@ -9,7 +9,7 @@
 2. New to ... [Asterisk ?](#new-to-asterisk-) [FreePBX ?](#new-to-freepbx-) [Debian ?](#new-to-debian-) [Ansible ?](#new-to-ansible-)
 3. [Basic Installations](#basic-installations)
 4. [Advanced Installations](#advanced-installations): [Variable: freepbx_upstream](#variable-freepbx_upstream) | [Skip Tags: extra,plus](#skip-tags-extraplus)
-5. [Fine Tuning with Tags](#fine-tuning-with-tags): [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [nonfree](#tag-nonfree) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [uninstall](#tag-uninstall)
+5. [Fine Tuning with Tags](#fine-tuning-with-tags): [apache](#tag-apache) | [catbert](#tag-catbert) | [confirm](#tag-confirm) | [dahdi](#tag-dahdi) | [db](#tag-db) | [drwho](#tag-drwho) | [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [logrotate](#tag-logrotate) | [nonfree](#tag-nonfree) | [nopants](#tag-nopants) | [packages](#tag-packages) | [phoneprov](#tag-phoneprov) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [tests](#tag-tests) | [uninstall](#tag-uninstall) | [vlan](#tag-vlan)
 
 ---
 
@@ -165,45 +165,95 @@ Installs but with limited FreePBX modules -- just enough to send and receive cal
 Idempotence is not perfectly supported, but it is fairly well-respected by this role, and so with certain Tags you can re-run portions of the role at different times.
 The rest of these examples assume that you have passwordless sudo working on TARGET and are connecting to TARGET using currently in-memory SSH keys.
 
+### Tag: apache
+
+Prepares Apache webserver for FreePBX installation (but does not actually install Apache):
+
+`$ ansible-playbook -i TARGET, -t apache playbook.yml`
+
+### Tag: catbert
+
+Adds some users and groups, fixes up some permissions, and prepares Asterisk configuration for fresh FreePBX installation:
+
+`$ ansible-playbook -i TARGET, -t catbert playbook.yml`
+
+### Tag: confirm
+
+Confirmation steps at the beginning of the installation. Most often this would be used in the negative to skip the confirmation steps; such as during a completely automated install, or if you want to force install on a non-Debian 12 system (not recommended unless you really know what you are doing):
+
+`$ ansible-playbook -i TARGET, --skip-tags confirm playbook.yml`
+
+### Tag: dahdi
+
+Builds and installs only the DAHDI hardware drivers:
+
+`$ ansible-playbook -i TARGET, -t dahdi playbook.yml`
+
+### Tag: db
+
+Prepares MySQL/MariaDB for use by FreePBX including ODBC configuration (but does not actually install MySQL/MariaDB):
+
+`$ ansible-playbook -i TARGET, -t db playbook.yml`
+
+### Tag: drwho
+
+Installs and configures ChronyD as the Network Time Protocol (NTP) server on LANs and/or VLANs:
+
+`$ ansible-playbook -i TARGET, -t drwho playbook.yml`
+
 ### Tag: extra
 
-Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this tag previously because you only wanted the basic FreePBX modules -- see above in the [Intermediate Installation Methods](#intermediate-installation-methods) section):
+Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this tag previously because you only wanted the basic FreePBX modules -- see above in the [Intermediate Installation Methods](#intermediate-installation-methods) section). *See detailed list of modules in the default/main/freepbx_modules.yml file*:
 
 `$ ansible-playbook -i TARGET, -t extra playbook.yml`
 
-*See detailed list of modules in the default/main/freepbx_modules.yml file.*
-
 ### Tag: firewall
 
-Resets only the firewall portions:
+Resets only the firewall portions. *Firewalling via UFW with limited SSH from anywhere and only LAN access to SIP and HTTP/S*:
 
 `$ ansible-playbook -i TARGET, -t firewall playbook.yml`
 
-*Firewalling via UFW with limited SSH from anywhere and only LAN access to SIP and HTTP/S.*
+### Tag: logrotate
+
+Configures log rotation policies for Asterisk and FreePBX log files, with some reasonable defaults:
+
+`$ ansible-playbook -i TARGET, -t logrotate playbook.yml`
 
 ### Tag: gui
 
-Installs only the FreePBX parts -- potentially useful if you already installed Asterisk, MySQL/MariaDB, Apache, and all other FreePBX package dependencies:
+Installs only the FreePBX parts -- potentially useful if you already installed Asterisk, MySQL/MariaDB, Apache, and all other FreePBX package dependencies. *You need to set the web interface admin user/pass using the web GUI immediately after this role is played out*:
 
 `$ ansible-playbook -i TARGET, -t gui playbook.yml`
 
-*You need to set the web interface admin user/pass using the web GUI immediately after this role is played out.*
-
 ### Tag: nonfree
 
-Installs nonfree Asterisk codecs and DAHDI firmware:
+Installs nonfree Asterisk codecs and DAHDI firmware. *By default, this role attempts to install only FLOSS software. You will need to explicitly pass command-line tag "nonfree" to install non-free software*:
 
 `$ ansible-playbook -i TARGET, -t nonfree playbook.yml`
 
-*This role attempts to install only FLOSS software. You will need to explicitly pass command-line tag "nonfree" to install non-free software.*
+### Tag: nopants
+
+Only used in combination with the [uninstall tag](#tag-uninstall) to stop the firewall parts (not recommended):
+
+`$ ansible-playbook -i TARGET, -t uninstall,nopants playbook.yml`
+
+### Tag: packages
+
+Updates and installs needed Debian packages using apt:
+
+`$ ansible-playbook -i TARGET, -t packages playbook.yml`
+
+### Tag: phoneprov
+
+Automates phone provisioning of certain Aastra, Polycom and SNOM phones; using an NGINX front-end proxy to the backend Asterisk HTTP server and PJSIP phoneprov modules, utilized to serve up some Penguin PBX Solutions customized template files for the phones. *See the /etc/asterisk/pjsip.endpoint_custom_post.conf file for a sample for how to configure your phones to auto-provision. This sample is installed as part of the [basic installation](#basic-installation)*:
+
+`$ ansible-playbook -i TARGET, -t phoneprov playbook.yml`
 
 ### Tag: plus
 
-Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra:
+Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra. *See detailed list of modules in the default/main/freepbx_modules.yml file*:
 
 `$ ansible-playbook -i TARGET, -t plus playbook.yml`
-
-*See detailed list of modules in the default/main/freepbx_modules.yml file.*
 
 ### Tag: splat
 
@@ -217,11 +267,23 @@ Installs only the Asterisk parts:
 
 `$ ansible-playbook -i TARGET, -t star playbook.yml`
 
+### Tag: tests
+
+Runs a test or two. Debugging use only:
+
+`$ ansible-playbook -i TARGET, -t tests playbook.yml`
+
 ### Tag: uninstall
 
 Removes most of the FreePBX parts:
 
 `$ ansible-playbook -i TARGET, -t uninstall playbook.yml`
+
+### Tag: vlan
+
+Installs and configures dnsmasq to provide DHCP server functions on a VLAN to help the phones auto-provision. *Ideally you should only need to configure the phone on to the VLAN, wait as it reboots, and in a few minutes start making calls*:
+
+`$ ansible-playbook -i TARGET, -t vlan playbook.yml`
 
 ---
 
