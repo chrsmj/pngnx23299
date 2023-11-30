@@ -17,11 +17,13 @@ pngnx_freepbx_systemd_name: freepbx
 # alternatively...
 #pngnx_freepbx_systemd_name: "{{ pngnx_distro }}"
 
-# SSH pubkey can be from a file or an URL - if specified, all other keys will be removed
-#pngnx_installer_sshpubkey: https://penguinpbx.com/muh.keys
+# SSH pubkey can be from a string, file or URL - if specified, all other keys will be removed
+#pngnx_installer_sshpubkey: /home/user/.ssh/id_rsa.pub
+#pngnx_installer_sshpubkey: https://penguinpbx.com/muh.shiny.pub.keys
 #pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 #pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-sk.pub') }}"
 #pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-' + ansible_host + '.pub') }}"
+#pngnx_installer_sshpubkey: "RAW_PUB_KEY_MATERIAL"
 
 # if key is defined, then logins can be limited to only public keys - no more password logins
 # note this does nothing UNLESS you specify a value for pngnx_installer_sshpubkey

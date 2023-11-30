@@ -6,13 +6,32 @@
 
 # Maybe counts as application-level firewalling...
 
-- name: Allow SSH with ONLY the authorized key. For installer account.
+- name: Check if SSH key exists as file that needs extra lookup step.
   when: pngnx_installer_sshpubkey is defined
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ pngnx_installer_sshpubkey }}"
+  register: pubkey
+
+- name: Allow SSH with ONLY the authorized key. For installer account.
+  when:
+    - pngnx_installer_sshpubkey is defined
+    - not pubkey.stat.exists
   ansible.posix.authorized_key:
-    exclusive: True
+    exclusive: true
     state: present
     user: "{{ ansible_user_id }}"
     key: "{{ pngnx_installer_sshpubkey }}"
+
+- name: Allow SSH with ONLY the authorized key. For installer account. Extra lookup step.
+  when:
+    - pngnx_installer_sshpubkey is defined
+    - pubkey.stat.exists
+  ansible.posix.authorized_key:
+    exclusive: true
+    state: present
+    user: "{{ ansible_user_id }}"
+    key: "{{ lookup('file', pngnx_installer_sshpubkey) }}"
 
 - name: Disallow SSH for root user.
   become: yes

@@ -77,12 +77,12 @@
   ansible.builtin.pause:
     prompt: Please read the *BOXED WARNING* above and type YES to confirm installation, then press Enter.
   register: promptconfirmed
+  run_once: true
 
 - name: Checking for confirmation.
   tags: [ confirm ]
   ansible.builtin.assert:
-    that: 
-      - promptconfirmed.user_input == "YES"
+    that: promptconfirmed.user_input == "YES"
     fail_msg: "Install terminated. You did not type YES. So, Adios!"
     success_msg: "Confirmation accepted. You typed YES. Install proceeding. Vamanos!"
 
