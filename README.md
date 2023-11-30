@@ -3,29 +3,43 @@
 
 ---
 
-> Copyright 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
->
-> This file is part of pngnx23299.
->
-> pngnx23299 is free software: you can redistribute it and/or modify it under
-> the terms of the GNU General Public License as published by the Free Software
-> Foundation, either version 3 of the License, or (at your option) any later
-> version.
->
-> pngnx23299 is distributed in the hope that it will be useful, but WITHOUT ANY
-> WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-> A PARTICULAR PURPOSE. See the GNU General Public License for more details.
->
-> You should have received a copy of the GNU General Public License along with
-> pngnx23299. If not, see <https://www.gnu.org/licenses/>. 
+# Table of Contents
+
+1. [License](#license)
+2. New to ... [Asterisk ?](#new-to-asterisk-) [FreePBX ?](#new-to-freepbx-) [Debian ?](#new-to-debian-) [Ansible ?](#new-to-ansible-)
+3. [Basic Installations](#basic-installations)
+4. [Advanced Installations](#advanced-installations): [Variable: freepbx_upstream](#variable-freepbx_upstream) | [Skip Tags: extra,plus](#skip-tags-extraplus)
+5. [Fine Tuning with Tags](#fine-tuning-with-tags): [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [nonfree](#tag-nonfree) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [uninstall](#tag-uninstall)
 
 ---
 
-## New to Asterisk ?
+## License
+
+Copyright 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+
+This file is part of pngnx23299.
+
+pngnx23299 is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+pngnx23299 is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+pngnx23299. If not, see <https://www.gnu.org/licenses/>. 
+
+---
+
+## New to ... ?
+
+### New to Asterisk ?
 
 [Asterisk](https://www.asterisk.org) is an open source telecommunications toolkit for VoiP and more, written mostly in C.
 
-## New to FreePBX ?
+### New to FreePBX ?
 
 [FreePBX](https://www.freepbx.org) is a Web GUI for Asterisk, written mostly in PHP and SQL.
 
@@ -39,7 +53,7 @@ Also by default, this role will only install FLOSS components eg. no non-free or
 This may mean that some things you are used to seeing on FreePBX distros and other installers are missing.
 You can change this by running the role again post-install using an Ansible tag called '[nonfree](#tag-nonfree)'.
 
-## New to Debian ?
+### New to Debian ?
 
 To proceed with this role, you Must have [Debian GNU/Linux 12 "bookworm"](https://www.debian.org) running on your TARGET
 with at least the following tasks selected during installation:
@@ -54,7 +68,7 @@ However, installing the web server is a good idea, so please do select:
 
 Installing Debian is outside the scope of this document.
 
-## New to Ansible ?
+### New to Ansible ?
 
 You run [Ansible](https://www.ansible.com) playbooks (scripts) on your LOCAL machine.
 Then things happen (over SSH) on your TARGET machine(s).
@@ -89,7 +103,9 @@ $ ssh TARGET
 **PRO-TIP 2:**
 Now is a good time to setup SSH keys and add those to the IdentityFile line in your ~/.ssh/config file.
 
-## Basic First Installation Sample Ansible Playbook <-- TL;DR ? #HELPME #START #HERE
+---
+
+## Basic Installations
 
 Replace TARGET with the SSH Host name you will be installing on, and run these commands:
 
@@ -116,7 +132,7 @@ Then test-drive a new SSH connection when done, just to make sure you can still 
 
 ---
 
-## Intermediate Installation Methods
+## Advanced Installations
 
 Different variables and tags in this role allow finer-grained control of the operations.
 
@@ -142,9 +158,11 @@ Installs but with limited FreePBX modules -- just enough to send and receive cal
 
 *See detailed list of modules in the default/main/freepbx_modules.yml file.*
 
-## Advanced Invocations
+---
 
-Idempotence is not perfectly supported, but it is fairly well-respected by this role, and so with certain tags you can re-run portions of the role at different times.
+## Fine Tuning with Tags
+
+Idempotence is not perfectly supported, but it is fairly well-respected by this role, and so with certain Tags you can re-run portions of the role at different times.
 The rest of these examples assume that you have passwordless sudo working on TARGET and are connecting to TARGET using currently in-memory SSH keys.
 
 ### Tag: extra
