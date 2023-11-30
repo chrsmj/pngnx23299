@@ -12,8 +12,8 @@ Designed to get a few desk phones quickly ringing by manually configuring them i
 1. [License](#license)
 2. New to ... [Asterisk ?](#new-to-asterisk-) [FreePBX ?](#new-to-freepbx-) [Debian ?](#new-to-debian-) [Ansible ?](#new-to-ansible-)
 3. [Basic Installation](#basic-installation)
-4. [Advanced Installation](#advanced-installation): [Variable: freepbx_upstream](#variable-freepbx_upstream) | [Skip Tags: extra,plus](#skip-tags-extraplus)
-5. [Fine Tuning with Tags](#fine-tuning-with-tags): [apache](#tag-apache) | [catbert](#tag-catbert) | [confirm](#tag-confirm) | [dahdi](#tag-dahdi) | [db](#tag-db) | [drwho](#tag-drwho) | [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [logrotate](#tag-logrotate) | [nonfree](#tag-nonfree) | [nopants](#tag-nopants) | [packages](#tag-packages) | [phoneprov](#tag-phoneprov) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [tests](#tag-tests) | [uninstall](#tag-uninstall) | [vlan](#tag-vlan)
+4. [Advanced Installation](#advanced-installation): [Variable: pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream) | [Variable: pngnx_php_version](#variable-pngnx_php_version) | [Skip Tags: extra,plus](#skip-tags-extraplus)
+5. [Idempotent Installation](#idempotent-installation) / Tag Details: [apache](#tag-apache) | [catbert](#tag-catbert) | [confirm](#tag-confirm) | [dahdi](#tag-dahdi) | [db](#tag-db) | [drwho](#tag-drwho) | [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [logrotate](#tag-logrotate) | [nonfree](#tag-nonfree) | [nopants](#tag-nopants) | [packages](#tag-packages) | [phoneprov](#tag-phoneprov) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [tests](#tag-tests) | [uninstall](#tag-uninstall) | [vlan](#tag-vlan)
 
 ---
 
@@ -138,25 +138,36 @@ Then test-drive a new SSH connection when done, just to make sure you can still 
 
 ## Advanced Installation
 
-Different variables and tags in this role allow finer-grained control of the operations.
+Different Ansible Variables and Tags in this Role allow finer-grained control of the operations.
+See the defaults/main/*.yml files for details.
+You can override any of these on the command line, in separate per-host files, in group files, and more.
+Below are some highlights/examples:
 
-### Variable: freepbx_upstream
+### Variable: pngnx_freepbx_upstream
 
 Installs system but changes upstream source, to either 'edge' or 'git'.
 
 To use the BETA EDGE tarball:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=edge playbook.yml`
+`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=edge playbook.yml`
 
 Or, to use ZIP files pulled from new FreePBX GIT repo on GitHub (this is the default if not specified):
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e freepbx_upstream=git playbook.yml`
+`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=git playbook.yml`
 
 *Currently (28 November 2023) both the edge tarball and the new github zips are installing properly, but some modules are buggy.*
 
+### Variable: pngnx_php_version
+
+Installs system but changes the PHP version from the Debian 12 default of PHP 8.2 to what you specify eg. PHP 7.4:
+
+`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_php_version=7.4 playbook.yml`
+
+*Many things were deprecated in PHP 8.2 but upstream FreePBX 17 saw lots of commit activity in the fall of 2023 to make it compatible with the new PHP changes.*
+
 ### Skip Tags: extra,plus
 
-Installs but with limited FreePBX modules -- just enough to send and receive calls:
+Installs system but with limited FreePBX modules -- just enough to send and receive calls:
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, --skip-tags extra,plus playbook.yml`
 
@@ -164,7 +175,7 @@ Installs but with limited FreePBX modules -- just enough to send and receive cal
 
 ---
 
-## Fine Tuning with Tags
+## Idempotent Installation
 
 Idempotence is not perfectly supported, but it is fairly well-respected by this role, and so with certain Tags you can re-run portions of the role at different times.
 The rest of these examples assume that you have passwordless sudo working on TARGET and are connecting to TARGET using currently in-memory SSH keys.
