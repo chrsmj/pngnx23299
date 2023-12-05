@@ -143,11 +143,11 @@
       tags: apache
   tags: apache
 
-- name: VLAN with dnsmasq support for PBX to drive the phones.
+- name: VLAN with dnsmasq and resolvconf support for PBX to drive the phones.
   tags: vlan
   when: pngnx_phone_vlans is defined
   ansible.builtin.include_tasks:
-    file: vlan-dnsmasq.yml
+    file: vlan-dns-dhcp.yml
     apply:
       tags: vlan
 

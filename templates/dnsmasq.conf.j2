@@ -1,16 +1,28 @@
-# this PBX is serving up DHCP and DNS to the VoiP phones on a VLAN
+# This PBX is serving up DHCP and DNS to the VoiP phones on a VLAN,
+# which makes auto-provisioning phones much easier. It also serves
+# as local DNS for resolving both things upstream and the local VLAN
+# phones -- this helps with PJSIP DNS client and others.
 
+domain-needed
 bogus-priv
-no-resolv
-no-poll
+#no-resolv
+#no-poll
+clear-on-reload
+strict-order
+expand-hosts
 
-#log-queries
-#log-dhcp
+# debugging
+log-queries
+log-dhcp
 
+# VLAN lookups, all others we forward
 domain={{ pngnx_vlan_fqdn }}
+local=/{{ pngnx_vlan_fqdn }}/
 
+# answer LOCAL and VLAN queries
+listen-address=127.0.0.1
 listen-address={{ pngnx_vlan_ip }}
-bind-interfaces
+#bind-interfaces
 
 # no routing
 dhcp-option=3
@@ -19,6 +31,18 @@ dhcp-option=19,0
 # NTP same as PBX
 dhcp-option=42,0.0.0.0
 
+# dnsmasq is boss
+dhcp-authoritative
+
+# run whenever we add/del/old a lease
+# ("old" is what happens when we restart and reread the lease database)
+# TODO: more autoprovisioning
+dhcp-script=/bin/echo
+
+
+###########################
+# ONLY PHONES GET FURTHER #
+###########################
 
 # Polycom
 dhcp-mac=set:polly,00:04:f2:*:*:*

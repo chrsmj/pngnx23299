@@ -1,6 +1,7 @@
 [Unit]
 Description={{ pngnx_distro }} UC-VoiP-PBX Server
-After=mariadb.service
+After=mariadb.service network-online.target
+Wants=mariadb.service network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes

@@ -84,7 +84,6 @@
       - libresample1-dev
       - libsndfile1-dev
       - libsnmp-dev
-      - libspandsp-dev
       - libspeex-dev
       - libspeexdsp-dev
       - libsqlite3-dev
@@ -118,6 +117,7 @@
       - libncurses5-dev
       - libopus-dev
       - libsox-fmt-mp3
+      - libspandsp-dev
       - libsystemd-dev
       - libtiff-dev
       - libtiff-tools

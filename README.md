@@ -12,7 +12,7 @@ Designed to get a few desk phones quickly ringing by manually configuring them i
 1. [License](#license)
 2. New to ... [Asterisk ?](#new-to-asterisk-) [FreePBX ?](#new-to-freepbx-) [Debian ?](#new-to-debian-) [Ansible ?](#new-to-ansible-)
 3. [Basic Installation](#basic-installation)
-4. [Advanced Installation](#advanced-installation): [Variable: pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream) | [Variable: pngnx_php_version](#variable-pngnx_php_version) | [Skip Tags: extra,plus](#skip-tags-extraplus) | [Multiple TARGETs](#multiple-targets) | [SSH Keys](#ssh-keys)
+4. [Advanced Installation](#advanced-installation): [Variable: pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream) | [Variable: pngnx_php_version](#variable-pngnx_php_version) | [Skip Tags: extra,plus](#skip-tags-extraplus) | [Multiple TARGETs](#multiple-targets) | [SSH Keys](#ssh-keys) | [Build Asterisk](#build-asterisk)
 5. [Idempotent Installation](#idempotent-installation) / Tag Details: [apache](#tag-apache) | [catbert](#tag-catbert) | [confirm](#tag-confirm) | [dahdi](#tag-dahdi) | [db](#tag-db) | [drwho](#tag-drwho) | [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [logrotate](#tag-logrotate) | [nonfree](#tag-nonfree) | [nopants](#tag-nopants) | [packages](#tag-packages) | [phoneprov](#tag-phoneprov) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [tests](#tag-tests) | [uninstall](#tag-uninstall) | [vlan](#tag-vlan)
 
 ---
@@ -115,9 +115,9 @@ or [you can specify them during (re-)install](#ssh-keys).
 Replace TARGET with the SSH Host name you will be installing on, and run these commands:
 
 ```
-$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.23.30-alpha.tar.gz
-$ tar xvzf v0.23.30-alpha.tar.gz
-$ cd pngnx23299-0.23.30-alpha
+$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.23.35-alpha.tar.gz
+$ tar xvzf v0.23.35-alpha.tar.gz
+$ cd pngnx23299-0.23.35-alpha
 $ ansible-playbook --become-method=su -k -K -i TARGET, playbook.yml
 ```
 
@@ -172,7 +172,7 @@ Installs system but with limited FreePBX modules -- just enough to send and rece
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, --skip-tags extra,plus playbook.yml`
 
-*See detailed list of modules in the default/main/freepbx_modules.yml file.*
+*See detailed list of modules in the defaults/main/freepbx_modules.yml file.*
 
 ### Multiple TARGETs
 
@@ -198,7 +198,15 @@ Or later on, you can (re-)run Tasks specified by the firewall Tag to do several 
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_rsa.pub,pngnx_allow_ssh_passwords=yes playbook.yml`
 
-*See [SSH PRO-TIP 3](#pro-tip-3) above, as well as more Variable controls in the default/main/controls.yml file, and also the tasks/firewall-\*.yml files.*
+*See [SSH PRO-TIP 3](#pro-tip-3) above, as well as more Variable controls in the defaults/main/controls.yml file, and also the tasks/firewall-\*.yml files.*
+
+### Build Asterisk
+
+Downloads and Builds Asterisk but does not Install it:
+
+`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_do_asterisk_install=false playbook.yml`
+
+*See defaults/main/versions.yml for changing the Asterisk version.*
 
 ---
 
@@ -250,7 +258,7 @@ Installs and configures ChronyD as the Network Time Protocol (NTP) server on LAN
 
 ### Tag: extra
 
-Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this Tag previously because you only wanted the basic FreePBX modules -- see above in the [Advanced Installation](#advanced-installation) section). *See detailed list of modules in the default/main/freepbx_modules.yml file*:
+Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this Tag previously because you only wanted the basic FreePBX modules -- see above in the [Advanced Installation](#advanced-installation) section). *See detailed list of modules in the defaults/main/freepbx_modules.yml file*:
 
 `$ ansible-playbook -i TARGET, -t extra playbook.yml`
 
@@ -298,7 +306,7 @@ Automates phone provisioning of certain Aastra, Polycom and SNOM phones; using a
 
 ### Tag: plus
 
-Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra. *See detailed list of modules in the default/main/freepbx_modules.yml file*:
+Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra. *See detailed list of modules in the defaults/main/freepbx_modules.yml file*:
 
 `$ ansible-playbook -i TARGET, -t plus playbook.yml`
 

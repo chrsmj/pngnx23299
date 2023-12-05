@@ -16,6 +16,11 @@
 * /etc/hosts needs adjustment when domain name changes (only issue in cloned test VMs ??)
 * reduce number of FreePBX reloads/restarts
 * use git clone for development environment in addition to git zip downloads (maybe in /srv or /home ?)
+* add app_softmodem
+* better DNS support
+* geolocation
+* STIR/SHAKEN
+* make systemd Conflicts with Asterisk service?
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX
