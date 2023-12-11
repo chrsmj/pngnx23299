@@ -115,9 +115,9 @@ or [you can specify them during (re-)install](#ssh-keys).
 Replace TARGET with the SSH Host name you will be installing on, and run these commands:
 
 ```
-$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.23.35-alpha.tar.gz
-$ tar xvzf v0.23.35-alpha.tar.gz
-$ cd pngnx23299-0.23.35-alpha
+$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.23.40-alpha.tar.gz
+$ tar xvzf v0.23.40-alpha.tar.gz
+$ cd pngnx23299-0.23.40-alpha
 $ ansible-playbook --become-method=su -k -K -i TARGET, playbook.yml
 ```
 

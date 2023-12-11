@@ -21,9 +21,13 @@
 * geolocation
 * STIR/SHAKEN
 * make systemd Conflicts with Asterisk service?
+* git clone each module from freepbx github, to make it easier to patch
+* initial web user should be available to auto-generate (see https://community.freepbx.org/t/create-1st-admin-user-from-cli/65133)
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX
 * syslog on the VLAN for the phones
 * HTTP PUTs on the VLAN for the phones
 * use the timezone vars
+* automatically add the entries for new phones configured via GUI in a /etc/asterisk/phones.d/ directory,
+  as they boot up via DNSMASQ command (currently a TODO with simple MAC/IP echo to syslogh)
