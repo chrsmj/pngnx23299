@@ -147,7 +147,7 @@
   tags: vlan
   when: pngnx_phone_vlans is defined
   ansible.builtin.include_tasks:
-    file: vlan-dns-dhcp.yml
+    file: vlan-bossmode.yml
     apply:
       tags: vlan
 
@@ -210,10 +210,11 @@
     when: pngnx_phoneprov_polycom is defined
   tags: phoneprov
 
+# TODO: expand to more places
 - name: Log rotation policies for things in /var/log/asterisk/ tree.
-  tags: logrotate
+  tags: logs-rotate
   ansible.builtin.include_tasks:
-    file: logrotate.yml
+    file: logs-rotate.yml
     apply:
       tags: logrotate
 

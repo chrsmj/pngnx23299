@@ -4,12 +4,13 @@
 ---
 # file: roles/pngnx23299/tasks/vlan-dns-dhcp.yml
 
-- name: Install the dnsmasq, resolvconf and vlan packages.
+- name: Install arpalert, dnsmasq, resolvconf and vlan packages.
   become: yes
   ansible.builtin.apt:
     update_cache: true
     state: latest
     name:
+      - arpalert
       - dnsmasq
       - resolvconf
       - vlan
@@ -53,6 +54,15 @@
 - name: Bring up the new VLAN.
   become: yes
   ansible.builtin.command: /sbin/ifup {{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}
+
+- name: Allow phones to send syslogs via UDP on the VLAN.
+  become: yes
+  ansible.builtin.blockinfile:
+    path: /etc/rsyslog.d/42-pngnx.conf
+    create: true
+    block: |
+      module(load="imudp")
+      input(type="imudp" port="514")
 
 - name: Start dnsmasq on the VLAN.
   become: yes

@@ -18,7 +18,8 @@
 * use git clone for development environment in addition to git zip downloads (maybe in /srv or /home ?)
 * add app_softmodem
 * better DNS support
-* geolocation
+* geolocation, for emergency calling improvements
+* geolocation, for IP address blocking
 * STIR/SHAKEN
 * make systemd Conflicts with Asterisk service?
 * git clone each module from freepbx github, to make it easier to patch
@@ -26,7 +27,6 @@
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX
-* syslog on the VLAN for the phones
 * HTTP PUTs on the VLAN for the phones
 * use the timezone vars
 * automatically add the entries for new phones configured via GUI in a /etc/asterisk/phones.d/ directory,

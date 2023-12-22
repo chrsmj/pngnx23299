@@ -7,19 +7,19 @@ pngnx_php_version: "{{ pngnx_php_major }}.{{ pngnx_php_minor }}"
 
 # latest DAHDI Linux
 pngnx_dahdilinux_major: 3
-pngnx_dahdilinux_minor: 3.0-rc1
+pngnx_dahdilinux_minor: 3.0
 pngnx_dahdilinux_version: "{{ pngnx_dahdilinux_major }}.{{ pngnx_dahdilinux_minor }}"
 pngnx_dahdilinux_urlbase: "https://github.com/asterisk/dahdi-linux/releases/download/v{{ pngnx_dahdilinux_version }}"
-pngnx_dahdilinux_checksum: sha256:453b4cb81396d8215d193a7bb6987a8d1cfdbd28cf12e4bfaca7ecf702d2dc76
+pngnx_dahdilinux_checksum: sha256:f9528a82b5e88c1d92d737efd65bd571bef2cd1b1b44d43b857a76e38e01a7c0
 pngnx_dahdilinux_tarball: "dahdi-linux-{{ pngnx_dahdilinux_version }}.tar.gz"
 pngnx_dahdilinux_target: "{{ pngnx_build_target }}/dahdi-linux-{{ pngnx_dahdilinux_version }}"
 
 # latest DAHDI Tools
 pngnx_dahditools_major: 3
-pngnx_dahditools_minor: 3.0-rc1
+pngnx_dahditools_minor: 3.0
 pngnx_dahditools_version: "{{ pngnx_dahditools_major }}.{{ pngnx_dahditools_minor }}"
 pngnx_dahditools_urlbase: "https://github.com/asterisk/dahdi-tools/releases/download/v{{ pngnx_dahditools_version }}"
-pngnx_dahditools_checksum: sha256:00bb02ea8d9aa5761da82fe578059aa73dee1e6f2a4a475b2e2ab602e1eed01f
+pngnx_dahditools_checksum: sha256:5706b37df5840ecdc524d4c86df2ad34a31f83db552a8519b4ccf61bac75d2e4
 pngnx_dahditools_tarball: "dahdi-tools-{{ pngnx_dahditools_version }}.tar.gz"
 pngnx_dahditools_target: "{{ pngnx_build_target }}/dahdi-tools-{{ pngnx_dahditools_version }}"
 
@@ -34,10 +34,10 @@ pngnx_libpri_target: "{{ pngnx_build_target }}/libpri-{{ pngnx_libpri_version }}
 
 # latest Asterisk
 pngnx_asterisk_major: 20
-pngnx_asterisk_minor: 5.0
+pngnx_asterisk_minor: 5.2
 pngnx_asterisk_version: "{{ pngnx_asterisk_major }}.{{ pngnx_asterisk_minor }}"
 pngnx_asterisk_urlbase: "https://github.com/asterisk/asterisk/releases/download/{{ pngnx_asterisk_version }}"
-pngnx_asterisk_checksum: sha256:05dc5f235da44b69102bedca067bf35a612813502d1e18cd88a22d9e4c25c5e7
+pngnx_asterisk_checksum: sha256:8f68e1789dfb8aa04b0eba87ea1d599a62e088ddd20926afc997f36b455e1859
 pngnx_asterisk_tarball: "asterisk-{{ pngnx_asterisk_version }}.tar.gz"
 pngnx_asterisk_target: "{{ pngnx_build_target }}/asterisk-{{ pngnx_asterisk_version }}"
 

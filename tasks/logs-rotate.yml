@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 ---
-# file: roles/pngnx23299/tasks/logrotate.yml
+# file: roles/pngnx23299/tasks/logs-rotate.yml
 
 - name: Copy over the templated rotation policies.
   become: yes
