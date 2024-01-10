@@ -1,0 +1,1 @@
+playbook.yml package-latest # disable package-latest rule for playbook.yml
