@@ -1,3 +1,6 @@
 ---
 # .ansible-lint
-profile: null
+profile: min
+
+mock_roles:
+  - pngnx23299-0.23.42-alpha
