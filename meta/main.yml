@@ -1,6 +1,6 @@
 galaxy_info:
-  author: C. Maj
-  description: Installs Asterisk 20 from source. Installs FreePBX 17 pre-release from GIT. Requires Debian 12.
+  author: chrsmj
+  description: Installs Asterisk 20 from source. Installs FreePBX 17 pre-release from GIT or EDGE. Requires Debian 12.
   company: Penguin PBX Solutions
   license: GPLv3+
 
