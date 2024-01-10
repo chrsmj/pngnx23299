@@ -1,2 +1,1 @@
-playbook.yml package-latest
-playbook-alt.yml package-latest
+playbook-alt.yml syntax-check
