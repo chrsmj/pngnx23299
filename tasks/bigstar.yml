@@ -19,7 +19,7 @@
     url: "{{ pngnx_asterisk_urlbase }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     checksum: "{{ pngnx_asterisk_checksum }}"
-    mode: 0644
+    mode: "0644"
 
 - name: Unarchive Asterisk source.
   when: pngnx_new_src
@@ -37,7 +37,7 @@
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-    mode: 0644
+    mode: "0644"
 
 - name: Copy Asterisk tarball from temp directory to target install directory.
   become: true
@@ -46,7 +46,7 @@
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
-    mode: 0644
+    mode: "0644"
 
 - name: Clean previous Asterisk build. Might not have been one so ignore any errors.
   when: pngnx_new_src or pngnx_clean_src
@@ -61,7 +61,7 @@
   ansible.builtin.copy:
     src: asterisk-{{ pngnx_asterisk_major }}.makeopts
     dest: /etc/asterisk.makeopts
-    mode: 0644
+    mode: "0644"
 
 - name: Might not need all these defaults. (But FreePBX uses file-based VoiceMail.)
   become: true
