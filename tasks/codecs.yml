@@ -16,8 +16,9 @@
 - name: Download extra codecs from Digium server (OPUS, SIREN, etc.).
   tags: nonfree
   ansible.builtin.get_url:
-    url: "{{ pngnx_digium_urlbase }}/codec_{{ item }}/asterisk-{{ pngnx_asterisk_major }}.0/{{ ansible_userspace_architecture | replace('_', '-') }}/codec_{{ item }}-{{ pngnx_asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
+    url: "{{ pngnx_digium_urlbase }}/codec_{{ item }}/{{ pngnx_digium_urlpart2 }}/codec_{{ item }}-{{ pngnx_digium_urlpart3 }}"
     dest: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
+    mode: "0644"
   with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Download versioning info for extra codecs from Digium server (OPUS, SIREN, etc.).
@@ -25,6 +26,7 @@
   ansible.builtin.get_url:
     url: "{{ pngnx_digium_urlbase }}/codec_{{ item }}/selector-{{ item }}.js"
     dest: "{{ tmpcodecs.path }}/selector-{{ item }}.js"
+    mode: "0644"
   with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Register variables for the codec versions.
@@ -32,12 +34,14 @@
   ansible.builtin.command: /usr/bin/grep -m 1 version "{{ tmpcodecs.path }}/selector-{{ item }}.js"
   register: vcodecs
   with_items: "{{ pngnx_digium_codecs }}"
+  when_changed: true
 
 - name: Register variables for the codec source names combined with their version numbers. Quietly.
   tags: nonfree
   no_log: true
   ansible.builtin.command: /usr/bin/echo codec_{{ item.0 }}-{{ pngnx_asterisk_major }}.0_{{ item.1.stdout | regex_replace('[^0-9.]+', '') }}-{{ ansible_userspace_architecture }}
   register: vcodecsources
+  when_changed: true
   with_together:
     - "{{ pngnx_digium_codecs }}"
     - "{{ vcodecs.results }}"
@@ -48,6 +52,7 @@
     src: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
     dest: "{{ tmpcodecs.path }}"
     remote_src: true
+    mode: "0644"
   with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Copy codec sources from temp directory to target install directory. Quietly.
@@ -61,6 +66,7 @@
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
+    mode: "0644"
   with_items: "{{ vcodecsources.results }}"
 
 - name: Copy codec tarballs from temp directory to target install directory.
@@ -71,6 +77,7 @@
     src: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
+    mode: "0644"
   with_items: "{{ pngnx_digium_codecs }}"
 
 - name: Install extra codecs. Quietly.
@@ -81,6 +88,7 @@
     src: "{{ pngnx_build_target }}/{{ item.0.stdout }}/codec_{{ item.1 }}.so"
     dest: /usr/lib/asterisk/modules
     remote_src: true
+    mode: "0644"
   with_together:
     - "{{ vcodecsources.results }}"
     - "{{ pngnx_digium_codecs }}"
@@ -93,6 +101,7 @@
     src: "{{ pngnx_build_target }}/{{ item.0.stdout }}/format_ogg_{{ item.1 }}.so"
     dest: /usr/lib/asterisk/modules
     remote_src: true
+    mode: "0644"
   with_together:
     - "{{ vcodecsources.results }}"
     - "{{ pngnx_digium_codecs }}"

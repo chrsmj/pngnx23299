@@ -3,6 +3,8 @@
 
 # extra Digium codecs
 pngnx_digium_urlbase: "http://downloads.digium.com/pub/telephony"
+pngnx_digium_urlpart2: "asterisk-{{ pngnx_asterisk_major }}.0/{{ ansible_userspace_architecture | replace('_', '-') }}"
+pngnx_digium_urlpart3: "-{{ pngnx_asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
 pngnx_digium_codecs:
   - opus
   - silk

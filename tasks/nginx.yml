@@ -23,7 +23,7 @@
 - name: Install nginx as web proxy and apache utils for passwords with nginx.
   become: true
   ansible.builtin.apt:
-    state: latest
+    state: present
     name:
       - nginx
       - apache2-utils

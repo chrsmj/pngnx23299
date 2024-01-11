@@ -10,7 +10,7 @@
   when: ansible_architecture == "x86_64"
   ansible.builtin.apt:
     update_cache: true
-    state: latest
+    state: present
     name: linux-image-amd64
 
 - name: Automatically rebooting if necessary. You may need to manually power-up the machine. Script will continue once connection is re-established.
@@ -43,7 +43,7 @@
   become: true
   register: rast20
   ansible.builtin.apt:
-    state: latest
+    state: present
     name:
       - bash
       - binutils-dev
@@ -108,7 +108,7 @@
   become: true
   register: rfax20
   ansible.builtin.apt:
-    state: latest
+    state: present
     name:
       - ghostscript
       - imagemagick
@@ -127,14 +127,14 @@
   become: true
   register: rdhd3
   ansible.builtin.apt:
-    state: latest
+    state: present
     name: dkms
 
 - name: Install packages for FreePBX 17.
   become: true
   register: rfpbx17
   ansible.builtin.apt:
-    state: latest
+    state: present
     name:
       - apache2
       - git
@@ -163,7 +163,7 @@
   become: true
   register: rnpm
   ansible.builtin.apt:
-    state: latest
+    state: present
     name:
       - npm
 
@@ -171,7 +171,7 @@
   become: true
   register: rnice
   ansible.builtin.apt:
-    state: latest
+    state: present
     name:
       - acl
       - aptitude
@@ -219,7 +219,7 @@
   become: true
   register: rphys
   ansible.builtin.apt:
-    state: latest
+    state: present
     name:
       - beep
       - irqbalance
