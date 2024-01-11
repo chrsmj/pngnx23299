@@ -5,25 +5,25 @@
 # file: roles/pngnx23299/tasks/phoneprov-polycom.yml
 
 - name: Prep the static directory.
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /var/lib/asterisk/phoneprov/statics/polycom
     state: directory
     owner: root
     group: asterisk
-    recurse: yes
+    recurse: true
 
 - name: Prep the dynamic directory.
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /var/lib/asterisk/phoneprov/dynamics/polycom
     state: directory
     owner: root
     group: asterisk
-    recurse: yes
+    recurse: true
 
 - name: Polycom templates - all balls.
-  become: yes
+  become: true
   ansible.builtin.template:
     src: phoneprov/polycom/{{ item }}.j2
     dest: /var/lib/asterisk/phoneprov/statics/polycom/{{ item }}
@@ -33,7 +33,7 @@
     - 000000000000.cfg
 
 - name: Polycom templates - all balls.
-  become: yes
+  become: true
   ansible.builtin.template:
     src: phoneprov/polycom/{{ item }}.j2
     dest: /var/lib/asterisk/phoneprov/statics/polycom/{{ item }}
@@ -43,7 +43,7 @@
     - polycom-client.cfg
 
 - name: Dynamic Polycom templates.
-  become: yes
+  become: true
   ansible.builtin.template:
     src: phoneprov/polycom/{{ item }}.j2
     dest: /var/lib/asterisk/phoneprov/dynamics/polycom/{{ item }}

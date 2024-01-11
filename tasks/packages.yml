@@ -5,7 +5,7 @@
 # file: roles/pngnx23299/tasks/packages.yml
 
 - name: Update kernel. If this step is 'ok' then no reboot will happen because kernel is up-to-date.
-  become: yes
+  become: true
   register: rkrn12
   when: ansible_architecture == "x86_64"
   ansible.builtin.apt:
@@ -14,7 +14,7 @@
     name: linux-image-amd64
 
 - name: Automatically rebooting if necessary. You may need to manually power-up the machine. Script will continue once connection is re-established.
-  become: yes
+  become: true
   when: rkrn12.changed
   ansible.builtin.reboot:
  
@@ -34,13 +34,13 @@
      - "**************************************************************************"
 
 - name: Update packages for Debian 12.
-  become: yes
+  become: true
   register: rdeb12
   ansible.builtin.apt:
     upgrade: safe
 
 - name: Install packages for Asterisk 20 - mostly per contrib/source/install_prereq file.
-  become: yes
+  become: true
   register: rast20
   ansible.builtin.apt:
     state: latest
@@ -105,7 +105,7 @@
       - zlib1g-dev
 
 - name: Install extra packages for Asterisk 20 for more faxing and codec support.
-  become: yes
+  become: true
   register: rfax20
   ansible.builtin.apt:
     state: latest
@@ -124,14 +124,14 @@
       - libxml2-utils
 
 - name: Install DKMS and by extension the kernel header package -- for supporting DAHDI 3.
-  become: yes
+  become: true
   register: rdhd3
   ansible.builtin.apt:
     state: latest
     name: dkms
 
 - name: Install packages for FreePBX 17.
-  become: yes
+  become: true
   register: rfpbx17
   ansible.builtin.apt:
     state: latest
@@ -160,7 +160,7 @@
       - uuid
 
 - name: The PM2 module for FreePBX needs NPM which is HUGE.
-  become: yes
+  become: true
   register: rnpm
   ansible.builtin.apt:
     state: latest
@@ -168,7 +168,7 @@
       - npm
 
 - name: Install packages that are nice-to-have.
-  become: yes
+  become: true
   register: rnice
   ansible.builtin.apt:
     state: latest
@@ -216,7 +216,7 @@
 
 # TODO: only when not virtualized
 - name: Install packages that are more useful on physical hardware.
-  become: yes
+  become: true
   register: rphys
   ansible.builtin.apt:
     state: latest

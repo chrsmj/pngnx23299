@@ -34,7 +34,7 @@
     key: "{{ lookup('file', pngnx_installer_sshpubkey) }}"
 
 - name: Disallow SSH for root user.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: '^PermitRootLogin '
@@ -42,42 +42,42 @@
     create: true
 
 - name: Limit SSH access to current user via AllowUsers line.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: "^AllowUsers "
     line: "AllowUsers {{ ansible_user_id }}"
 
 - name: Changing SSH port number.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: "^Port "
     line: "Port {{ pngnx_ssh_port | default('22') }}"
 
 - name: Shorten time allowed for SSH login windows.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: '^LoginGraceTime '
     line: 'LoginGraceTime 55'
 
 - name: Disable X11Forwarding over SSH.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: '^X11Forwarding '
     line: 'X11Forwarding no'
 
 - name: Disallow empty passwords over SSH.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: '^PermitEmptyPasswords '
     line: 'PermitEmptyPasswords no'
 
 - name: Disallow password auth and force public keys.
-  become: yes
+  become: true
   when:
     - pngnx_installer_sshpubkey is defined
     - not pngnx_allow_ssh_passwords
@@ -87,7 +87,7 @@
     line: 'PasswordAuthentication no'
 
 - name: Allow password auth - in addition to keys.
-  become: yes
+  become: true
   when: pngnx_allow_ssh_passwords
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
@@ -95,7 +95,7 @@
     line: 'PasswordAuthentication yes'
 
 - name: Restarting SSH to pick up the changes. CHECK THAT YOUR SSH STILL WORKS!
-  become: yes
+  become: true
   ansible.builtin.service:
     name: sshd
     state: restarted

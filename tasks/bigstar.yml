@@ -28,7 +28,7 @@
     remote_src: true
 
 - name: Copy Asterisk source from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpast.path }}/asterisk-{{ pngnx_asterisk_version }}"
@@ -38,7 +38,7 @@
     group: "{{ ansible_user_id }}"
 
 - name: Copy Asterisk tarball from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
@@ -53,13 +53,13 @@
   ignore_errors: true
 
 - name: Specify some default build options.
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: asterisk-{{ pngnx_asterisk_major }}.makeopts
     dest: /etc/asterisk.makeopts
 
 - name: Might not need all these defaults. (But FreePBX uses file-based VoiceMail.)
-  become: yes
+  become: true
   when: pngnx_voicemail_type is not defined or pngnx_voicemail_type == "files"
   ansible.builtin.lineinfile:
     path: /etc/asterisk.makeopts
@@ -114,7 +114,7 @@
     creates: "{{ pngnx_asterisk_target }}/main/asterisk"
 
 - name: Install Asterisk.
-  become: yes
+  become: true
   when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make install
   args:

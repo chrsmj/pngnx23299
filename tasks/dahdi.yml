@@ -25,10 +25,10 @@
   ansible.builtin.unarchive:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahdilinux_tarball }}"
     dest: "{{ tmpdahdi.path }}"
-    remote_src: yes
+    remote_src: true
 
 - name: Copy DAHDI Linux source from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/dahdi-linux-{{ pngnx_dahdilinux_version }}"
@@ -38,7 +38,7 @@
     group: "{{ ansible_user_id }}"
 
 - name: Copy DAHDI Linux tarball from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahdilinux_tarball }}"
@@ -60,14 +60,14 @@
     creates: "{{ pngnx_dahdilinux_target }}/linux/drivers/dahdi/Module.symvers"
 
 - name: Install DAHDI Linux.
-  become: yes
+  become: true
   when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make all install-modules install-include
   args:
     chdir: "{{ pngnx_dahdilinux_target }}"
 
 - name: Install DAHDI Linux non-free firmware.
-  become: yes
+  become: true
   tags: [ never, nonfree ]
   when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make install-firmware install-xpp-firm
@@ -75,7 +75,7 @@
     chdir: "{{ pngnx_dahdilinux_target }}"
 
 - name: Load DAHDI Linux dummy module.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/modprobe dahdi_dummy
 
 - name: Download DAHDI Tools source.
@@ -90,10 +90,10 @@
   ansible.builtin.unarchive:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahditools_tarball }}"
     dest: "{{ tmpdahdi.path }}"
-    remote_src: yes
+    remote_src: true
 
 - name: Copy DAHDI Tools source from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/dahdi-tools-{{ pngnx_dahditools_version }}"
@@ -103,7 +103,7 @@
     group: "{{ ansible_user_id }}"
 
 - name: Copy DAHDI Tools tarball from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahditools_tarball }}"
@@ -139,14 +139,14 @@
     chdir: "{{ pngnx_dahditools_target }}"
 
 - name: Install DAHDI Tools.
-  become: yes
+  become: true
   when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make install
   args:
     chdir: "{{ pngnx_dahditools_target }}"
 
 - name: Install DAHDI using DKMS so it will work if the kernel changes.
-  become: yes
+  become: true
   when: pngnx_do_asterisk_install
   ansible.builtin.command: ./build_tools/dkms-helper add
   args:

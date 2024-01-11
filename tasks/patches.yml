@@ -7,7 +7,7 @@
 # The most minor of adjustments needed.
 
 - name: Minor bug when adding outbound route.
-  become: yes
+  become: true
   ansible.posix.patch:
     src: freepbx-core-views-routing-form.patch
     dest: /var/www/html/admin/modules/core/views/routing/form.php

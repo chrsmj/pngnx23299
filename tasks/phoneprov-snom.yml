@@ -5,7 +5,7 @@
 # file: roles/pngnx23299/tasks/phoneprov-snom.yml
 
 - name: Snom templates.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.template:
     src: phoneprov/snom/snom320-mac-template.cfg.j2
@@ -21,7 +21,7 @@
     - snom320-mac-template-fkeys3_11-blfs6_7
 
 - name: More Snom templates.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.template:
     src: phoneprov/snom/snom715-mac-template.cfg.j2
@@ -31,70 +31,70 @@
     - snom715-mac-template-fkeys0_4
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 0-11.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys0_11.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(0, 12, 1)|list }}"
+  loop: "{{ range(0, 12, 1)| | list }}"
  
 - name: Snom 320. Adjust the templates to contain the correct function keys 2-11.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys2_11.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(2, 12, 1)|list }}"
+  loop: "{{ range(2, 12, 1)| | list }}"
  
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(3, 12, 1)|list }}"
+  loop: "{{ range(3, 12, 1)| | list }}"
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 6 and 7. Step 1.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blfs6_7.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(3, 6, 1)|list }}"
+  loop: "{{ range(3, 6, 1)| | list }}"
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 6 and 7. Step 2.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blfs6_7.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">blf ${FKEY{{ item }}}@{{ pngnx_hostname }}|*8</fkey>'
-  loop: "{{ range(6, 8, 1)|list }}"
+  loop: "{{ range(6, 8, 1)| | list }}"
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 6 and 7. Step 3.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blfs6_7.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(8, 12, 1)|list }}"
+  loop: "{{ range(8, 12, 1)| | list }}"
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 6. Step 1.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blf6.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(3, 6, 1)|list }}"
+  loop: "{{ range(3, 6, 1)| | list }}"
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 6. Step 2.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blf6.cfg
@@ -104,25 +104,25 @@
     - 6
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 6. Step 3.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blf6.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(8, 12, 1)|list }}"
+  loop: "{{ range(8, 12, 1)| | list }}"
  
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 7. Step 1.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blf7.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(3, 6, 1)|list }}"
+  loop: "{{ range(3, 6, 1)| | list }}"
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 7. Step 2.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blf7.cfg
@@ -132,30 +132,30 @@
     - 7
 
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 7. Step 3.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys3_11-blf7.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(8, 12, 1)|list }}"
+  loop: "{{ range(8, 12, 1)| | list }}"
  
  
 - name: Snom 320. Adjust the templates to contain the correct function keys 6-11.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom320-mac-template-fkeys6_11.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(6, 12, 1)|list }}"
+  loop: "{{ range(6, 12, 1)| | list }}"
  
 - name: Snom 715. Adjust the templates to contain the correct function keys 0-4.
-  become: yes
+  become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
   ansible.builtin.lineinfile:
     dest: /var/lib/asterisk/phoneprov/snom715-mac-template-fkeys0_4.cfg
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
-  loop: "{{ range(0, 5, 1)|list }}"
+  loop: "{{ range(0, 5, 1)| | list }}"
  

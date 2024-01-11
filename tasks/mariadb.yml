@@ -7,28 +7,28 @@
 # Configure MariaDB/MYSQL in a way that FreePBX can handle.
 
 - name: Make MYSQL Great Again.
-  become: yes
+  become: true
   ansible.builtin.ini_file:
     path: /etc/mysql/conf.d/freepbx.cnf
     section: mysqld
     option: sql_mode
     value: ''
-    no_extra_spaces: yes
+    no_extra_spaces: true
 
 - name: Restart MariaDB (MYSQL).
-  become: yes
+  become: true
   ansible.builtin.service:
     name: mariadb
     state: restarted
 
 - name: Prep odbc.ini for FreePBX ODBC connection.
-  become: yes
+  become: true
   ansible.builtin.ini_file:
     path: /etc/odbc.ini
     section: MySQL-asteriskcdrdb
     option: "{{ item.k }}"
     value: "{{ item.v }}"
-    no_extra_spaces: yes
+    no_extra_spaces: true
   loop:
     - { k: "Description", v: "MySQL connection to 'asteriskcdrdb' database" }
     - { k: "driver",      v: "MariaDB Unicode" }

@@ -7,19 +7,19 @@
 # Do the basic and extra modules first and then add these for more features.
 
 - name: Install the plus local modules. As a group.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole ma install {{ pngnx_freepbx_plus_modules | flatten }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    
 - name: Reload FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    
 - name: Restart FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

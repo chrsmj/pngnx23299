@@ -5,7 +5,7 @@
 # file: roles/pngnx23299/tasks/nginx.yml
 
 - name: Create nginx directories, if needed.
-  become: yes
+  become: true
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -15,13 +15,13 @@
     - /etc/nginx/sites-enabled/
 
 - name: Configure the site in available-sites.
-  become: yes
+  become: true
   ansible.builtin.template:
     src: nginx-site.pngnx.j2
     dest: /etc/nginx/sites-available/pngnx.site
 
 - name: Install nginx as web proxy and apache utils for passwords with nginx.
-  become: yes
+  become: true
   ansible.builtin.apt:
     state: latest
     name:
@@ -29,21 +29,21 @@
       - apache2-utils
 
 - name: Stop the default site.
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Activate the site.
-  become: yes
+  become: true
   ansible.builtin.file:
     src: ../sites-available/pngnx.site
     path: /etc/nginx/sites-enabled/pngnx.site
     state: link
 
 - name: Restart nginx.
-  become: yes
+  become: true
   ansible.builtin.service:
     name: nginx
     state: restarted

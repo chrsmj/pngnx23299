@@ -43,7 +43,7 @@
   with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Copy FreePBX module sources from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
@@ -54,7 +54,7 @@
   with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Copy FreePBX module zip files from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
@@ -63,7 +63,7 @@
   with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Start Asterisk using FreePBX scripts.
-  become: yes
+  become: true
   ansible.builtin.command: ./start_asterisk start
   args:
     chdir: "{{ pngnx_freepbx_git_target }}/framework/framework-release-{{ pngnx_freepbx_git_version }}"
@@ -71,7 +71,7 @@
 # the PATH modification is needed to support use of runuser in the install script
 # TODO: maybe: use --dev-links
 - name: Install FreePBX framework. Ignoring errors because even with install script -q option there is a bunch of output.
-  become: yes
+  become: true
   ansible.builtin.command: ./install -n -f -q
   args:
     chdir: "{{ pngnx_freepbx_git_target }}/framework/framework-release-{{ pngnx_freepbx_git_version }}"
@@ -80,7 +80,7 @@
   ignore_errors: true
 
 - name: Copy in the modules from usr/src to var/www. Error on framework during reinstalls is expected.
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: "{{ pngnx_freepbx_git_target }}/{{ item }}/{{ item }}-release-{{ pngnx_freepbx_git_version }}/"
     dest: /var/www/html/admin/modules/{{ item }}/
@@ -89,7 +89,7 @@
   ignore_errors: true
 
 - name: Fix perms on PM2 it is a bugger.
-  become: yes
+  become: true
   ansible.builtin.file:
     path: /var/www/html/admin/modules/pm2
     owner: asterisk
@@ -97,19 +97,19 @@
     recurse: true
 
 - name: Install the local modules. As a group.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole ma installlocal
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    
 - name: Reload FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    
 - name: Restart FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

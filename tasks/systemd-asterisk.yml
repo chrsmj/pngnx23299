@@ -7,7 +7,7 @@
 # Provides automatic start up of Asterisk at boot via SystemD.
 
 - name: Copy SystemD service config files for Asterisk.
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: asterisk.service
     dest: /etc/systemd/system/asterisk.service
@@ -16,18 +16,18 @@
     mode: 0444
 
 - name: Adjust SystemD config to account for maximum channels.
-  become: yes
+  become: true
   ansible.builtin.ini_file:
     path: /etc/systemd/system/asterisk.service
     section: Service
     option: ExecStart
     value: /usr/sbin/asterisk -mqf -M {{ pngnx_max_calls | default(7) }} -C /etc/asterisk/asterisk.conf
-    no_extra_spaces: yes
+    no_extra_spaces: true
 
 - name: Reload SystemD to catch new Asterisk service changes.
-  become: yes
+  become: true
   ansible.builtin.systemd:
-    daemon_reload: yes
+    daemon_reload: true
 
 - name: Give SystemD a moment to catch-up.
   delegate_to: localhost
@@ -35,7 +35,7 @@
     timeout: 2
 
 - name: Enable Asterisk service via SystemD.
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: asterisk
     enabled: true
@@ -46,16 +46,16 @@
     timeout: 2
 
 - name: Start Asterisk service via SystemD.
-  become: yes
+  become: true
   ansible.builtin.systemd:
     name: asterisk
     state: started
  
 - name: Restart Asterisk. Only when new source build.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.service:
     name: asterisk
-    enabled: yes   
+    enabled: true   
     state: restarted
 

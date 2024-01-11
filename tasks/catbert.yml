@@ -8,13 +8,13 @@
 # Don't get too carried away because the FreePBX install changes lots of permissions itself.
 
 - name: Make asterisk group.
-  become: yes
+  become: true
   ansible.builtin.group:
     name: asterisk
     state: present
 
 - name: Make asterisk user.
-  become: yes
+  become: true
   ansible.builtin.user:
     name: asterisk
     state: present
@@ -23,21 +23,21 @@
     home: /var/lib/asterisk
 
 - name: Make pbx-bots group.
-  become: yes
+  become: true
   ansible.builtin.group:
     name: pbx-bots
     state: present
 
 - name: Put current user in some extra groups.
-  become: yes
+  become: true
   ansible.builtin.user:
     name: "{{ ansible_user_id }}"
     groups: asterisk,www-data,pbx-bots,sudo
-    append: yes
+    append: true
 
 - name: Make sure some directories exist.
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
   ansible.builtin.file:
     path: "{{ item.dir }}"
     state: directory
@@ -50,8 +50,8 @@
     - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
 
 - name: Change ownership on certain files and also touch them.
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
   ansible.builtin.file:
     path: "{{ item }}"
     owner: asterisk
@@ -64,8 +64,8 @@
     - /var/lib/asterisk/astdb.sqlite3
 
 - name: Change ownership on certain directories and make sure they exist.
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
   ansible.builtin.file:
     path: "{{ item.dir }}"
     state: directory
@@ -83,7 +83,7 @@
     - { dir: "/var/spool/asterisk",         owner: "asterisk", group: "pbx-bots", recurse: "no" }
 
 - name: Copy default main configuration file for Asterisk in to /etc/asterisk/. Do not overwrite if already something there.
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: "{{ pngnx_asterisk_target }}/configs/samples/asterisk.conf.sample"
     dest: /etc/asterisk/asterisk.conf
@@ -99,13 +99,13 @@
   register: st1
 
 - name: Check if we are dealing with the default Asterisk configuration file. Part 2.
-  become: yes
+  become: true
   ansible.builtin.stat:
     path: /etc/asterisk/asterisk.conf
   register: st2
 
 - name: Modify the default configuration file for Asterisk.
-  become: yes
+  become: true
   when: st1.stat.checksum == st2.stat.checksum
   ansible.builtin.replace:
     path: /etc/asterisk/asterisk.conf

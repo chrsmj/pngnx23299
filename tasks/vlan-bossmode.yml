@@ -5,7 +5,7 @@
 # file: roles/pngnx23299/tasks/vlan-dns-dhcp.yml
 
 - name: Install arpalert, dnsmasq, resolvconf and vlan packages.
-  become: yes
+  become: true
   ansible.builtin.apt:
     update_cache: true
     state: latest
@@ -16,32 +16,32 @@
       - vlan
 
 - name: Copy over dnsmasq.conf from a template with resolvconf friendly configs.
-  become: yes
+  become: true
   ansible.builtin.template:
     src: dnsmasq.conf.j2
     dest: /etc/dnsmasq.d/pngnx_dhcp_server.conf
 
 - name: Make an entry for the PBX on the VLAN.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/hosts
     regexp: "{{ pngnx_vlan_ip }}"
     line: "{{ pngnx_vlan_ip }} pbx.{{ pngnx_vlan_fqdn }} pbx"
 
 - name: Load the VLAN module into the kernel.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/modprobe 8021q
 
 # TODO: is everyone using /etc/modules-load.d/*.conf
 - name: Make VLAN module load persistent across reboots.
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/modules
     regexp: "^8021q" 
     line: "8021q" 
 
 - name: Add VLAN to the interfaces.
-  become: yes
+  become: true
   ansible.builtin.blockinfile:
     path: /etc/network/interfaces.d/pngnx-vlan
     create: true
@@ -52,11 +52,11 @@
         netmask {{ pngnx_vlan_netmask }}
 
 - name: Bring up the new VLAN.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/ifup {{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}
 
 - name: Allow phones to send syslogs via UDP on the VLAN.
-  become: yes
+  become: true
   ansible.builtin.blockinfile:
     path: /etc/rsyslog.d/42-pngnx.conf
     create: true
@@ -65,10 +65,10 @@
       input(type="imudp" port="514")
 
 - name: Start dnsmasq on the VLAN.
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
   service:
-    enabled: yes
+    enabled: true
     state: restarted
     name: dnsmasq
 

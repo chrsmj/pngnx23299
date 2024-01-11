@@ -5,7 +5,7 @@
 # file: roles/pngnx23299/tasks/logs-rotate.yml
 
 - name: Copy over the templated rotation policies.
-  become: yes
+  become: true
   ansible.builtin.template:
     src: logrotate.pngnx.j2
     dest: /etc/logrotate.d/pngnx

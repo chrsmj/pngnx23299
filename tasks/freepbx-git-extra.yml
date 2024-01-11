@@ -36,7 +36,7 @@
   with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Copy FreePBX module sources from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
@@ -47,7 +47,7 @@
   with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Copy FreePBX module zip files from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpfegit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
@@ -56,7 +56,7 @@
   with_items: "{{ pngnx_freepbx_extra_modules }}"
 
 - name: Copy in the modules from usr/src to var/www.
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: "{{ pngnx_freepbx_git_target }}/{{ item }}/{{ item }}-release-{{ pngnx_freepbx_git_version }}/"
     dest: /var/www/html/admin/modules/{{ item }}/
@@ -65,19 +65,19 @@
   ignore_errors: true
 
 - name: Install the extra local modules. All that were downloaded, as a group.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole ma installlocal
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    
 - name: Reload FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    
 - name: Restart FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

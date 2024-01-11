@@ -6,26 +6,26 @@
 
 - name: Get custom Asterisk phone provisioning in place.
   when: pngnx_private_asterisk_phoneprov_dir is defined
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: "{{ pngnx_private_asterisk_phoneprov_dir }}"
     dest: /var/lib/asterisk/phoneprov/
 
 - name: Get generic Asterisk phone provisioning in place.
   when: pngnx_private_asterisk_phoneprov_dir is not defined
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: ../files/phoneprov/
     dest: /var/lib/asterisk/phoneprov/
 
 - name: Copy the phone wallpaper to the Apache webroot because it is easier to serve.
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: phoneprov/pngnx_logo_spip550.bmp
     dest: /var/www/html
 
 - name: Asterisk phone provisioning config file.
-  become: yes
+  become: true
   ansible.builtin.template:
     src: phoneprov/pngnx-asterisk-phoneprov.conf.j2
     dest: /etc/asterisk/phoneprov.conf
@@ -40,7 +40,7 @@
   when: pngnx_phoneprov_snom | default(false)
 
 - name: Place a small sample FreePBX Endpoint PJSIP config file in /etc/asterisk/pjsip.endpoint_custom_post.conf
-  become: yes
+  become: true
   ansible.builtin.blockinfile:
     path: /etc/asterisk/pjsip.endpoint_custom_post.conf
     insertbefore: BOF

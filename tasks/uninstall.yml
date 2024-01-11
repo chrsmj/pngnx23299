@@ -10,7 +10,7 @@
 # nopants - Stops and flushes out the firewall parts. Careful!
 
 - name: Disable and Stop FreePBX, Asterisk and Apache.
-  become: yes
+  become: true
   tags: [ never, uninstall, splat ]
   ansible.builtin.service:
     name: "{{ item }}"
@@ -23,7 +23,7 @@
   ignore_errors: true
 
 - name: Remove most of the FreePBX parts.
-  become: yes
+  become: true
   tags: [ never, uninstall, splat ]
   ansible.builtin.file:
     path: "{{ item }}"
@@ -38,7 +38,7 @@
   ignore_errors: true
 
 - name: Drops the Asterisk MariaDB databases.
-  become: yes
+  become: true
   tags: [ never, uninstall, splat ]
   ansible.builtin.command: mysqladmin -f drop {{ item }}
   loop:
@@ -48,7 +48,7 @@
 
 
 - name: Disable and Stop MariaDB.
-  become: yes
+  become: true
   tags: [ never, uninstall, splat ]
   ansible.builtin.service:
     name: "{{ item }}"
@@ -59,7 +59,7 @@
   ignore_errors: true
 
 - name: Uninstall DAHDI and LIBPRI.
-  become: yes
+  become: true
   tags: [ never, splat ]
   ansible.builtin.command: /usr/bin/make uninstall
   args:
@@ -71,7 +71,7 @@
   ignore_errors: true
 
 - name: Completely uninstall and remove all parts of Asterisk install.
-  become: yes
+  become: true
   tags: [ never, splat ]
   ansible.builtin.command: /usr/bin/make uninstall-all
   args:
@@ -79,7 +79,7 @@
   ignore_errors: true
   
 - name: Remove source trees for Asterisk, DAHDI and LIBPRI.
-  become: yes
+  become: true
   tags: [ never, splat ]
   ansible.builtin.file:
     path: "{{ item }}"
@@ -92,7 +92,7 @@
   ignore_errors: true
  
 - name: Remove some more files.
-  become: yes
+  become: true
   tags: [ never, splat ]
   ansible.builtin.file:
     path: "{{ item }}"
@@ -102,14 +102,14 @@
   ignore_errors: true
  
 - name: Removes non-free codecs if any. Uses rm (yuck).
-  become: yes
+  become: true
   tags: [ never, splat ]
   ansible.builtin.command: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-*
   with_items: "{{ pngnx_digium_codecs }}"
   ignore_errors: true
 
 - name: Stop and disable fail2ban, ufw, and nftables. Careful!
-  become: yes
+  become: true
   tags: [ never, nopants ]
   ansible.builtin.service:
     state: stopped

@@ -28,7 +28,7 @@
     remote_src: true
 
 - name: Copy FreePBX source from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpedge.path }}/freepbx"
@@ -36,7 +36,7 @@
     remote_src: true
 
 - name: Copy FreePBX tarball from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmpedge.path }}/{{ pngnx_freepbx_edge_tarball }}"
@@ -44,7 +44,7 @@
     remote_src: true
 
 - name: Start Asterisk using FreePBX scripts.
-  become: yes
+  become: true
   ansible.builtin.command: ./start_asterisk start
   args:
     chdir: "{{ pngnx_freepbx_edge_target }}"
@@ -52,7 +52,7 @@
 # the PATH modification is needed to support use of runuser in the install script
 # TODO: maybe: use --dev-links
 - name: Install FreePBX. Ignoring errors because even with install script -q option there is a bunch of output.
-  become: yes
+  become: true
   ansible.builtin.command: ./install -n -f -q
   args:
     chdir: "{{ pngnx_freepbx_edge_target }}"
@@ -61,21 +61,21 @@
   ignore_errors: true
 
 - name: Install the basic local modules. As a group.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole ma install {{ pngnx_freepbx_basic_modules | flatten }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
    
 - name: Reload FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
    
 - name: Restart FreePBX.
-  become: yes
+  become: true
   ansible.builtin.command: /sbin/fwconsole restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

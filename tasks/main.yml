@@ -219,10 +219,10 @@
       tags: logrotate
 
 - name: Did you try turning it off and then back on again?
-  become: yes
+  become: true
   ansible.builtin.service:
     name: "{{ pngnx_freepbx_systemd_name }}"
-    enabled: yes   
+    enabled: true   
     state: restarted
 
 - name: W00t!

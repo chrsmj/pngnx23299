@@ -23,10 +23,10 @@
   ansible.builtin.unarchive:
     src: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
     dest: "{{ tmplibpri.path }}"
-    remote_src: yes
+    remote_src: true
 
 - name: Copy LibPRI source from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmplibpri.path }}/libpri-{{ pngnx_libpri_version }}"
@@ -36,7 +36,7 @@
     group: "{{ ansible_user_id }}"
 
 - name: Copy LibPRI tarball from temp directory to target install directory.
-  become: yes
+  become: true
   when: pngnx_new_src
   ansible.builtin.copy:
     src: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
@@ -57,7 +57,7 @@
     creates: "{{ pngnx_libpri_target }}/pri.o"
 
 - name: Install LibPRI.
-  become: yes
+  become: true
   when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make install
   args:
