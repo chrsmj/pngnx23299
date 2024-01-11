@@ -1,8 +1,9 @@
 ---
+# defaults/main/freepbx_modules.yml
 
 # minimal install mostly for testing module development
 pngnx_freepbx_basic_modules:
-  - framework 
+  - framework
   - backup
   - core
   - dashboard
@@ -205,4 +206,3 @@ pngnx_freepbx_nonfree_modules:
 # smsconnector is FLOSS but requires sms which is non-free
 pngnx_freepbx_rogue_modules:
   - smsconnector
-
