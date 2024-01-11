@@ -3,29 +3,29 @@
 pngnx_distro: pngnx23299
 
 # the script is fairly idempotent but you can still shoot yourself in the foot
-pngnx_new_src: yes
-pngnx_clean_src: yes
-pngnx_do_asterisk_install: yes
+pngnx_new_src: true
+pngnx_clean_src: true
+pngnx_do_asterisk_install: true
 pngnx_build_target: /usr/local/src
 
 # where to pull freepbx from
 pngnx_freepbx_upstream: git
-#pngnx_freepbx_upstream: edge
+# pngnx_freepbx_upstream: edge
 
 # probably what people will be looking for is freepbx
 pngnx_freepbx_systemd_name: freepbx
 # alternatively...
-#pngnx_freepbx_systemd_name: "{{ pngnx_distro }}"
+# pngnx_freepbx_systemd_name: "{{ pngnx_distro }}"
 
 # SSH pubkey can be from a string, file or URL - if specified, all other keys will be removed
-#pngnx_installer_sshpubkey: /home/user/.ssh/id_rsa.pub
-#pngnx_installer_sshpubkey: https://penguinpbx.com/muh.shiny.pub.keys
-#pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-#pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-sk.pub') }}"
-#pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-' + ansible_host + '.pub') }}"
-#pngnx_installer_sshpubkey: "RAW_PUB_KEY_MATERIAL"
+# pngnx_installer_sshpubkey: /home/user/.ssh/id_rsa.pub
+# pngnx_installer_sshpubkey: https://penguinpbx.com/muh.shiny.pub.keys
+# pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+# pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-sk.pub') }}"
+# pngnx_installer_sshpubkey: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_ed25519-' + ansible_host + '.pub') }}"
+# pngnx_installer_sshpubkey: "RAW_PUB_KEY_MATERIAL"
 
 # if key is defined, then logins can be limited to only public keys - no more password logins
 # note this does nothing UNLESS you specify a value for pngnx_installer_sshpubkey
-pngnx_allow_ssh_passwords: no
+pngnx_allow_ssh_passwords: false
 
