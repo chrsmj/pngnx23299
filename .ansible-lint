@@ -3,5 +3,6 @@
 
 profile: production
 
-playbooks:
-  - playbook.yml
+exclude_paths:
+  - .cache/
+  - playbook-alt.yml
