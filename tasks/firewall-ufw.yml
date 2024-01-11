@@ -35,15 +35,15 @@
 
 # TODO: fix this bug in Ansible - only 'in' or 'out' work not full 'incoming' or 'outgoing' as per the docs online
 # BUT is superflous anyhow as default UFW always allows in/out traffic on the loopback
-#- name: Loopback always works.
-#  become: true
-#  ufw:
-#    rule: allow
-#    interface: lo
-#    direction: "{{ item }}"
-#  loop:
-#    - incoming
-#    - outgoing
+# - name: Loopback always works.
+#   become: true
+#   ufw:
+#     rule: allow
+#     interface: lo
+#     direction: "{{ item }}"
+#   loop:
+#     - incoming
+#     - outgoing
 
 - name: Remove previous SSH limits on default port.
   become: true
@@ -54,7 +54,7 @@
     port: '22'
     proto: tcp
     delete: true
- 
+
 - name: Limit SSH attempts on potentially non-standard port if defined in host/group variables.
   become: true
   environment:

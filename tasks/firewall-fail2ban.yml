@@ -65,7 +65,7 @@
     - asterisk
   loop_control:
     loop_var: itemf
-    
+
 - name: Start fail2ban.
   become: true
   ansible.builtin.service:

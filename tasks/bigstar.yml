@@ -55,9 +55,9 @@
   ansible.builtin.command: /usr/bin/make -i distclean
   args:
     chdir: "{{ pngnx_asterisk_target }}"
-  register: fail_distclean
-  failed_when: "fail_distclean.rc != 0"
-  changed_when: "'Cleaning' in fail_distclean.stdout"
+  register: fail_astdistclean
+  failed_when: "fail_astdistclean.rc != 0"
+  changed_when: "'Cleaning' in fail_astdistclean.stdout"
 
 - name: Specify some default build options.
   become: true

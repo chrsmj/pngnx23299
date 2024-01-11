@@ -11,7 +11,7 @@
 
 - name: Disable and Stop FreePBX, Asterisk and Apache.
   become: true
-  tags: [ never, uninstall, splat ]
+  tags: [never, uninstall, splat]
   ansible.builtin.service:
     name: "{{ item }}"
     state: stopped
@@ -24,7 +24,7 @@
 
 - name: Remove most of the FreePBX parts.
   become: true
-  tags: [ never, uninstall, splat ]
+  tags: [never, uninstall, splat]
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -39,7 +39,7 @@
 
 - name: Drops the Asterisk MariaDB databases.
   become: true
-  tags: [ never, uninstall, splat ]
+  tags: [never, uninstall, splat]
   ansible.builtin.command: mysqladmin -f drop {{ item }}
   loop:
     - asterisk
@@ -49,7 +49,7 @@
 
 - name: Disable and Stop MariaDB.
   become: true
-  tags: [ never, uninstall, splat ]
+  tags: [never, uninstall, splat]
   ansible.builtin.service:
     name: "{{ item }}"
     state: stopped
@@ -60,7 +60,7 @@
 
 - name: Uninstall DAHDI and LIBPRI.
   become: true
-  tags: [ never, splat ]
+  tags: [never, splat]
   ansible.builtin.command: /usr/bin/make uninstall
   args:
     chdir: "{{ item }}"
@@ -72,15 +72,15 @@
 
 - name: Completely uninstall and remove all parts of Asterisk install.
   become: true
-  tags: [ never, splat ]
+  tags: [never, splat]
   ansible.builtin.command: /usr/bin/make uninstall-all
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   ignore_errors: true
-  
+
 - name: Remove source trees for Asterisk, DAHDI and LIBPRI.
   become: true
-  tags: [ never, splat ]
+  tags: [never, splat]
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -90,27 +90,27 @@
     - "{{ pngnx_dahditools_target }}"
     - "{{ pngnx_dahdilinux_target }}"
   ignore_errors: true
- 
+
 - name: Remove some more files.
   become: true
-  tags: [ never, splat ]
+  tags: [never, splat]
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   loop:
     - /etc/asterisk.makeopts
   ignore_errors: true
- 
-- name: Removes non-free codecs if any. Uses rm (yuck).
+
+- name: Removes non-free codecs if any. TODO fix the rm.
   become: true
-  tags: [ never, splat ]
-  ansible.builtin.command: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-*
+  tags: [never, splat]
+  ansible.builtin.command: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-* # noqa: deprecated-command-syntax
   with_items: "{{ pngnx_digium_codecs }}"
   ignore_errors: true
 
 - name: Stop and disable fail2ban, ufw, and nftables. Careful!
   become: true
-  tags: [ never, nopants ]
+  tags: [never, nopants]
   ansible.builtin.service:
     state: stopped
     enabled: false

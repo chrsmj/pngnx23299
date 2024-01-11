@@ -19,6 +19,7 @@
     url: "{{ pngnx_dahdilinux_urlbase }}/{{ pngnx_dahdilinux_tarball }}"
     dest: "{{ tmpdahdi.path }}/{{ pngnx_dahdilinux_tarball }}"
     checksum: "{{ pngnx_dahdilinux_checksum }}"
+    mode: "0644"
 
 - name: Unarchive DAHDI Linux source.
   when: pngnx_new_src
@@ -36,6 +37,7 @@
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
+    mode: "0644"
 
 - name: Copy DAHDI Linux tarball from temp directory to target install directory.
   become: true
@@ -44,13 +46,16 @@
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahdilinux_tarball }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
+    mode: "0644"
 
 - name: Clean previous DAHDI Linux build.
   when: pngnx_new_src or pngnx_clean_src
   ansible.builtin.command: /usr/bin/make -i clean
   args:
     chdir: "{{ pngnx_dahdilinux_target }}"
-  ignore_errors: true
+  register: fail_dahdiclean
+  failed_when: "fail_dahdiclean.rc != 0"
+  changed_when: "'CLEAN' in fail_dahdiclean.stdout"
 
 # TODO: maybe: command: make -j {{ ansible_processor_count | default(2) }} all
 - name: Build DAHDI Linux from source. If this fails please reboot - kernel is probably out of date.
@@ -58,6 +63,7 @@
   args:
     chdir: "{{ pngnx_dahdilinux_target }}"
     creates: "{{ pngnx_dahdilinux_target }}/linux/drivers/dahdi/Module.symvers"
+  changed_when: true
 
 - name: Install DAHDI Linux.
   become: true
@@ -65,18 +71,20 @@
   ansible.builtin.command: /usr/bin/make all install-modules install-include
   args:
     chdir: "{{ pngnx_dahdilinux_target }}"
+  changed_when: true
 
 - name: Install DAHDI Linux non-free firmware.
   become: true
-  tags: [ never, nonfree ]
+  tags: [never, nonfree]
   when: pngnx_do_asterisk_install
   ansible.builtin.command: /usr/bin/make install-firmware install-xpp-firm
   args:
     chdir: "{{ pngnx_dahdilinux_target }}"
+  changed_when: true
 
-- name: Load DAHDI Linux dummy module.
+- name: Load DAHDI Linux module (TODO what happened to dahdi_dummy ?)
   become: true
-  ansible.builtin.command: /sbin/modprobe dahdi_dummy
+  ansible.builtin.command: /sbin/modprobe dahdi
 
 - name: Download DAHDI Tools source.
   when: pngnx_new_src
@@ -115,7 +123,9 @@
   ansible.builtin.command: /usr/bin/make -i clean
   args:
     chdir: "{{ pngnx_dahditools_target }}"
-  ignore_errors: true
+  register: fail_dahditoolsclean
+  failed_when: "fail_dahditoolsclean.rc != 0"
+  changed_when: true
 
 - name: Re-Configure the Configure script for DAHDI Tools.
   when: pngnx_new_src or pngnx_clean_src
@@ -123,20 +133,25 @@
   args:
     chdir: "{{ pngnx_dahditools_target }}"
     creates: "{{ pngnx_dahditools_target }}/configure"
-  ignore_errors: true
+  register: fail_dahditoolsreconf
+  failed_when: "fail_dahditoolsreconf.rc != 0"
+  changed_when: true
 
 - name: Configure DAHDI Tools.
   when: pngnx_new_src or pngnx_clean_src
   ansible.builtin.command: ./configure
   args:
     chdir: "{{ pngnx_dahditools_target }}"
-  ignore_errors: true
+  register: fail_dahditoolsconfigure
+  failed_when: "fail_dahditoolsconfigure.rc != 0"
+  changed_when: true
 
 # TODO: maybe: command: make -j {{ ansible_processor_count | default(2) }} all
 - name: Build DAHDI Tools from source. If this fails please reboot - kernel is out of date.
   ansible.builtin.command: /usr/bin/make -j {{ ansible_processor_vcpus | default(2) }} all
   args:
     chdir: "{{ pngnx_dahditools_target }}"
+  changed_when: true
 
 - name: Install DAHDI Tools.
   become: true
@@ -144,6 +159,7 @@
   ansible.builtin.command: /usr/bin/make install
   args:
     chdir: "{{ pngnx_dahditools_target }}"
+  changed_when: true
 
 - name: Install DAHDI using DKMS so it will work if the kernel changes.
   become: true
@@ -151,4 +167,4 @@
   ansible.builtin.command: ./build_tools/dkms-helper add
   args:
     chdir: "{{ pngnx_dahdilinux_target }}"
-  ignore_errors: true
+  changed_when: true

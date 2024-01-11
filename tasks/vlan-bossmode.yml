@@ -37,8 +37,8 @@
   become: true
   ansible.builtin.lineinfile:
     path: /etc/modules
-    regexp: "^8021q" 
-    line: "8021q" 
+    regexp: "^8021q"
+    line: "8021q"
 
 - name: Add VLAN to the interfaces.
   become: true
@@ -71,4 +71,3 @@
     enabled: true
     state: restarted
     name: dnsmasq
-

@@ -38,7 +38,7 @@
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
   loop: "{{ range(0, 12, 1)| | list }}"
- 
+
 - name: Snom 320. Adjust the templates to contain the correct function keys 2-11.
   become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
@@ -47,7 +47,7 @@
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
   loop: "{{ range(2, 12, 1)| | list }}"
- 
+
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11.
   become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
@@ -111,7 +111,7 @@
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
   loop: "{{ range(8, 12, 1)| | list }}"
- 
+
 - name: Snom 320. Adjust the templates to contain the correct function keys 3-11. PLUS BLFS ON 7. Step 1.
   become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
@@ -139,8 +139,7 @@
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
   loop: "{{ range(8, 12, 1)| | list }}"
- 
- 
+
 - name: Snom 320. Adjust the templates to contain the correct function keys 6-11.
   become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined
@@ -149,7 +148,7 @@
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
   loop: "{{ range(6, 12, 1)| | list }}"
- 
+
 - name: Snom 715. Adjust the templates to contain the correct function keys 0-4.
   become: true
   when: pngnx_private_asterisk_phoneprov_dir is not defined

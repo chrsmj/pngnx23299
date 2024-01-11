@@ -1,8 +1,12 @@
 ---
 # .ansible-lint
 
-profile: production
+profile: basic
+
+skip_list:
+  - yaml[commas]
 
 exclude_paths:
   - .cache/
+  - .github/
   - playbook-alt.yml

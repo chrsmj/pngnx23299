@@ -33,15 +33,15 @@
   tags: nonfree
   ansible.builtin.command: /usr/bin/grep -m 1 version "{{ tmpcodecs.path }}/selector-{{ item }}.js"
   register: vcodecs
+  changed_when: false
   with_items: "{{ pngnx_digium_codecs }}"
-  when_changed: true
 
 - name: Register variables for the codec source names combined with their version numbers. Quietly.
   tags: nonfree
   no_log: true
-  ansible.builtin.command: /usr/bin/echo codec_{{ item.0 }}-{{ pngnx_asterisk_major }}.0_{{ item.1.stdout | regex_replace('[^0-9.]+', '') }}-{{ ansible_userspace_architecture }}
+  ansible.builtin.command: /usr/bin/echo "{{ item.0 }}-{{ pngnx_asterisk_major }}.0_{{ item.1.stdout | regex_replace('[^0-9.]+', '') }}"
   register: vcodecsources
-  when_changed: true
+  changed_when: false
   with_together:
     - "{{ pngnx_digium_codecs }}"
     - "{{ vcodecs.results }}"
@@ -61,7 +61,7 @@
   no_log: true
   when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpcodecs.path }}/{{ item.stdout }}"
+    src: "{{ tmpcodecs.path }}/codec_{{ item.stdout }}-{{ ansible_userspace_architecture }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"

@@ -41,10 +41,10 @@
   ansible.builtin.systemd:
     name: "{{ pngnx_freepbx_systemd_name }}"
     state: started
- 
+
 - name: Restart FreePBX.
   become: true
   ansible.builtin.service:
     name: "{{ pngnx_freepbx_systemd_name }}"
-    enabled: true   
+    enabled: true
     state: restarted

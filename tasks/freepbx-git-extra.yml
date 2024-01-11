@@ -69,13 +69,13 @@
   ansible.builtin.command: /sbin/fwconsole ma installlocal
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-   
+
 - name: Reload FreePBX.
   become: true
   ansible.builtin.command: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
-   
+
 - name: Restart FreePBX.
   become: true
   ansible.builtin.command: /sbin/fwconsole restart

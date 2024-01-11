@@ -50,11 +50,11 @@
   ansible.builtin.systemd:
     name: asterisk
     state: started
- 
+
 - name: Restart Asterisk. Only when new source build.
   become: true
   when: pngnx_new_src
   ansible.builtin.service:
     name: asterisk
-    enabled: true   
+    enabled: true
     state: restarted

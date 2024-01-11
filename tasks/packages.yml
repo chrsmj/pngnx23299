@@ -17,21 +17,25 @@
   become: true
   when: rkrn12.changed
   ansible.builtin.reboot:
- 
+    msg:
+      - "**************************************************************************"
+      - "* Target Rebooting! Get ready to power it back on if necessary! LOOK!!!! *"
+      - "**************************************************************************"
+
 - name: Reboot status check.
   when: rkrn12.changed
   ansible.builtin.debug:
     msg:
-     - "**************************************************************************"
-     - "* Target rebooted and role should continue automatically until finished. *"
-     - "**************************************************************************"
+      - "**************************************************************************"
+      - "* Target rebooted and role should continue automatically until finished. *"
+      - "**************************************************************************"
 
 - name: Stay hydrated.
   ansible.builtin.debug:
     msg:
-     - "**************************************************************************"
-     - "*      Maybe go get a drink of water and come back in 15 minutes ?       *" 
-     - "**************************************************************************"
+      - "**************************************************************************"
+      - "*      Maybe go get a drink of water and come back in 15 minutes ?       *"
+      - "**************************************************************************"
 
 - name: Update packages for Debian 12.
   become: true
