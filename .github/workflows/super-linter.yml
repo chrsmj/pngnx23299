@@ -1,3 +1,6 @@
+---
+# .github/workflows/super-linter.yml
+
 # This workflow executes several linters on changed files based on languages used in your code base whenever
 # you push a code or open a pull request.
 #
@@ -7,10 +10,8 @@
 name: Super Lint
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  - push
+  - pull_request
 jobs:
   run-lint:
     runs-on: ubuntu-latest
