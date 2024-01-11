@@ -54,7 +54,8 @@
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   register: fail_distclean
-  failed_when: "fail_distclean.rc < 0"
+  failed_when: "fail_distclean.rc != 0"
+  changed_when: "'Cleaning' in fail_distclean.stdout"
 
 - name: Specify some default build options.
   become: true
@@ -75,7 +76,9 @@
   ansible.builtin.command: ./contrib/scripts/get_mp3_source.sh
   args:
     chdir: "{{ pngnx_asterisk_target }}"
-  ignore_errors: true
+  register: fail_mp3source
+  failed_when: "fail_mp3source.rc != 0"
+  changed_when: "'appears to already be present' not in fail_mp3source.stdout"
 
 # TODO: ansible.builtin.command: ./configure --libdir=/lib/{{ ansible_architecture }}-linux-gnu --with-pjproject-bundled --with-jansson-bundled
 - name: Configure Asterisk source - version 18.
@@ -83,18 +86,21 @@
   ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
+  changed_when: true
 
 - name: Configure Asterisk source - version 20.
   when: pngnx_asterisk_major == 20
   ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
+  changed_when: true
 
 - name: Configure Asterisk source - version 21.
   when: pngnx_asterisk_major == 21
   ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled --with-libjwt-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
+  changed_when: true
 
 - name: Make the menuselect.makeopts so the Addons can be added.
   ansible.builtin.command: /usr/bin/make menuselect.makeopts
