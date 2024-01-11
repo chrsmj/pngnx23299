@@ -6,6 +6,8 @@
 
 # Downloads, builds, and (if do_asterisk_install is true) installs Asterisk from source.
 
+# TODO: refine the changed_when clauses and generally speed up rebuilds
+
 - name: Make a place for the Asterisk source.
   when: pngnx_new_src
   ansible.builtin.tempfile:
@@ -106,11 +108,13 @@
   ansible.builtin.command: /usr/bin/make menuselect.makeopts
   args:
     chdir: "{{ pngnx_asterisk_target }}"
+  changed_when: true
 
 - name: Fix-up the Asterisk Addons so they get built.
   ansible.builtin.command: ./menuselect/menuselect --enable-category MENUSELECT_ADDONS menuselect.makeopts
   args:
     chdir: "{{ pngnx_asterisk_target }}"
+  changed_when: true
 
 - name: Build Asterisk from source. Threaded make.
   ansible.builtin.command: /usr/bin/nice -n {{ nicely | default(0) }} /usr/bin/make -j {{ ansible_processor_vcpus | default(2) }} all
@@ -123,6 +127,7 @@
   args:
     chdir: "{{ pngnx_asterisk_target }}"
     creates: "{{ pngnx_asterisk_target }}/main/asterisk"
+  changed_when: true
 
 - name: Install Asterisk.
   become: true

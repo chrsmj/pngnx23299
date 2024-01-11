@@ -5,7 +5,7 @@ galaxy_info:
   company: Penguin PBX Solutions
   license: GPLv3+
 
-  min_ansible_version: '2.1'
+  min_ansible_version: '2.11'
   platforms:
     - name: Debian
       versions:

@@ -37,27 +37,27 @@
 
 - name: Make sure some directories exist.
   become: true
-  ignore_errors: true
   ansible.builtin.file:
     path: "{{ item.dir }}"
     state: directory
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
-    mode: 0750
+    mode: "0750"
     recurse: "{{ item.recurse }}"
+    access_time: now
   loop:
     - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
     - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
 
 - name: Change ownership on certain files and also touch them.
   become: true
-  ignore_errors: true
   ansible.builtin.file:
     path: "{{ item }}"
     owner: asterisk
     group: asterisk
-    mode: 0750
+    mode: "0750"
     state: touch
+    access_time: now
   loop:
     - /etc/asterisk/cdr.conf
     - /etc/asterisk/modules.conf
@@ -65,14 +65,14 @@
 
 - name: Change ownership on certain directories and make sure they exist.
   become: true
-  ignore_errors: true
   ansible.builtin.file:
     path: "{{ item.dir }}"
     state: directory
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
-    mode: 0750
+    mode: "0750"
     recurse: "{{ item.recurse }}"
+    access_time: now
   loop:
     - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
     - { dir: "/var/lib/asterisk/sounds",    owner: "asterisk", group: "asterisk", recurse: "yes" }
@@ -90,7 +90,7 @@
     force: false
     owner: root
     group: asterisk
-    mode: 0750
+    mode: "0750"
     remote_src: true
 
 - name: Check if we are dealing with the default Asterisk configuration file. Part 1.

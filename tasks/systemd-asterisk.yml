@@ -13,7 +13,7 @@
     dest: /etc/systemd/system/asterisk.service
     owner: root
     group: root
-    mode: 0444
+    mode: "0444"
 
 - name: Adjust SystemD config to account for maximum channels.
   become: true
