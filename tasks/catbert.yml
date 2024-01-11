@@ -46,8 +46,8 @@
     recurse: "{{ item.recurse }}"
     access_time: now
   loop:
-    - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
-    - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
+    - { dir: "/etc/asterisk", owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/var/lib/asterisk", owner: "asterisk", group: "asterisk", recurse: "no" }
 
 - name: Change ownership on certain files and also touch them.
   become: true
@@ -74,13 +74,13 @@
     recurse: "{{ item.recurse }}"
     access_time: now
   loop:
-    - { dir: "/etc/asterisk",               owner: "asterisk", group: "asterisk", recurse: "yes" }
-    - { dir: "/var/lib/asterisk/sounds",    owner: "asterisk", group: "asterisk", recurse: "yes" }
-    - { dir: "/var/lib/asterisk",           owner: "asterisk", group: "asterisk", recurse: "no" }
-    - { dir: "/var/log/asterisk",           owner: "asterisk", group: "pbx-bots", recurse: "yes" }
-    - { dir: "/var/spool/asterisk",         owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/etc/asterisk", owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/var/lib/asterisk/sounds", owner: "asterisk", group: "asterisk", recurse: "yes" }
+    - { dir: "/var/lib/asterisk", owner: "asterisk", group: "asterisk", recurse: "no" }
+    - { dir: "/var/log/asterisk", owner: "asterisk", group: "pbx-bots", recurse: "yes" }
+    - { dir: "/var/spool/asterisk", owner: "asterisk", group: "asterisk", recurse: "yes" }
     - { dir: "/var/spool/asterisk/monitor", owner: "asterisk", group: "pbx-bots", recurse: "yes" }
-    - { dir: "/var/spool/asterisk",         owner: "asterisk", group: "pbx-bots", recurse: "no" }
+    - { dir: "/var/spool/asterisk", owner: "asterisk", group: "pbx-bots", recurse: "no" }
 
 - name: Copy default main configuration file for Asterisk in to /etc/asterisk/. Do not overwrite if already something there.
   become: true
