@@ -1,5 +1,5 @@
 ---
-# defaults/main/freepbx_modules.yml
+# roles/pngnx23299/defaults/main/freepbx_modules.yml
 
 # minimal install mostly for testing module development
 pngnx_freepbx_basic_modules:

@@ -61,7 +61,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ pngnx_ssh_port|default('22') }}"
+    port: "{{ pngnx_ssh_port | default('22') }}"
     proto: tcp
     log: yes
     comment: Allow limited SSH.
@@ -73,7 +73,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_iax_port|default('4569') }}"
+    port: "{{ pngnx_iax_port | default('4569') }}"
     proto: udp
     from: "{{ item }}"
     log: no
@@ -86,7 +86,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
+    port: "{{ pngnx_sip_port_range | default('5060:5069') }}"
     src: "{{ itemx }}"
     proto: udp
     log: yes
@@ -101,7 +101,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
+    port: "{{ pngnx_sip_port_range | default('5060:5069') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: yes
@@ -116,7 +116,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_rtp_port_range|default('10000:20000') }}"
+    port: "{{ pngnx_rtp_port_range | default('10000:20000') }}"
     src: "{{ itemx }}"
     proto: udp
     log: no
@@ -131,7 +131,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_t38_port_range|default('4000:4999') }}"
+    port: "{{ pngnx_t38_port_range | default('4000:4999') }}"
     src: "{{ itemx }}"
     proto: udp
     log: no
@@ -146,7 +146,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_http_port|default('80') }}"
+    port: "{{ pngnx_http_port | default('80') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: no
@@ -161,7 +161,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_https_port|default('443') }}"
+    port: "{{ pngnx_https_port | default('443') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: no
@@ -179,7 +179,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
+    port: "{{ pngnx_sip_port_range | default('5060:5069') }}"
     src: "{{ itemx }}"
     proto: udp
     log: yes
@@ -199,7 +199,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
+    port: "{{ pngnx_sip_port_range | default('5060:5069') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: yes
@@ -219,7 +219,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_rtp_port_range|default('10000:20000') }}"
+    port: "{{ pngnx_rtp_port_range | default('10000:20000') }}"
     src: "{{ itemx }}"
     proto: udp
     log: no
@@ -239,7 +239,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_t38_port_range|default('4000:4999') }}"
+    port: "{{ pngnx_t38_port_range | default('4000:4999') }}"
     src: "{{ itemx }}"
     proto: udp
     log: no
@@ -259,7 +259,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_http_port|default('80') }}"
+    port: "{{ pngnx_http_port | default('80') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: no
@@ -279,7 +279,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_https_port|default('443') }}"
+    port: "{{ pngnx_https_port | default('443') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: no
@@ -299,7 +299,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_phoneprov_proxy_port|default(pngnx_phoneprov_port|default('8088')) }}"
+    port: "{{ pngnx_phoneprov_proxy_port | default(pngnx_phoneprov_port | default('8088')) }}"
     src: "{{ itemx }}"
     proto: tcp
     log: yes
@@ -320,7 +320,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ pngnx_phoneprov_proxy_port|default(pngnx_phoneprov_port|default('8088')) }}"
+    port: "{{ pngnx_phoneprov_proxy_port | default(pngnx_phoneprov_port | default('8088')) }}"
     src: "{{ itemx }}"
     proto: tcp
     log: yes
@@ -338,7 +338,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: allow
-    port: "{{ pngnx_phonebook_proxy_port|default('8088') }}"
+    port: "{{ pngnx_phonebook_proxy_port | default('8088') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: yes
@@ -359,7 +359,7 @@
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ansible.builtin.ufw:
     rule: limit
-    port: "{{ pngnx_phonebook_proxy_port|default('8088') }}"
+    port: "{{ pngnx_phonebook_proxy_port | default('8088') }}"
     src: "{{ itemx }}"
     proto: tcp
     log: yes

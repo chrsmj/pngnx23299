@@ -16,7 +16,7 @@
 - name: Download extra codecs from Digium server (OPUS, SIREN, etc.).
   tags: nonfree
   ansible.builtin.get_url:
-    url: "{{ pngnx_digium_urlbase }}/codec_{{ item }}/asterisk-{{ pngnx_asterisk_major }}.0/{{ ansible_userspace_architecture|replace('_','-') }}/codec_{{ item }}-{{ pngnx_asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
+    url: "{{ pngnx_digium_urlbase }}/codec_{{ item }}/asterisk-{{ pngnx_asterisk_major }}.0/{{ ansible_userspace_architecture | replace('_','-') }}/codec_{{ item }}-{{ pngnx_asterisk_major }}.0_current-{{ ansible_userspace_architecture }}.tar.gz"
     dest: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
   with_items: "{{ pngnx_digium_codecs }}"
 
@@ -36,7 +36,7 @@
 - name: Register variables for the codec source names combined with their version numbers. Quietly.
   tags: nonfree
   no_log: true
-  ansible.builtin.command: /usr/bin/echo codec_{{ item.0 }}-{{ pngnx_asterisk_major }}.0_{{ item.1.stdout|regex_replace('[^0-9.]+','') }}-{{ ansible_userspace_architecture }}
+  ansible.builtin.command: /usr/bin/echo codec_{{ item.0 }}-{{ pngnx_asterisk_major }}.0_{{ item.1.stdout | regex_replace('[^0-9.]+','') }}-{{ ansible_userspace_architecture }}
   register: vcodecsources
   with_together:
     - "{{ pngnx_digium_codecs }}"

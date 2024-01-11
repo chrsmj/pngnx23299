@@ -53,7 +53,7 @@
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: "^Port "
-    line: "Port {{ pngnx_ssh_port|default('22') }}"
+    line: "Port {{ pngnx_ssh_port | default('22') }}"
 
 - name: Shorten time allowed for SSH login windows.
   become: yes

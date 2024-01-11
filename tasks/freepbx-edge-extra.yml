@@ -8,7 +8,7 @@
 
 - name: Install the extra local modules. As a group.
   become: yes
-  ansible.builtin.command: /sbin/fwconsole ma install {{ pngnx_freepbx_extra_modules|flatten }}
+  ansible.builtin.command: /sbin/fwconsole ma install {{ pngnx_freepbx_extra_modules | flatten }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
    

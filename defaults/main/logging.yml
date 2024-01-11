@@ -1,5 +1,5 @@
 ---
-# defaults/main/logging.yml
+# roles/pngnx23299/defaults/main/logging.yml
 
 # These are the default time periods to rotate logs,
 # defaulted in the logrotate template file.

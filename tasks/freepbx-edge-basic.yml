@@ -62,7 +62,7 @@
 
 - name: Install the basic local modules. As a group.
   become: yes
-  ansible.builtin.command: /sbin/fwconsole ma install {{ pngnx_freepbx_basic_modules|flatten }}
+  ansible.builtin.command: /sbin/fwconsole ma install {{ pngnx_freepbx_basic_modules | flatten }}
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true

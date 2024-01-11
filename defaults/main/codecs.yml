@@ -1,5 +1,5 @@
 ---
-# defaults/main/codecs.yml
+# roles/pngnx23299/defaults/main/codecs.yml
 
 # extra Digium codecs
 pngnx_digium_urlbase: "http://downloads.digium.com/pub/telephony"

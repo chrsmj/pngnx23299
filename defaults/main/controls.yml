@@ -1,5 +1,5 @@
 ---
-# defaults/main/controls.yml
+# roles/pngnx23299/defaults/main/controls.yml
 
 pngnx_distro: pngnx23299
 
@@ -29,4 +29,3 @@ pngnx_freepbx_systemd_name: freepbx
 # if key is defined, then logins can be limited to only public keys - no more password logins
 # note this does nothing UNLESS you specify a value for pngnx_installer_sshpubkey
 pngnx_allow_ssh_passwords: false
-

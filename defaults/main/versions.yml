@@ -1,4 +1,5 @@
 ---
+# roles/pngnx23299/defaults/main/versions.yml
 
 # lots of things deprecated in PHP 8.2, yikes
 pngnx_php_major: 8
@@ -58,4 +59,3 @@ pngnx_freepbx_git_basename: "freepbx-git-{{ pngnx_freepbx_git_version }}"
 pngnx_freepbx_git_urlbase: "https://github.com/FreePBX"
 pngnx_freepbx_git_urlpost: "archive/refs/heads/release/{{ pngnx_freepbx_git_version }}.zip"
 pngnx_freepbx_git_target: "{{ pngnx_build_target }}/{{ pngnx_freepbx_git_basename }}"
-

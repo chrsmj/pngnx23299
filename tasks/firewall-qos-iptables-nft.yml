@@ -23,7 +23,7 @@
     table: mangle
     set_dscp_mark_class: EF
     protocol: udp
-    source_port: "{{ pngnx_rtp_port_range|default('10000:20000') }}"
+    source_port: "{{ pngnx_rtp_port_range | default('10000:20000') }}"
 
 - name: QoS VoiP - SIP fax.
   become: yes
@@ -33,7 +33,7 @@
     table: mangle
     set_dscp_mark_class: EF
     protocol: udp
-    source_port: "{{ pngnx_t38_port_range|default('4000:4999') }}"
+    source_port: "{{ pngnx_t38_port_range | default('4000:4999') }}"
 
 - name: QoS VoiP - SIP signaling.
   become: yes
@@ -43,7 +43,7 @@
     table: mangle
     set_dscp_mark_class: CS3
     protocol: udp
-    source_port: "{{ pngnx_sip_port_range|default('5060:5069') }}"
+    source_port: "{{ pngnx_sip_port_range | default('5060:5069') }}"
 
 - name: QoS VoiP - IAX media and signaling on same port.
   become: yes
@@ -53,7 +53,7 @@
     table: mangle
     set_dscp_mark_class: CS1
     protocol: udp
-    source_port: "{{ pngnx_iax_port|default('4569') }}"
+    source_port: "{{ pngnx_iax_port | default('4569') }}"
 
 - name: Dump the NFT output of the mangle rules.
   become: yes

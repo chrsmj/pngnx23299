@@ -1,4 +1,5 @@
 ---
+# roles/pngnx23299/defaults/main/network.yml
 
 # common short name, on both VLAN and LAN
 pngnx_hostname: "{{ ansible_hostname }}"
@@ -11,44 +12,43 @@ pngnx_ip: "{{ ansible_default_ipv4['address'] }}"
 # minimal things are opened by the firewall, and only for friendlies
 # by default, the local LAN of the PBX will be used (network/netmask)
 # but you can change it and use network/CIDR format, for example...
-#pngnx_friendly_lans:
-#  - 10.1.1.0/24
-#  - 10.1.2.0/24
-#  - 10.10.0.0/16
+# pngnx_friendly_lans:
+#   - 10.1.1.0/24
+#   - 10.1.2.0/24
+#   - 10.10.0.0/16
 
 # these are defaulted in the roles themselves
-#pngnx_voicemail_type: files
-#pngnx_ssh_port: 22
-#pngnx_rtp_port_range: 10000:20000
-#pngnx_sip_port_range: 5060:5069
-#pngnx_t38_port_range: 4000:4999
-#pngnx_iax_port: 4569
-#pngnx_http_port: 80
-#pngnx_https_port: 443
+# pngnx_voicemail_type: files
+# pngnx_ssh_port: 22
+# pngnx_rtp_port_range: 10000:20000
+# pngnx_sip_port_range: 5060:5069
+# pngnx_t38_port_range: 4000:4999
+# pngnx_iax_port: 4569
+# pngnx_http_port: 80
+# pngnx_https_port: 443
 
 # the rest of these are undefined by default
 
 # for IAX peers eg. other Asterisk boxes
-#pngnx_iax_hosts:
+# pngnx_iax_hosts:
 # usually phoneprov is 8088
-#pngnx_phoneprov_port:
+# pngnx_phoneprov_port:
 # if we do provision, we proxy with NGINX so we get better logging and such
 pngnx_phoneprov_proxy_port: 18088
 pngnx_phonebook_proxy_port: 28088
-#pngnx_paging_multicast_addr: 224.0.0.99
-#pngnx_paging_multicast_port: 12345
+# pngnx_paging_multicast_addr: 224.0.0.99
+# pngnx_paging_multicast_port: 12345
 
 # run some services only on LANs or VLANs eg. NTP server and TFTP server
 # and DHCP server only on VLAN, for example...
-#pngnx_phone_vlans:
+# pngnx_phone_vlans:
 #  - 10.42.42.0/24
 #  - 10.42.43.0/24
-#pngnx_vlan_interface: eth0
-#pngnx_vlan_id: 7
-#pngnx_vlan_ip: 10.42.42.1
-#pngnx_vlan_netmask: 255.255.255.0
-#pngnx_vlan_dhcp_start: 10.42.42.5
-#pngnx_vlan_dhcp_stop: 10.42.42.250
-#pngnx_vlan_fqdn: pngnx.voip.home.arpa
-#pngnx_vlan_domain: voip.home.arpa
-
+# pngnx_vlan_interface: eth0
+# pngnx_vlan_id: 7
+# pngnx_vlan_ip: 10.42.42.1
+# pngnx_vlan_netmask: 255.255.255.0
+# pngnx_vlan_dhcp_start: 10.42.42.5
+# pngnx_vlan_dhcp_stop: 10.42.42.250
+# pngnx_vlan_fqdn: pngnx.voip.home.arpa
+# pngnx_vlan_domain: voip.home.arpa
