@@ -152,4 +152,3 @@
   args:
     chdir: "{{ pngnx_dahdilinux_target }}"
   ignore_errors: true
-  

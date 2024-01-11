@@ -65,4 +65,3 @@
   ansible.builtin.service:
     name: chrony
     state: restarted
-

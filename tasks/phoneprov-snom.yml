@@ -158,4 +158,3 @@
     regexp: '^<fkey idx="{{ item }}"'
     line: '<fkey idx="{{ item }}" context="active" label="" perm="RW">dest &lt;sip:${FKEY{{ item }}}@{{ pngnx_hostname }};user=phone&gt;</fkey>'
   loop: "{{ range(0, 5, 1)| | list }}"
- 

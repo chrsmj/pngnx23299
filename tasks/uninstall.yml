@@ -119,4 +119,3 @@
     - ufw
     - nftables
   ignore_errors: true
-

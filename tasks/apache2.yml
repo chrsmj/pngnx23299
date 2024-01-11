@@ -59,4 +59,3 @@
   ansible.builtin.file:
     path: /var/www/html/index.html
     state: absent
-

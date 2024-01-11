@@ -250,4 +250,3 @@
      - ""
      - " GUI may be at   http://{{ ansible_host }}   OR   http://{{ ansible_default_ipv4['address'] }}"
      - ""
-

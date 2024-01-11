@@ -48,4 +48,3 @@
     name: "{{ pngnx_freepbx_systemd_name }}"
     enabled: true   
     state: restarted
-

@@ -11,4 +11,3 @@
   ansible.posix.patch:
     src: freepbx-core-views-routing-form.patch
     dest: /var/www/html/admin/modules/core/views/routing/form.php
-

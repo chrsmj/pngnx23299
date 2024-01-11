@@ -72,4 +72,3 @@
     name: nftables
     state: restarted
     enabled: true
-

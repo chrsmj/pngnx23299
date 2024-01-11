@@ -58,4 +58,3 @@
     name: asterisk
     enabled: true   
     state: restarted
-

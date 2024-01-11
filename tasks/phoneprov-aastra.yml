@@ -21,4 +21,3 @@
     dest: /var/lib/asterisk/phoneprov/statics/aastra/{{ item }}
   loop:
     - aastra.cfg
-

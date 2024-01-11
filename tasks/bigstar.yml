@@ -119,4 +119,3 @@
   ansible.builtin.command: /usr/bin/make install
   args:
     chdir: "{{ pngnx_asterisk_target }}"
-

@@ -111,4 +111,3 @@
     path: /etc/asterisk/asterisk.conf
     regexp: '^\[directories\]\(!\)'
     replace: '[directories]'
-
