@@ -1,6 +1,11 @@
 ---
 # file: playbook-alt.yml
 
-- hosts: all
+# pinned to a release because
+# when you download zips/tarballs
+# the paths get a little funky
+
+- name: Howdy! Welcome to pngnx23299-0.23.42-alpha!
+  hosts: all
   roles:
     - pngnx23299-0.23.42-alpha

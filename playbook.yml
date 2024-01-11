@@ -1,6 +1,7 @@
 ---
 # file: playbook.yml
 
-- hosts: all
+- name: Howdy! Welcome to pngnx23299!
+  hosts: all
   roles:
     - .

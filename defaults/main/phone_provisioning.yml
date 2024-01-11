@@ -6,7 +6,7 @@
 pngnx_phoneprov: false
 
 # for local per client files, otherwise generics are used
-# pngnx_private_asterisk_phoneprov_dir: 
+# pngnx_private_asterisk_phoneprov_dir:
 
 # define what phones are being used, only template them
 # pngnx_phoneprov_polycom:
