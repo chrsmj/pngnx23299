@@ -1,4 +1,5 @@
-# pngnx23299
+pngnx23299
+
 **An Ansible Role for installing FreePBX 17 on Asterisk 20 on Debian 12**
 
 Currently for testing purposes only.
@@ -10,16 +11,46 @@ Designed to get a few desk phones quickly ringing by manually configuring them i
 # Table of Contents
 
 1. [License](#license)
-2. New to ... [Asterisk ?](#new-to-asterisk-) [FreePBX ?](#new-to-freepbx-) [Debian ?](#new-to-debian-) [Ansible ?](#new-to-ansible-)
+2. New to...
+    * [Asterisk ?](#new-to-asterisk-)
+    * [FreePBX ?](#new-to-freepbx-)
+    * [Debian ?](#new-to-debian-)
+    * [Ansible ?](#new-to-ansible-)
 3. [Basic Installation](#basic-installation)
-4. [Advanced Installation](#advanced-installation): [Variable: pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream) | [Variable: pngnx_php_version](#variable-pngnx_php_version) | [Skip Tags: extra,plus](#skip-tags-extraplus) | [Multiple TARGETs](#multiple-targets) | [SSH Keys](#ssh-keys) | [Build Asterisk](#build-asterisk)
-5. [Idempotent Installation](#idempotent-installation) / Tag Details: [apache](#tag-apache) | [catbert](#tag-catbert) | [confirm](#tag-confirm) | [dahdi](#tag-dahdi) | [db](#tag-db) | [drwho](#tag-drwho) | [extra](#tag-extra) | [firewall](#tag-firewall) | [gui](#tag-gui) | [logrotate](#tag-logrotate) | [nonfree](#tag-nonfree) | [nopants](#tag-nopants) | [packages](#tag-packages) | [phoneprov](#tag-phoneprov) | [plus](#tag-plus) | [splat](#tag-splat) | [star](#tag-star) | [tests](#tag-tests) | [uninstall](#tag-uninstall) | [vlan](#tag-vlan)
+4. [Advanced Installation](#advanced-installation):
+    * [Variable: pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream)
+    * [Variable: pngnx_php_version](#variable-pngnx_php_version)
+    * [Skip Tags: extra,plus](#skip-tags-extraplus)
+    * [Multiple TARGETs](#multiple-targets)
+    * [SSH Keys](#ssh-keys)
+    * [Build Asterisk](#build-asterisk)
+5. [Idempotent Installation](#idempotent-installation) / Tag Details:
+    * [apache](#tag-apache)
+    * [catbert](#tag-catbert)
+    * [confirm](#tag-confirm)
+    * [dahdi](#tag-dahdi)
+    * [db](#tag-db)
+    * [drwho](#tag-drwho)
+    * [extra](#tag-extra)
+    * [firewall](#tag-firewall)
+    * [gui](#tag-gui)
+    * [logrotate](#tag-logrotate)
+    * [nonfree](#tag-nonfree)
+    * [nopants](#tag-nopants)
+    * [packages](#tag-packages)
+    * [phoneprov](#tag-phoneprov)
+    * [plus](#tag-plus)
+    * [splat](#tag-splat)
+    * [star](#tag-star)
+    * [tests](#tag-tests)
+    * [uninstall](#tag-uninstall)
+    * [vlan](#tag-vlan)
 
 ---
 
 ## License
 
-Copyright 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+Copyright 2023-2024 Penguin PBX Solutions <chris at penguin p b x dot com>
 
 This file is part of pngnx23299.
 
