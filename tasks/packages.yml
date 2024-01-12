@@ -141,6 +141,7 @@
     state: present
     name:
       - apache2
+      - cron
       - git
       - lame
       - mariadb-server
