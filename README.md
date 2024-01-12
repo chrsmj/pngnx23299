@@ -51,7 +51,7 @@ With this Role, you can install either the FreePBX BETA EDGE tarball or the Free
 These are downloaded by the Role from the latest version 17 branches.
 
 By default, the FreePBX GIT ZIPs from GitHub will be installed.
-You can change this by setting an Ansible Variable called '[pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream)' in various locations eg. global, per host, on the command line, etc.
+You can change this by setting an Ansible Variable called '[pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream)' in various locations eg. global, per host, on the command-line, etc.
 
 Also by default, this Role will only install FLOSS components eg. no non-free or commercial licenses.
 This may mean that some things you are used to seeing on FreePBX distros and other installers are missing.
@@ -95,7 +95,7 @@ This Role was tested initially with ansible version 2.10.8 on Debian 11 and curr
 
 #### PRO-TIP 1
 Add an entry for TARGET in the ~/.ssh/config file on your LOCAL machine.
-This works because Ansible and SSH are friends! Ansible uses SSH Host names.
+This works because Ansible and SSH are friends! Ansible uses SSH hostnames.
 The following basic ssh command should work with only your password needed on most new Debian 12 installs:
 
 ```
@@ -140,7 +140,7 @@ Then test-drive a new SSH connection when done, just to make sure you can still 
 
 Different Ansible Variables and Tags in this Role allow finer-grained control of the operations.
 See the defaults/main/\*.yml files for details.
-You can override any of these on the command line, in separate per-host files, in group files, and more.
+You can override any of these on the command-line, in separate per-host files, in group files, and more.
 Below are some highlights/examples:
 
 ### Variable: pngnx_freepbx_upstream
@@ -151,11 +151,11 @@ To use the BETA EDGE tarball:
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=edge playbook.yml`
 
-Or, to use ZIP files pulled from new FreePBX GIT repo on GitHub (this is the default if not specified):
+Or, to use ZIP files pulled from new FreePBX GIT repository on GitHub (this is the default if not specified):
 
 `$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=git playbook.yml`
 
-*Currently (30 November 2023) both the edge tarball and the new github zips are installing properly, but some modules are buggy.*
+*Currently (30 November 2023) both the edge tarball and the new GitHub zips are installing properly, but some modules are buggy.*
 
 ### Variable: pngnx_php_version
 
@@ -299,7 +299,7 @@ Updates and installs needed Debian packages using apt:
 
 ### Tag: phoneprov
 
-Automates phone provisioning of certain Aastra, Polycom and SNOM phones; using an NGINX front-end proxy to the backend Asterisk HTTP server and PJSIP phoneprov modules, utilized to serve up some Penguin PBX Solutions customized template files for the phones. *See the /etc/asterisk/pjsip.endpoint_custom_post.conf file for a sample for how to configure your phones to auto-provision. This sample is installed as part of the [basic installation](#basic-installation)*:
+Automates phone provisioning of certain Aastra, Polycom and SNOM phones; using an NGINX frontend proxy to the backend Asterisk HTTP server and PJSIP phoneprov modules, utilized to serve up some Penguin PBX Solutions customized template files for the phones. *See the /etc/asterisk/pjsip.endpoint_custom_post.conf file for a sample for how to configure your phones to auto-provision. This sample is installed as part of the [basic installation](#basic-installation)*:
 
 `$ ansible-playbook -i TARGET, -t phoneprov playbook.yml`
 
