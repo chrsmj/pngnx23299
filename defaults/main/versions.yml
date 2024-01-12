@@ -35,10 +35,10 @@ pngnx_libpri_target: "{{ pngnx_build_target }}/libpri-{{ pngnx_libpri_version }}
 
 # latest Asterisk
 pngnx_asterisk_major: 20
-pngnx_asterisk_minor: 5.2
+pngnx_asterisk_minor: 6.0-rc1
 pngnx_asterisk_version: "{{ pngnx_asterisk_major }}.{{ pngnx_asterisk_minor }}"
 pngnx_asterisk_urlbase: "https://github.com/asterisk/asterisk/releases/download/{{ pngnx_asterisk_version }}"
-pngnx_asterisk_checksum: sha256:8f68e1789dfb8aa04b0eba87ea1d599a62e088ddd20926afc997f36b455e1859
+pngnx_asterisk_checksum: sha256:e0b359f96888ecd28214b44c549da993bb8bea8fd84b0224114e33b2d4e542f6
 pngnx_asterisk_tarball: "asterisk-{{ pngnx_asterisk_version }}.tar.gz"
 pngnx_asterisk_target: "{{ pngnx_build_target }}/asterisk-{{ pngnx_asterisk_version }}"
 
