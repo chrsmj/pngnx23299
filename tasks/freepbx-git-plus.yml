@@ -70,7 +70,8 @@
 
 - name: Install the local modules. One-by-one. Ignore errors.
   become: true
-  ansible.builtin.command: /sbin/fwconsole ma install {{ item }}
+  ansible.builtin.command:
+    cmd: /sbin/fwconsole ma install {{ item }}
   with_items: "{{ pngnx_freepbx_plus_modules }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -78,12 +79,14 @@
 
 - name: Reload FreePBX.
   become: true
-  ansible.builtin.command: /sbin/fwconsole reload
+  ansible.builtin.command:
+    cmd: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
 - name: Restart FreePBX.
   become: true
-  ansible.builtin.command: /sbin/fwconsole restart
+  ansible.builtin.command:
+    cmd: /sbin/fwconsole restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

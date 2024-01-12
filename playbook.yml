@@ -1,7 +1,7 @@
 ---
 # file: playbook.yml
 
-- name: Howdy! Welcome to pngnx23299!
+- name: Default development and git pulled playbook.
   hosts: all
   roles:
     - .

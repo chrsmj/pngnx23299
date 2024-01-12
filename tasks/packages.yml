@@ -10,7 +10,7 @@
   when: ansible_architecture == "x86_64"
   ansible.builtin.apt:
     update_cache: true
-    state: present
+    state: latest
     name: linux-image-amd64
 
 - name: Automatically rebooting if necessary. You may need to manually power-up the machine. Script will continue once connection is re-established.
@@ -208,6 +208,7 @@
       - sipsak
       - sngrep
       - snmp
+      - stress
       - sudo
       - tcl
       - tcllib

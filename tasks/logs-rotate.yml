@@ -4,6 +4,14 @@
 ---
 # file: roles/pngnx23299/tasks/logs-rotate.yml
 
+- name: Install logrotate package.
+  become: true
+  ansible.builtin.apt:
+    state: present
+    name:
+      - cron
+      - logrotate
+
 - name: Copy over the templated rotation policies.
   become: true
   ansible.builtin.template:

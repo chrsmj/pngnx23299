@@ -64,7 +64,8 @@
 
 - name: Start Asterisk using FreePBX scripts.
   become: true
-  ansible.builtin.command: ./start_asterisk start
+  ansible.builtin.command:
+    cmd: ./start_asterisk start
   args:
     chdir: "{{ pngnx_freepbx_git_target }}/framework/framework-release-{{ pngnx_freepbx_git_version }}"
 
@@ -72,7 +73,8 @@
 # TODO: maybe: use --dev-links
 - name: Install FreePBX framework. Ignoring errors because even with install script -q option there is a bunch of output.
   become: true
-  ansible.builtin.command: ./install -n -f -q
+  ansible.builtin.command:
+    cmd: ./install -n -f -q
   args:
     chdir: "{{ pngnx_freepbx_git_target }}/framework/framework-release-{{ pngnx_freepbx_git_version }}"
   environment:
@@ -98,18 +100,21 @@
 
 - name: Install the local modules. As a group.
   become: true
-  ansible.builtin.command: /sbin/fwconsole ma installlocal
+  ansible.builtin.command:
+    cmd: /sbin/fwconsole ma installlocal
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
 - name: Reload FreePBX.
   become: true
-  ansible.builtin.command: /sbin/fwconsole reload
+  ansible.builtin.command:
+    cmd: /sbin/fwconsole reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
 - name: Restart FreePBX.
   become: true
-  ansible.builtin.command: /sbin/fwconsole restart
+  ansible.builtin.command:
+    cmd: /sbin/fwconsole restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

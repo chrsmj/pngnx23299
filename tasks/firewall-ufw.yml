@@ -91,7 +91,7 @@
     proto: udp
     log: true
     comment: Allow limited SIP via UDP for phone signal layer on LAN/VPNs.
-  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)| | split }}"
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | split }}"
   loop_control:
     loop_var: itemx
 
@@ -106,7 +106,7 @@
     proto: tcp
     log: true
     comment: Allow limited SIP via TCP for phone signal layer on LAN/VPNs.
-  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)| | split }}"
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | split }}"
   loop_control:
     loop_var: itemx
 
@@ -121,7 +121,7 @@
     proto: udp
     log: false
     comment: Allow RTP for phone media channels on LAN/VPNs.
-  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)| | split }}"
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | split }}"
   loop_control:
     loop_var: itemx
 
@@ -136,7 +136,7 @@
     proto: udp
     log: false
     comment: Allow RTP for T38 FAX on LAN/VPNs.
-  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)| | split }}"
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | split }}"
   loop_control:
     loop_var: itemx
 
@@ -151,7 +151,7 @@
     proto: tcp
     log: false
     comment: Allow friendly/LAN/VPNs access to the PBX Webserver - HTTP.
-  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)| | split }}"
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | split }}"
   loop_control:
     loop_var: itemx
 
@@ -166,7 +166,7 @@
     proto: tcp
     log: false
     comment: Allow friendly/LAN/VPNs access to the PBX Webserver - HTTPS.
-  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask)| | split }}"
+  loop: "{{ pngnx_friendly_lans if pngnx_friendly_lans is defined else (ansible_default_ipv4.network + '/' + ansible_default_ipv4.netmask) | split }}"
   loop_control:
     loop_var: itemx
 

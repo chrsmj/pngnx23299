@@ -21,7 +21,7 @@
     url: "{{ pngnx_asterisk_urlbase }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     checksum: "{{ pngnx_asterisk_checksum }}"
-    mode: "0644"
+    mode: "0500"
 
 - name: Unarchive Asterisk source.
   when: pngnx_new_src
@@ -39,7 +39,7 @@
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
-    mode: "0644"
+    mode: "0700"
 
 - name: Copy Asterisk tarball from temp directory to target install directory.
   become: true
@@ -48,15 +48,19 @@
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
-    mode: "0644"
+    mode: "0400"
 
 - name: Clean previous Asterisk build. Might not have been one so ignore any errors.
   when: pngnx_new_src or pngnx_clean_src
-  ansible.builtin.command: /usr/bin/make -i distclean
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - -i
+      - distclean
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   register: fail_astdistclean
-  failed_when: "fail_astdistclean.rc != 0"
+  failed_when: fail_astdistclean.rc != 0
   changed_when: "'Cleaning' in fail_astdistclean.stdout"
 
 - name: Specify some default build options.
@@ -64,7 +68,7 @@
   ansible.builtin.copy:
     src: asterisk-{{ pngnx_asterisk_major }}.makeopts
     dest: /etc/asterisk.makeopts
-    mode: "0644"
+    mode: "0500"
 
 - name: Might not need all these defaults. (But FreePBX uses file-based VoiceMail.)
   become: true
@@ -75,55 +79,89 @@
     state: absent
 
 - name: Download MP3 source - per Asterisk contrib/scripts/get_mp3_source.sh file. Ignored if already done.
-  ansible.builtin.command: ./contrib/scripts/get_mp3_source.sh
+  ansible.builtin.command:
+    argv:
+      - ./contrib/scripts/get_mp3_source.sh
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   register: fail_mp3source
-  failed_when: "fail_mp3source.rc != 0"
+  failed_when: fail_mp3source.rc > 1
   changed_when: "'appears to already be present' not in fail_mp3source.stdout"
 
 # TODO: ansible.builtin.command: ./configure --libdir=/lib/{{ ansible_architecture }}-linux-gnu --with-pjproject-bundled --with-jansson-bundled
 - name: Configure Asterisk source - version 18.
   when: pngnx_asterisk_major == 18
-  ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
+  ansible.builtin.command:
+    argv:
+      - ./configure
+      - --with-pjproject-bundled
+      - --with-jansson-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true
 
 - name: Configure Asterisk source - version 20.
   when: pngnx_asterisk_major == 20
-  ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled
+  ansible.builtin.command:
+    argv:
+      - ./configure
+      - --with-pjproject-bundled
+      - --with-jansson-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true
 
 - name: Configure Asterisk source - version 21.
   when: pngnx_asterisk_major == 21
-  ansible.builtin.command: ./configure --with-pjproject-bundled --with-jansson-bundled --with-libjwt-bundled
+  ansible.builtin.command:
+    argv:
+      - ./configure
+      - --with-pjproject-bundled
+      - --with-jansson-bundled
+      - --with-libjwt-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true
 
 - name: Make the menuselect.makeopts so the Addons can be added.
-  ansible.builtin.command: /usr/bin/make menuselect.makeopts
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - menuselect.makeopts
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true
 
 - name: Fix-up the Asterisk Addons so they get built.
-  ansible.builtin.command: ./menuselect/menuselect --enable-category MENUSELECT_ADDONS menuselect.makeopts
+  ansible.builtin.command:
+    argv:
+      - ./menuselect/menuselect
+      - --enable-category
+      - MENUSELECT_ADDONS
+      - menuselect.makeopts
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true
 
 - name: Build Asterisk from source. Threaded make.
-  ansible.builtin.command: /usr/bin/nice -n {{ nicely | default(0) }} /usr/bin/make -j {{ ansible_processor_vcpus | default(2) }} all
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/nice
+      - -n
+      - "{{ nicely | default(0) }}"
+      - /usr/bin/make
+      - -j
+      - "{{ ansible_processor_vcpus | default(2) }}"
+      - all
   args:
     chdir: "{{ pngnx_asterisk_target }}"
     creates: "{{ pngnx_asterisk_target }}/main/asterisk"
 
 - name: Build Asterisk from source. Single make. Sometimes needed if threaded make fails due to improper ordering of objects between threads.
-  ansible.builtin.command: /usr/bin/make all
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - all
   args:
     chdir: "{{ pngnx_asterisk_target }}"
     creates: "{{ pngnx_asterisk_target }}/main/asterisk"
@@ -132,7 +170,10 @@
 - name: Install Asterisk.
   become: true
   when: pngnx_do_asterisk_install
-  ansible.builtin.command: /usr/bin/make install
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - install
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true

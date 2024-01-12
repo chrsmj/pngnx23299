@@ -40,7 +40,8 @@
 - name: Drops the Asterisk MariaDB databases.
   become: true
   tags: [never, uninstall, splat]
-  ansible.builtin.command: mysqladmin -f drop {{ item }}
+  ansible.builtin.command:
+    cmd: mysqladmin -f drop {{ item }}
   loop:
     - asterisk
     - asteriskcdrdb
@@ -61,7 +62,8 @@
 - name: Uninstall DAHDI and LIBPRI.
   become: true
   tags: [never, splat]
-  ansible.builtin.command: /usr/bin/make uninstall
+  ansible.builtin.command:
+    cmd: /usr/bin/make uninstall
   args:
     chdir: "{{ item }}"
   loop:
@@ -73,7 +75,8 @@
 - name: Completely uninstall and remove all parts of Asterisk install.
   become: true
   tags: [never, splat]
-  ansible.builtin.command: /usr/bin/make uninstall-all
+  ansible.builtin.command:
+    cmd: /usr/bin/make uninstall-all
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   ignore_errors: true
@@ -104,7 +107,8 @@
 - name: Removes non-free codecs if any. TODO fix the rm.
   become: true
   tags: [never, splat]
-  ansible.builtin.command: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-* # noqa: deprecated-command-syntax
+  ansible.builtin.command:
+    cmd: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-* # noqa: deprecated-command-syntax
   with_items: "{{ pngnx_digium_codecs }}"
   ignore_errors: true
 
