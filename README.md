@@ -1,14 +1,14 @@
-pngnx23299
+# pngnx23299
 
 **An Ansible Role for installing FreePBX 17 on Asterisk 20 on Debian 12**
 
-Currently for testing purposes only.
+*Currently for testing purposes only.*
 
 Designed to get a few desk phones quickly ringing by manually configuring them in FreePBX and then allowing the PBX to (mostly) auto-provision them on a private, dedicated voice VLAN where the PBX acts as the DHCP and NTP server.
 
 ---
 
-# Table of Contents
+**Table of Contents**
 
 1. [License](#license)
 2. New to...
@@ -110,32 +110,26 @@ Then things happen (over SSH) on your TARGET machine(s).
 
 So on your LOCAL machine...
 
-```
-$ sudo apt-get install ansible sshpass
-```
+`sudo apt-get install ansible sshpass`
 
 ...should be good enough.
 
 You can check the version number with:
 
-```
-$ ansible --version
-```
+`ansible --version`
 
 This Role was tested initially with ansible version 2.10.8 on Debian 11 and currently with version 2.14.3 on Debian 12.
 
-#### PRO-TIP 1
+**PRO-TIP 1**
 Add an entry for TARGET in the ~/.ssh/config file on your LOCAL machine.
 This works because Ansible and SSH are friends! Ansible uses SSH hostnames.
 The following basic ssh command should work with only your password needed on most new Debian 12 installs:
 
-```
-$ ssh TARGET
-```
+`ssh TARGET`
 
 *If you can SSH to the TARGET, then Ansible can do the rest.*
 
-#### PRO-TIP 2
+**PRO-TIP 2**
 Now is a good time to setup SSH keys and add those to the IdentityFile line in your ~/.ssh/config file,
 or [you can specify them during (re-)install](#ssh-keys).
 
@@ -145,10 +139,10 @@ or [you can specify them during (re-)install](#ssh-keys).
 
 Replace TARGET with the SSH Host name you will be installing on, and run these commands:
 
-```
-$ wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.12-alpha.tar.gz
-$ tar xzf v0.24.12-alpha.tar.gz
-$ ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.12-alpha/playbook-alt.yml
+```shell
+wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.12-alpha.tar.gz
+tar xzf v0.24.12-alpha.tar.gz
+ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.12-alpha/playbook-alt.yml
 ```
 
 You will be prompted for your SSH password for TARGET. Type it in and press Enter.
@@ -161,7 +155,7 @@ Answer that, wait a minute, and possibly restart the TARGET if prompted.
 The rest should take care of itself, providing you a link to access the web GUI when finished.
 Typically, the install takes about 15-30 minutes on modern PBX DIY'er hardware.
 
-#### PRO-TIP 3
+**PRO-TIP 3**
 Always keep an SSH connection alive in another terminal when making changes that involve SSH eg. installing this system.
 Then test-drive a new SSH connection when done, just to make sure you can still get in.
 
@@ -180,11 +174,11 @@ Installs system but changes upstream source, to either 'edge' or 'git'.
 
 To use the BETA EDGE tarball:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=edge playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=edge playbook.yml`
 
 Or, to use ZIP files pulled from new FreePBX GIT repository on GitHub (this is the default if not specified):
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=git playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=git playbook.yml`
 
 *Currently (30 November 2023) both the edge tarball and the new GitHub zips are installing properly, but some modules are buggy.*
 
@@ -192,7 +186,7 @@ Or, to use ZIP files pulled from new FreePBX GIT repository on GitHub (this is t
 
 Installs system but changes the PHP version from the Debian 12 default of PHP 8.2 to what you specify eg. PHP 7.4:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_php_version=7.4 playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_php_version=7.4 playbook.yml`
 
 *Many things were deprecated in PHP 8.2 but upstream FreePBX 17 saw lots of commit activity in the fall of 2023 to make it compatible with the new PHP changes.*
 
@@ -200,7 +194,7 @@ Installs system but changes the PHP version from the Debian 12 default of PHP 8.
 
 Installs system but with limited FreePBX modules -- just enough to send and receive calls:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, --skip-tags extra,plus playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, --skip-tags extra,plus playbook.yml`
 
 *See detailed list of modules in the defaults/main/freepbx_modules.yml file.*
 
@@ -208,25 +202,25 @@ Installs system but with limited FreePBX modules -- just enough to send and rece
 
 Installs system on several remote TARGETs at the same time (assuming they are setup beforehand with same SSH user/pass eg. cloned Virtual Machines):
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET1,TARGET2,TARGET3,TARGET4,TARGET5,TARGET6,TARGET7, playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET1,TARGET2,TARGET3,TARGET4,TARGET5,TARGET6,TARGET7, playbook.yml`
 
 ### SSH Keys
 
 Installs system and sets up passwordless SSH **exclusively using a public key** from a file (no more SSH passwords), using the 'pngnx_installer_sshpubkey' Variable:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_installer_sshpubkey=/home/user/.ssh/id_ed25519-sk.pub playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_installer_sshpubkey=/home/user/.ssh/id_ed25519-sk.pub playbook.yml`
 
 Or later on, you can (re-)run Tasks specified by the firewall Tag to do several things, including changing SSH configuration to use public keys:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_ed25519-sk.pub playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_ed25519-sk.pub playbook.yml`
 
 ...or pull the public key from a URL:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=https://penguinpbx.com/shiny.pub playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=https://penguinpbx.com/shiny.pub playbook.yml`
 
 ...or keep password logins working alongside the key-based logins, using an additional Variable 'pngnx_allow_ssh_passwords' (not recommended):
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_rsa.pub,pngnx_allow_ssh_passwords=yes playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_rsa.pub,pngnx_allow_ssh_passwords=yes playbook.yml`
 
 *See [SSH PRO-TIP 3](#pro-tip-3) above, as well as more Variable controls in the defaults/main/controls.yml file, and also the tasks/firewall-\*.yml files.*
 
@@ -234,7 +228,7 @@ Or later on, you can (re-)run Tasks specified by the firewall Tag to do several 
 
 Downloads and Builds Asterisk but does not Install it:
 
-`$ ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_do_asterisk_install=false playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_do_asterisk_install=false playbook.yml`
 
 *See defaults/main/versions.yml for changing the Asterisk version.*
 
@@ -254,127 +248,137 @@ And when you do find the issue, you can jump ahead to that Tag, right from the c
 
 Prepares Apache webserver for FreePBX installation (but does not actually install Apache -- see the [packages Tag](#tag-packages)):
 
-`$ ansible-playbook -i TARGET, -t apache playbook.yml`
+`ansible-playbook -i TARGET, -t apache playbook.yml`
 
 ### Tag: catbert
 
 Adds some users and groups, fixes up some permissions, and prepares Asterisk configuration for fresh FreePBX installation:
 
-`$ ansible-playbook -i TARGET, -t catbert playbook.yml`
+`ansible-playbook -i TARGET, -t catbert playbook.yml`
 
 ### Tag: confirm
 
 Confirmation steps at the beginning of the installation. Most often this would be used in the negative to skip the confirmation steps; such as during a completely automated install, or if you want to force install on a non-Debian 12 system (not recommended unless you really know what you are doing):
 
-`$ ansible-playbook -i TARGET, --skip-tags confirm playbook.yml`
+`ansible-playbook -i TARGET, --skip-tags confirm playbook.yml`
 
 ### Tag: dahdi
 
 Builds and installs only the DAHDI hardware drivers:
 
-`$ ansible-playbook -i TARGET, -t dahdi playbook.yml`
+`ansible-playbook -i TARGET, -t dahdi playbook.yml`
 
 ### Tag: db
 
 Prepares MySQL/MariaDB for use by FreePBX including ODBC configuration (but does not actually install MySQL/MariaDB -- see the [packages Tag](#tag-packages)):
 
-`$ ansible-playbook -i TARGET, -t db playbook.yml`
+`ansible-playbook -i TARGET, -t db playbook.yml`
 
 ### Tag: drwho
 
 Installs and configures ChronyD as the Network Time Protocol (NTP) server on LANs and/or VLANs:
 
-`$ ansible-playbook -i TARGET, -t drwho playbook.yml`
+`ansible-playbook -i TARGET, -t drwho playbook.yml`
 
 ### Tag: extra
 
 Installs the extra FreePBX modules, beyond basic ones from the default basic installation (useful if you skipped this Tag previously because you only wanted the basic FreePBX modules -- see above in the [Advanced Installation](#advanced-installation) section). *See detailed list of modules in the defaults/main/freepbx_modules.yml file*:
 
-`$ ansible-playbook -i TARGET, -t extra playbook.yml`
+`ansible-playbook -i TARGET, -t extra playbook.yml`
 
 ### Tag: firewall
 
 Resets only the firewall portions, including [SSH key updates](#ssh-keys). *Firewalling via UFW with limited SSH from anywhere and only LAN access to SIP and HTTP/S*:
 
-`$ ansible-playbook -i TARGET, -t firewall playbook.yml`
+`ansible-playbook -i TARGET, -t firewall playbook.yml`
 
 ### Tag: logrotate
 
 Configures log rotation policies for Asterisk and FreePBX log files, with some reasonable defaults:
 
-`$ ansible-playbook -i TARGET, -t logrotate playbook.yml`
+`ansible-playbook -i TARGET, -t logrotate playbook.yml`
 
 ### Tag: gui
 
 Installs only the FreePBX parts -- potentially useful if you already installed Asterisk, MySQL/MariaDB, Apache, and all other FreePBX package dependencies. *You need to set the web interface admin user/pass using the web GUI immediately after this Role is played out*:
 
-`$ ansible-playbook -i TARGET, -t gui playbook.yml`
+`ansible-playbook -i TARGET, -t gui playbook.yml`
 
 ### Tag: nonfree
 
 Installs nonfree Asterisk codecs and DAHDI firmware. *By default, this Role attempts to install only FLOSS software. You will need to explicitly pass command-line Tag "nonfree" to install non-free software*:
 
-`$ ansible-playbook -i TARGET, -t nonfree playbook.yml`
+`ansible-playbook -i TARGET, -t nonfree playbook.yml`
 
 ### Tag: nopants
 
 Only used in combination with the [uninstall Tag](#tag-uninstall) to stop the firewall parts (not recommended):
 
-`$ ansible-playbook -i TARGET, -t uninstall,nopants playbook.yml`
+`ansible-playbook -i TARGET, -t uninstall,nopants playbook.yml`
 
 ### Tag: packages
 
 Updates and installs needed Debian packages using apt:
 
-`$ ansible-playbook -i TARGET, -t packages playbook.yml`
+`ansible-playbook -i TARGET, -t packages playbook.yml`
 
 ### Tag: phoneprov
 
-Automates phone provisioning of certain Aastra, Polycom and SNOM phones; using an NGINX frontend proxy to the backend Asterisk HTTP server and PJSIP phoneprov modules, utilized to serve up some Penguin PBX Solutions customized template files for the phones. *See the /etc/asterisk/pjsip.endpoint_custom_post.conf file for a sample for how to configure your phones to auto-provision. This sample is installed as part of the [basic installation](#basic-installation)*:
+Automates phone provisioning of certain Aastra, Polycom and SNOM phones;
+using an NGINX frontend proxy to the backend Asterisk HTTP server and PJSIP phoneprov modules,
+utilized to serve up some Penguin PBX Solutions customized template files for the phones.
+*See the /etc/asterisk/pjsip.endpoint_custom_post.conf file for a sample for how to configure your phones to auto-provision.
+This sample is installed as part of the [basic installation](#basic-installation)*:
 
-`$ ansible-playbook -i TARGET, -t phoneprov playbook.yml`
+`ansible-playbook -i TARGET, -t phoneprov playbook.yml`
 
 ### Tag: plus
 
-Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra. *See detailed list of modules in the defaults/main/freepbx_modules.yml file*:
+Installs only the rest of the main-line FreePBX modules, beyond basic gui and extra.
+*See detailed list of modules in the defaults/main/freepbx_modules.yml file*:
 
-`$ ansible-playbook -i TARGET, -t plus playbook.yml`
+`ansible-playbook -i TARGET, -t plus playbook.yml`
 
 ### Tag: splat
 
 Removes most of the Asterisk parts -- must be in combination with uninstall:
 
-`$ ansible-playbook -i TARGET, -t uninstall,splat playbook.yml`
+`ansible-playbook -i TARGET, -t uninstall,splat playbook.yml`
 
 ### Tag: star
 
 Installs only the Asterisk parts:
 
-`$ ansible-playbook -i TARGET, -t star playbook.yml`
+`ansible-playbook -i TARGET, -t star playbook.yml`
 
 ### Tag: tests
 
 Runs a test or two. Debugging use only:
 
-`$ ansible-playbook -i TARGET, -t tests playbook.yml`
+`ansible-playbook -i TARGET, -t tests playbook.yml`
 
 ### Tag: uninstall
 
 Removes most of the FreePBX parts:
 
-`$ ansible-playbook -i TARGET, -t uninstall playbook.yml`
+`ansible-playbook -i TARGET, -t uninstall playbook.yml`
 
 ### Tag: vlan
 
-Installs and configures dnsmasq to provide DHCP server functions on a VLAN to help the phones auto-provision. *Ideally you should only need to configure the phone on to the VLAN, wait as it reboots, and in a few minutes start making calls. See the defaults/main/network.yml Variables file in this Role for configuration options*:
+Installs and configures dnsmasq to provide DHCP server functions on a VLAN to help the phones auto-provision.
+*Ideally you should only need to configure the phone on to the VLAN, wait as it reboots, and in a few minutes start making calls.
+See the defaults/main/network.yml Variables file in this Role for configuration options*:
 
-`$ ansible-playbook -i TARGET, -t vlan playbook.yml`
+`ansible-playbook -i TARGET, -t vlan playbook.yml`
 
 ---
 
 #### Notices
 
-*Various trademarks not owned by Penguin PBX Solutions are property of their respective owners and are descriptively used for commentary, identification purposes and trademark parody; and Penguin PBX Solutions claims no rights in these trademarks. No sponsorship from, endorsement by, approval of, or affiliation with any third parties is to be implied by the links and/or mentions on this site, as these links/mentions are simply fair use points of reference.*
+*Various trademarks not owned by Penguin PBX Solutions are property of their respective owners and are descriptively used for commentary,
+identification purposes and trademark parody; and Penguin PBX Solutions claims no rights in these trademarks.
+No sponsorship from, endorsement by, approval of, or affiliation with any third parties is to be implied by the links and/or mentions on this site,
+as these links/mentions are simply fair use points of reference.*
 
 Linux® is the registered trademark of Linus Torvalds in the U.S. and other countries. Penguin PBX Solutions is not affiliated with Linus Torvalds.
 
