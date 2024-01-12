@@ -64,7 +64,7 @@ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
 A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with
-pngnx23299. If not, see <https://www.gnu.org/licenses/>. 
+pngnx23299. If not, see <https://www.gnu.org/licenses/>.
 
 ---
 
@@ -137,7 +137,7 @@ or [you can specify them during (re-)install](#ssh-keys).
 
 ## Basic Installation
 
-Replace TARGET with the SSH Host name you will be installing on, and run these commands:
+Replace TARGET with the SSH hostname you will be installing on, and run these commands:
 
 ```shell
 wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.12-alpha.tar.gz
@@ -222,7 +222,7 @@ Or later on, you can (re-)run Tasks specified by the firewall Tag to do several 
 
 `ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_rsa.pub,pngnx_allow_ssh_passwords=yes playbook.yml`
 
-*See [SSH PRO-TIP 3](#pro-tip-3) above, as well as more Variable controls in the defaults/main/controls.yml file, and also the tasks/firewall-\*.yml files.*
+*See SSH PRO-TIP 3 above, as well as more Variable controls in the defaults/main/controls.yml file, and also the tasks/firewall-\*.yml files.*
 
 ### Build Asterisk
 
