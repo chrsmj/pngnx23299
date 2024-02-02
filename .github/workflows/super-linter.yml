@@ -9,7 +9,7 @@
 # https://github.com/github/super-linter
 name: Super Lint
 
-on: [push, pull_request]
+on: push
 
 jobs:
   run-lint:
