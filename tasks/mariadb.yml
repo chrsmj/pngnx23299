@@ -9,11 +9,14 @@
 - name: Make MYSQL Great Again.
   become: true
   ansible.builtin.ini_file:
-    path: /etc/mysql/conf.d/freepbx.cnf
+    path: /etc/mysql/mariadb.conf.d/99-pngnx.cnf
     section: mysqld
-    option: sql_mode
-    value: ''
+    option: "{{ item.k }}"
+    value: "{{ item.v }}"
     no_extra_spaces: true
+  loop:
+    - { k: "sql_mode",     v: "" }
+    - { k: "bind-address", v: "127.0.0.1,::" }
 
 - name: Restart MariaDB (MYSQL).
   become: true
