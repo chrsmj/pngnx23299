@@ -28,6 +28,9 @@
 	sharedscripts
 	create 0640 asterisk asterisk
 	su asterisk asterisk
+	firstaction
+		/usr/sbin/asterisk -rx "logger show channels" > /dev/null 2> /dev/null
+	endscript
 	postrotate
 		/usr/sbin/asterisk -rx "logger reload" > /dev/null 2> /dev/null
 	endscript
