@@ -125,6 +125,20 @@
       tags: star
   tags: star
 
+- name: Automatic Speech Recognition installation (currently Vosk for Asterisk).
+  ansible.builtin.include_tasks:
+    file: asr-vosk.yml
+    apply:
+      tags: asr
+  tags: asr
+
+- name: Text-To-Speech installation (currently Espeak for Asterisk).
+  ansible.builtin.include_tasks:
+    file: tts-espeak.yml
+    apply:
+      tags: tts
+  tags: tts
+
 - name: Additonal non-free codecs.
   tags: [never, nonfree]
   ansible.builtin.include_tasks: codecs.yml
@@ -169,6 +183,13 @@
     - firewall-ufw.yml
     - firewall-fail2ban.yml
     - firewall-ssh.yml
+
+#- name: Firewall for Docker for Vosk ASR. Should not be necessary.
+#  tags: asr
+#  ansible.builtin.include_tasks:
+#    file: firewall-ufw.yml
+#    apply:
+#      tags: firewall
 
 # not used by FreePBX...
 # - name: SystemD start up for Asterisk.

@@ -16,7 +16,9 @@
   register: tmpast
 
 - name: Download Asterisk source.
-  when: pngnx_new_src
+  when:
+    - pngnx_new_src
+    - pngnx_asterisk_git_repo is not defined
   ansible.builtin.get_url:
     url: "{{ pngnx_asterisk_urlbase }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
@@ -24,11 +26,22 @@
     mode: "0500"
 
 - name: Unarchive Asterisk source.
-  when: pngnx_new_src
+  when:
+    - pngnx_new_src
+    - pngnx_asterisk_git_repo is not defined
   ansible.builtin.unarchive:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ tmpast.path }}"
     remote_src: true
+
+- name: Pull the Asterisk source into temp dir - via git.
+  when:
+    - pngnx_new_src
+    - pngnx_asterisk_git_repo is defined
+  ansible.builtin.git:
+    repo: "{{ pngnx_asterisk_git_repo }}"
+    dest: "{{ tmpast.path }}/asterisk-{{ pngnx_asterisk_version }}"
+    version: "{{ pngnx_asterisk_major }}"
 
 - name: Copy Asterisk source from temp directory to target install directory.
   become: true
@@ -43,12 +56,21 @@
 
 - name: Copy Asterisk tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when:
+    - pngnx_new_src
+    - pngnx_asterisk_git_repo is not defined
   ansible.builtin.copy:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
     mode: "0400"
+
+- name: Update the Asterisk source in target dir - via git.
+  when: pngnx_asterisk_git_repo is defined
+  ansible.builtin.git:
+    repo: "{{ pngnx_asterisk_git_repo }}"
+    dest: "{{ pngnx_asterisk_target }}"
+    update: true
 
 - name: Clean previous Asterisk build. Might not have been one so ignore any errors.
   when: pngnx_new_src or pngnx_clean_src
@@ -75,8 +97,19 @@
   when: pngnx_voicemail_type is not defined or pngnx_voicemail_type == "files"
   ansible.builtin.lineinfile:
     path: /etc/asterisk.makeopts
+    create: true
     regexp: '^MENUSELECT_OPTS_app_voicemail'
     state: absent
+
+# TODO: debug build
+- name: Debugging build for big bug hunting.
+  become: true
+  when: pngnx_bug_hunter
+  ansible.builtin.lineinfile:
+    path: /etc/asterisk.makeopts
+    create: true
+    regexp: '^MENUSELECT_CFLAGS='
+    line: 'MENUSELECT_CFLAGS=DONT_OPTIMIZE COMPILE_DOUBLE DEBUG_THREADS DEBUG_FD_LEAKS BETTER_BACKTRACES BUILD_NATIVE OPTIONAL_API'
 
 - name: Download MP3 source - per Asterisk contrib/scripts/get_mp3_source.sh file. Ignored if already done.
   ansible.builtin.command:
@@ -113,6 +146,18 @@
 
 - name: Configure Asterisk source - version 21.
   when: pngnx_asterisk_major == 21
+  ansible.builtin.command:
+    argv:
+      - ./configure
+      - --with-pjproject-bundled
+      - --with-jansson-bundled
+      - --with-libjwt-bundled
+  args:
+    chdir: "{{ pngnx_asterisk_target }}"
+  changed_when: true
+
+- name: Configure Asterisk source - git.
+  when: pngnx_asterisk_git_repo is defined
   ansible.builtin.command:
     argv:
       - ./configure
@@ -174,6 +219,17 @@
     argv:
       - /usr/bin/make
       - install
+  args:
+    chdir: "{{ pngnx_asterisk_target }}"
+  changed_when: true
+
+- name: Install Asterisk headers.
+  become: true
+  when: pngnx_do_asterisk_install
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - install-headers
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true

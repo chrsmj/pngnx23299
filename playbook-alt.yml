@@ -8,4 +8,4 @@
 - name: Special release playbook for zip/tarball downloads.
   hosts: all
   roles:
-    - pngnx23299-0.24.12-alpha
+    - pngnx23299-0.24.40-alpha

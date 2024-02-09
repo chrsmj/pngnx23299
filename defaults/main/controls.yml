@@ -9,6 +9,9 @@ pngnx_clean_src: true
 pngnx_do_asterisk_install: true
 pngnx_build_target: /usr/local/src
 
+# useful for development and advanced debugging
+pngnx_bug_hunter: false
+
 # where to pull freepbx from
 pngnx_freepbx_upstream: git
 # pngnx_freepbx_upstream: edge

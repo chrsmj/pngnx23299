@@ -1,0 +1,115 @@
+# SPDX-FileCopyrightText: 2023-2024 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/asr-vosk.yml
+
+# Automatic Speech Recognition using third-party Vosk for Asterisk modules
+
+# TODO
+#- name: Setup kaldi docker.
+
+# TODO
+#- name: Provide helper dial plan for Vosk (maybe extensions_pngnpbx_hh.conf)
+
+- name: Make a place for the Vosk source.
+  when: pngnx_new_src
+  ansible.builtin.tempfile:
+    suffix: ".vosk-asterisk"
+    state: directory
+  register: tmpvsk
+
+- name: Download Vosk.
+  when: pngnx_new_src
+  ansible.builtin.get_url:
+    url: "{{ pngnx_vosk_asterisk_urlbase }}"
+    dest: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_zip }}"
+    mode: "0500"
+
+- name: Unarchive Vosk.
+  when: pngnx_new_src
+  ansible.builtin.unarchive:
+    src: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_zip }}"
+    dest: "{{ tmpvsk.path }}"
+    remote_src: true
+
+- name: Copy Vosk source from temp directory to target install directory.
+  become: true
+  when: pngnx_new_src
+  ansible.builtin.copy:
+    src: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_basename }}"
+    dest: "{{ pngnx_build_target }}"
+    remote_src: true
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: "0700"
+
+- name: Copy Vosk tarball from temp directory to target install directory.
+  become: true
+  when: pngnx_new_src
+  ansible.builtin.copy:
+    src: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_zip }}"
+    dest: "{{ pngnx_build_target }}"
+    remote_src: true
+    mode: "0400"
+
+- name: Bootstrap Vosk.
+  when: pngnx_new_src
+  ansible.builtin.command:
+    argv:
+      - ./bootstrap
+  args:
+    chdir: "{{ pngnx_vosk_asterisk_target }}"
+  changed_when: true
+
+- name: Configure Vosk.
+  when: pngnx_new_src
+  ansible.builtin.command:
+    argv:
+      - ./configure
+      - --with-asterisk={{ pngnx_asterisk_target }}
+      - --prefix=/usr
+      - "{{ 'CFLAGS=-Og' if pngnx_bug_hunter }}"
+  args:
+    chdir: "{{ pngnx_vosk_asterisk_target }}"
+  changed_when: true
+
+- name: Make Vosk.
+  when: pngnx_new_src
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+  args:
+    chdir: "{{ pngnx_vosk_asterisk_target }}"
+  changed_when: true
+
+- name: Install Vosk.
+  become: true
+  when: pngnx_do_asterisk_install
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - install
+  args:
+    chdir: "{{ pngnx_vosk_asterisk_target }}"
+  changed_when: true
+
+- name: Copy over default Vosk configuration file for Asterisk.
+  become: true
+  when: pngnx_do_asterisk_install
+  ansible.builtin.copy:
+    src: res_speech_vosk.conf
+    dest: /etc/asterisk/res_speech_vosk.conf
+    force: false
+    mode: "0555"
+
+- name: Make sure needed Asterisk modules are loaded in modules.conf
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/asterisk/modules.conf
+    regexp: "{{ item }}"
+    line: "load = {{ item }}"
+  loop:
+    - res_speech.so
+    - res_http_websocket.so
+    - res_speech_vosk.so

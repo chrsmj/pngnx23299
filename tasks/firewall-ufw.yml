@@ -492,6 +492,20 @@
   loop_control:
     loop_var: itemx
 
+#- name: Docker communication line for Vosk speech recognition.
+#  become: true
+#  environment:
+#    PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
+#  ansible.builtin.ufw:
+#    rule: allow
+#    port: 2700
+#    proto: tcp
+#    log: false
+#    interface: docker0
+#    direction: in
+#    comment: Docker access for Vosk. Should not be necessary.
+#  tags: asr
+
 - name: Switch from Allow to Deny default policy. This disallows everything else not explicity allowed already. Double-check SSH still works!
   become: true
   environment:

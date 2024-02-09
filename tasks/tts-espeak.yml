@@ -1,0 +1,91 @@
+# SPDX-FileCopyrightText: 2023-2024 Penguin PBX Solutions <chris at penguin p b x dot com>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+---
+# file: roles/pngnx23299/tasks/tts-espeak.yml
+
+# Text-To-Speech using third-party Espeak for Asterisk application
+
+# TODO
+#- name: Generate default Espeak configuration file for Asterisk.
+
+# TODO
+#- name: Provide helper dial plan for Espeak (extensions_pngnpbx_tts.conf)
+
+- name: Extra packages for Espeak.
+  become: yes
+  ansible.builtin.apt:
+    state: present
+    name:
+      - libespeak-ng-dev
+      - libsamplerate0-dev
+
+- name: Make a place for the Espeak source.
+  when: pngnx_new_src
+  ansible.builtin.tempfile:
+    suffix: ".espeak-asterisk"
+    state: directory
+  register: tmpvsk
+
+- name: Download Espeak.
+  when: pngnx_new_src
+  ansible.builtin.get_url:
+    url: "{{ pngnx_espeak_asterisk_urlbase }}"
+    dest: "{{ tmpvsk.path }}/{{ pngnx_espeak_asterisk_zip }}"
+    mode: "0500"
+
+- name: Unarchive Espeak.
+  when: pngnx_new_src
+  ansible.builtin.unarchive:
+    src: "{{ tmpvsk.path }}/{{ pngnx_espeak_asterisk_zip }}"
+    dest: "{{ tmpvsk.path }}"
+    remote_src: true
+
+- name: Copy Espeak source from temp directory to target install directory.
+  become: true
+  when: pngnx_new_src
+  ansible.builtin.copy:
+    src: "{{ tmpvsk.path }}/{{ pngnx_espeak_asterisk_basename }}"
+    dest: "{{ pngnx_build_target }}"
+    remote_src: true
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: "0700"
+
+- name: Copy Espeak tarball from temp directory to target install directory.
+  become: true
+  when: pngnx_new_src
+  ansible.builtin.copy:
+    src: "{{ tmpvsk.path }}/{{ pngnx_espeak_asterisk_zip }}"
+    dest: "{{ pngnx_build_target }}"
+    remote_src: true
+    mode: "0400"
+
+- name: Make Espeak.
+  when: pngnx_new_src
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+  args:
+    chdir: "{{ pngnx_espeak_asterisk_target }}"
+  changed_when: true
+
+- name: Install Espeak.
+  become: true
+  when: pngnx_do_asterisk_install
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - install
+  args:
+    chdir: "{{ pngnx_espeak_asterisk_target }}"
+  changed_when: true
+
+- name: Make sure needed Asterisk modules are loaded in modules.conf
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/asterisk/modules.conf
+    regexp: "{{ item }}"
+    line: "load = {{ item }}"
+  loop:
+    - app_espeak.so
