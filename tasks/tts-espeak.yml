@@ -7,13 +7,13 @@
 # Text-To-Speech using third-party Espeak for Asterisk application
 
 # TODO
-#- name: Generate default Espeak configuration file for Asterisk.
+# - name: Generate default Espeak configuration file for Asterisk.
 
 # TODO
-#- name: Provide helper dial plan for Espeak (extensions_pngnpbx_tts.conf)
+# - name: Provide helper dial plan for Espeak (extensions_pngnpbx_tts.conf)
 
 - name: Extra packages for Espeak.
-  become: yes
+  become: true
   ansible.builtin.apt:
     state: present
     name:
