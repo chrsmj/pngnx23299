@@ -108,7 +108,7 @@
   become: true
   tags: [never, splat]
   ansible.builtin.command:
-    cmd: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-* # noqa: deprecated-command-syntax
+    cmd: /usr/bin/rm -Rf {{ pngnx_build_target }}/codec_{{ item }}-* # noqa: no-free-form
   with_items: "{{ pngnx_digium_codecs }}"
   ignore_errors: true
 

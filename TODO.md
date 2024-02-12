@@ -26,8 +26,8 @@
 * geolocation, for IP address blocking
 * STIR/SHAKEN
 * make systemd Conflicts with Asterisk service?
-* git clone each module from freepbx github, to make it easier to patch
-* initial web user should be available to auto-generate (see https://community.freepbx.org/t/create-1st-admin-user-from-cli/65133)
+* git clone each module from freepbx GitHub, to make it easier to patch
+* initial web user should be available to auto-generate [see](https://community.freepbx.org/t/create-1st-admin-user-from-cli/65133)
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX
