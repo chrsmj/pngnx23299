@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 Penguin PBX Solutions <chris at penguin p b x dot com>
+# SPDX-FileCopyrightText: 2023-2024 Penguin PBX Solutions <chris at penguin p b x dot com>
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
@@ -30,7 +30,9 @@
     msg:
       - "**************************************************************************"
       - "*                                                                        *"
-      - "* Welcome to pngnx23299!  Copyright 2023 GPLv3+ by Penguin PBX Solutions *"
+      - "*                       Welcome to pngnx23299!                           *"
+      - "*                                                                        *"
+      - "*          Copyright 2023-2024 GPLv3+ by Penguin PBX Solutions           *"
       - "*                                                                        *"
       - "* This Ansible Role helps install software written/copyright by others,  *"
       - "* mainly Asterisk 20 and FreePBX 17 (BETA / GIT) on Debian 12, so mostly *"
@@ -125,20 +127,6 @@
       tags: star
   tags: star
 
-- name: Automatic Speech Recognition installation (currently Vosk for Asterisk).
-  ansible.builtin.include_tasks:
-    file: asr-vosk.yml
-    apply:
-      tags: asr
-  tags: asr
-
-- name: Text-To-Speech installation (currently Espeak for Asterisk).
-  ansible.builtin.include_tasks:
-    file: tts-espeak.yml
-    apply:
-      tags: tts
-  tags: tts
-
 - name: Additonal non-free codecs.
   tags: [never, nonfree]
   ansible.builtin.include_tasks: codecs.yml
@@ -222,6 +210,20 @@
     # FreePBX uses fwconsole to start Asterisk and several other things
     - name: SystemD start up for FreePBX.
       ansible.builtin.include_tasks: systemd-freepbx.yml
+
+- name: Automatic Speech Recognition installation (currently Vosk for Asterisk).
+  ansible.builtin.include_tasks:
+    file: asr-vosk.yml
+    apply:
+      tags: asr
+  tags: asr
+
+- name: Text-To-Speech installation (currently Espeak for Asterisk).
+  ansible.builtin.include_tasks:
+    file: tts-espeak.yml
+    apply:
+      tags: tts
+  tags: tts
 
 - name: Phone provisioning.
   tags: phoneprov
