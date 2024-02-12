@@ -140,9 +140,9 @@ or [you can specify them during (re-)install](#ssh-keys).
 Replace TARGET with the SSH hostname you will be installing on, and run these commands:
 
 ```shell
-wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.40-alpha.tar.gz
-tar xzf v0.24.40-alpha.tar.gz
-ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.40-alpha/playbook-alt.yml
+wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.43-alpha.tar.gz
+tar xzf v0.24.43-alpha.tar.gz
+ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.43-alpha/playbook-alt.yml
 ```
 
 You will be prompted for your SSH password for TARGET. Type it in and press Enter.
@@ -180,7 +180,7 @@ Or, to use ZIP files pulled from new FreePBX GIT repository on GitHub (this is t
 
 `ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_freepbx_upstream=git playbook.yml`
 
-*Currently (30 November 2023) both the edge tarball and the new GitHub zips are installing properly, but some modules are buggy.*
+*Currently (early 2024) both the edge tarball and the new GitHub zips are installing properly, but some modules are buggy.*
 
 ### Variable: pngnx_php_version
 
