@@ -7,10 +7,10 @@
 # Automatic Speech Recognition using third-party Vosk for Asterisk modules
 
 # TODO
-#- name: Setup kaldi docker.
+# - name: Setup kaldi docker.
 
 # TODO
-#- name: Provide helper dial plan for Vosk (maybe extensions_pngnpbx_hh.conf)
+# - name: Provide helper dial plan for Vosk (maybe extensions_pngnpbx_hh.conf)
 
 - name: Make a place for the Vosk source.
   when: pngnx_new_src

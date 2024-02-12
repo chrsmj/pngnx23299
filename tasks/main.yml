@@ -184,12 +184,12 @@
     - firewall-fail2ban.yml
     - firewall-ssh.yml
 
-#- name: Firewall for Docker for Vosk ASR. Should not be necessary.
-#  tags: asr
-#  ansible.builtin.include_tasks:
-#    file: firewall-ufw.yml
-#    apply:
-#      tags: firewall
+# - name: Firewall for Docker for Vosk ASR. Should not be necessary.
+#   tags: asr
+#   ansible.builtin.include_tasks:
+#     file: firewall-ufw.yml
+#     apply:
+#       tags: firewall
 
 # not used by FreePBX...
 # - name: SystemD start up for Asterisk.
