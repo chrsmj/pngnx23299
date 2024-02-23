@@ -20,7 +20,8 @@
 * /etc/hosts needs adjustment when domain name changes (only issue in cloned test VMs ??)
 * reduce number of FreePBX reloads/restarts
 * use git clone for development environment in addition to git zip downloads (maybe in /srv or /home ?)
-* add app_softmodem, res_speech_vosk, app_espeak (and FPBX modules for them)
+* add app_softmodem
+* add FreePBX modules for res_speech_vosk, app_espeak, app_flite (ASR and TTS)
 * better DNS support
 * geolocation, for emergency calling improvements
 * geolocation, for IP address blocking
@@ -28,6 +29,8 @@
 * make systemd Conflicts with Asterisk service?
 * git clone each module from freepbx GitHub, to make it easier to patch
 * initial web user should be available to auto-generate [see](https://community.freepbx.org/t/create-1st-admin-user-from-cli/65133)
+* ARI interfaces
+* Wazo repo
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX

@@ -36,39 +36,48 @@ pngnx_libpri_checksum: sha256:d4d1a62766695455f1b616f5f7603458e6d23df787ebabc31f
 pngnx_libpri_tarball: "libpri-{{ pngnx_libpri_version }}.tar.gz"
 pngnx_libpri_target: "{{ pngnx_build_target }}/libpri-{{ pngnx_libpri_version }}"
 
-# previous Asterisk LTS
-# pngnx_asterisk_major: 18
-# pngnx_asterisk_minor: 21.0
-# pngnx_asterisk_checksum: sha256:31e1b544ece2bb75be93621e358e6765fc095f4b65e061d488d517177aeb9208
+pngnx_asterisk:
+  # previous Asterisk LTS
+  lts18:
+    major: 18
+    minor: 21.0
+    checksum: sha256:31e1b544ece2bb75be93621e358e6765fc095f4b65e061d488d517177aeb9208
+  # current Asterisk LTS
+  lts20:
+    major: 20
+    minor: 6.0
+    checksum: sha256:d70109e9b4c52fba6d0080b20cadc0aaee4060a0ad28bff4e376bf8b393e9400
+  # latest Asterisk STD
+  std21:
+    major: 21
+    minor: 1.0
+    checksum: sha256:488100fe1d5648f629e22b52c87d9133892bf556f0c544eea659185cea6e8a69
+  # certified Asterisk
+  crt18:
+    major: 18
+    minor: 9-cert7
+    checksum: sha256:169c9f155bb1a5c7bf8c25b654cb66046d9dbf68afec684eb69810ce15e06a80
+    name: certified-asterisk
+    altname: asterisk-certified
+  # git Asterisk
+  git:
+    major: master
+    minor: git
 
-# current Asterisk LTS
-pngnx_asterisk_major: 20
-pngnx_asterisk_minor: 6.0
-pngnx_asterisk_checksum: sha256:d70109e9b4c52fba6d0080b20cadc0aaee4060a0ad28bff4e376bf8b393e9400
-
-# latest Asterisk STD
-# pngnx_asterisk_name: asterisk
-# pngnx_asterisk_major: 21
-# pngnx_asterisk_minor: 1.0
-# pngnx_asterisk_checksum: sha256:488100fe1d5648f629e22b52c87d9133892bf556f0c544eea659185cea6e8a69
-
-# git Asterisk
-# pngnx_asterisk_major: master
-# pngnx_asterisk_minor: git
-# pngnx_asterisk_git_repo: https://github.com/asterisk/asterisk.git
-
-# certified Asterisk
-# pngnx_asterisk_name: certified-asterisk
-# pngnx_asterisk_major: 18
-# pngnx_asterisk_minor: 9-cert7
-# pngnx_asterisk_checksum: sha256:169c9f155bb1a5c7bf8c25b654cb66046d9dbf68afec684eb69810ce15e06a80
+# used in git pulls only
+pngnx_asterisk_git_repo: https://github.com/asterisk/asterisk.git
 
 # common to all Asterisk
+pngnx_asterisk_name: "{{ pngnx_asterisk[pngnx_asterisk_release].name | default('asterisk') }}"
+pngnx_asterisk_altname: "{{ pngnx_asterisk[pngnx_asterisk_release].altname | default('asterisk') }}"
+pngnx_asterisk_major: "{{ pngnx_asterisk[pngnx_asterisk_release].major }}"
+pngnx_asterisk_minor: "{{ pngnx_asterisk[pngnx_asterisk_release].minor }}"
+pngnx_asterisk_checksum: "{{ pngnx_asterisk[pngnx_asterisk_release].checksum | default('') }}"
 pngnx_asterisk_version: "{{ pngnx_asterisk_major }}.{{ pngnx_asterisk_minor }}"
 # pngnx_asterisk_urlbase: "https://github.com/asterisk/asterisk/releases/download/{{ pngnx_asterisk_version }}"
-pngnx_asterisk_urlbase: "https://downloads.asterisk.org/pub/telephony/{{ pngnx_asterisk_name | default('asterisk') }}/releases"
-pngnx_asterisk_tarball: "asterisk-{{ pngnx_asterisk_version }}.tar.gz"
-pngnx_asterisk_target: "{{ pngnx_build_target }}/asterisk-{{ pngnx_asterisk_version }}"
+pngnx_asterisk_urlbase: "https://downloads.asterisk.org/pub/telephony/{{ pngnx_asterisk_name }}/releases"
+pngnx_asterisk_tarball: "{{ pngnx_asterisk_altname }}-{{ pngnx_asterisk_version }}.tar.gz"
+pngnx_asterisk_target: "{{ pngnx_build_target }}/{{ pngnx_asterisk_altname }}-{{ pngnx_asterisk_version }}"
 
 # BETA FreePBX tarball
 pngnx_freepbx_edge_major: 17
@@ -99,3 +108,9 @@ pngnx_espeak_asterisk_urlbase: "https://codeload.github.com/zaf/Asterisk-eSpeak/
 pngnx_espeak_asterisk_basename: "Asterisk-eSpeak-master"
 pngnx_espeak_asterisk_zip: "{{ pngnx_espeak_asterisk_basename }}.zip"
 pngnx_espeak_asterisk_target: "{{ pngnx_build_target }}/{{ pngnx_espeak_asterisk_basename }}"
+
+# Flite git zips
+pngnx_flite_asterisk_urlbase: "https://codeload.github.com/zaf/Asterisk-Flite/zip/refs/heads/master"
+pngnx_flite_asterisk_basename: "Asterisk-Flite-master"
+pngnx_flite_asterisk_zip: "{{ pngnx_flite_asterisk_basename }}.zip"
+pngnx_flite_asterisk_target: "{{ pngnx_build_target }}/{{ pngnx_flite_asterisk_basename }}"

@@ -18,7 +18,7 @@
 - name: Download Asterisk source.
   when:
     - pngnx_new_src
-    - pngnx_asterisk_git_repo is not defined
+    - pngnx_asterisk_minor != "git"
   ansible.builtin.get_url:
     url: "{{ pngnx_asterisk_urlbase }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
@@ -28,7 +28,7 @@
 - name: Unarchive Asterisk source.
   when:
     - pngnx_new_src
-    - pngnx_asterisk_git_repo is not defined
+    - pngnx_asterisk_minor != "git"
   ansible.builtin.unarchive:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ tmpast.path }}"
@@ -37,7 +37,7 @@
 - name: Pull the Asterisk source into temp dir - via git.
   when:
     - pngnx_new_src
-    - pngnx_asterisk_git_repo is defined
+    - pngnx_asterisk_minor == "git"
   ansible.builtin.git:
     repo: "{{ pngnx_asterisk_git_repo }}"
     dest: "{{ tmpast.path }}/asterisk-{{ pngnx_asterisk_version }}"
@@ -47,7 +47,7 @@
   become: true
   when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpast.path }}/asterisk-{{ pngnx_asterisk_version }}"
+    src: "{{ tmpast.path }}/{{ pngnx_asterisk_altname }}-{{ pngnx_asterisk_version }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
@@ -58,7 +58,7 @@
   become: true
   when:
     - pngnx_new_src
-    - pngnx_asterisk_git_repo is not defined
+    - pngnx_asterisk_minor != "git"
   ansible.builtin.copy:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
     dest: "{{ pngnx_build_target }}"
@@ -66,7 +66,7 @@
     mode: "0400"
 
 - name: Update the Asterisk source in target dir - via git.
-  when: pngnx_asterisk_git_repo is defined
+  when: pngnx_asterisk_minor == "git"
   ansible.builtin.git:
     repo: "{{ pngnx_asterisk_git_repo }}"
     dest: "{{ pngnx_asterisk_target }}"
@@ -123,7 +123,7 @@
 
 # TODO: ansible.builtin.command: ./configure --libdir=/lib/{{ ansible_architecture }}-linux-gnu --with-pjproject-bundled --with-jansson-bundled
 - name: Configure Asterisk source - version 18.
-  when: pngnx_asterisk_major == 18
+  when: pngnx_asterisk_major == "18"
   ansible.builtin.command:
     argv:
       - ./configure
@@ -134,7 +134,7 @@
   changed_when: true
 
 - name: Configure Asterisk source - version 20.
-  when: pngnx_asterisk_major == 20
+  when: pngnx_asterisk_major == "20"
   ansible.builtin.command:
     argv:
       - ./configure
@@ -145,7 +145,7 @@
   changed_when: true
 
 - name: Configure Asterisk source - version 21.
-  when: pngnx_asterisk_major == 21
+  when: pngnx_asterisk_major == "21"
   ansible.builtin.command:
     argv:
       - ./configure
@@ -157,7 +157,7 @@
   changed_when: true
 
 - name: Configure Asterisk source - git.
-  when: pngnx_asterisk_git_repo is defined
+  when: pngnx_asterisk_minor == "git"
   ansible.builtin.command:
     argv:
       - ./configure
@@ -211,6 +211,15 @@
     chdir: "{{ pngnx_asterisk_target }}"
     creates: "{{ pngnx_asterisk_target }}/main/asterisk"
   changed_when: true
+
+- name: Wipe out the old modules.
+  become: true
+  when:
+    - pngnx_do_asterisk_install
+    - pngnx_clean_asterisk_modules
+  ansible.builtin.file:
+    path: /usr/lib/asterisk/modules/
+    state: absent
 
 - name: Install Asterisk.
   become: true

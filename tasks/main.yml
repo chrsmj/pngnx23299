@@ -92,6 +92,26 @@
   ansible.builtin.include_tasks: uninstall.yml
   tags: [never, uninstall]
 
+- name: Additional Debian Repositories, if any.
+  tags: debrepo
+  block:
+    - name: Repo from Sangoma. Mostly alien RPMs.
+      when:
+        - pngnx_debrepo is defined
+        - pngnx_debrepo == "sng"
+      ansible.builtin.include_tasks:
+        file: debrepo-sng.yml
+        apply:
+          tags: debrepo
+#    - name: Repo from Wazo.
+#      when:
+#        - pngnx_debrepo is defined
+#        - pngnx_debrepo == "wzo"
+#      ansible.builtin.include_tasks:
+#        file: debrepo-wzo.yml
+#        apply:
+#          tags: debrepo
+
 - name: Packages.
   ansible.builtin.include_tasks:
     file: packages.yml
@@ -218,12 +238,19 @@
       tags: asr
   tags: asr
 
-- name: Text-To-Speech installation (currently Espeak for Asterisk).
-  ansible.builtin.include_tasks:
-    file: tts-espeak.yml
-    apply:
-      tags: tts
+- name: Text-To-Speech installations.
   tags: tts
+  block:
+    - name: Espeak for Asterisk.
+      ansible.builtin.include_tasks:
+        file: tts-espeak.yml
+        apply:
+          tags: tts
+    - name: Flite for Asterisk.
+      ansible.builtin.include_tasks:
+        file: tts-flite.yml
+        apply:
+          tags: tts
 
 - name: Phone provisioning.
   tags: phoneprov

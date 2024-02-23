@@ -46,14 +46,21 @@
 - name: Clean previous LibPRI build.
   when: pngnx_new_src or pngnx_clean_src
   ansible.builtin.command:
-    cmd: /usr/bin/make -i clean
+    argv:
+      - /usr/bin/make
+      - -i
+      - clean
   args:
     chdir: "{{ pngnx_libpri_target }}"
   ignore_errors: true
 
 - name: Build LibPRI from source.
   ansible.builtin.command:
-    cmd: /usr/bin/make -j {{ ansible_processor_count | default(2) }} all
+    argv:
+      - /usr/bin/make
+      - -j
+      - "{{ ansible_processor_count | default(2) }}"
+      - all
   args:
     chdir: "{{ pngnx_libpri_target }}"
     creates: "{{ pngnx_libpri_target }}/pri.o"
@@ -62,6 +69,8 @@
   become: true
   when: pngnx_do_asterisk_install
   ansible.builtin.command:
-    cmd: /usr/bin/make install
+    argv:
+      - /usr/bin/make
+      - install
   args:
     chdir: "{{ pngnx_libpri_target }}"

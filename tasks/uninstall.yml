@@ -41,7 +41,11 @@
   become: true
   tags: [never, uninstall, splat]
   ansible.builtin.command:
-    cmd: mysqladmin -f drop {{ item }}
+    argv:
+      - mysqladmin
+      - -f
+      - drop
+      - "{{ item }}"
   loop:
     - asterisk
     - asteriskcdrdb
@@ -63,7 +67,9 @@
   become: true
   tags: [never, splat]
   ansible.builtin.command:
-    cmd: /usr/bin/make uninstall
+    argv:
+      - /usr/bin/make
+      - uninstall
   args:
     chdir: "{{ item }}"
   loop:
@@ -76,7 +82,9 @@
   become: true
   tags: [never, splat]
   ansible.builtin.command:
-    cmd: /usr/bin/make uninstall-all
+    argv:
+      - /usr/bin/make
+      - uninstall-all
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   ignore_errors: true

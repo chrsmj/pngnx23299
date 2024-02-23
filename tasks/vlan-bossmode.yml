@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 ---
-# file: roles/pngnx23299/tasks/vlan-dns-dhcp.yml
+# file: roles/pngnx23299/tasks/vlan-bossmode.yml
 
 - name: Install arpalert, dnsmasq, resolvconf and vlan packages.
   become: true
@@ -31,7 +31,9 @@
 - name: Load the VLAN module into the kernel.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/modprobe 8021q
+    argv:
+      - /sbin/modprobe
+      - 8021q
 
 # TODO: is everyone using /etc/modules-load.d/*.conf
 - name: Make VLAN module load persistent across reboots.
@@ -55,7 +57,9 @@
 - name: Bring up the new VLAN.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/ifup {{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}
+    argv:
+      - /sbin/ifup
+      - "{{ pngnx_vlan_interface }}.{{ pngnx_vlan_id }}"
 
 - name: Allow phones to send syslogs via UDP on the VLAN.
   become: true

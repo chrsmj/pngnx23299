@@ -19,7 +19,11 @@
   become: true
   when: pngnx_phoneprov
   ansible.builtin.command:
-    cmd: /sbin/fwconsole setting HTTPENABLED true
+    argv:
+      - /sbin/fwconsole
+      - setting
+      - HTTPENABLED
+      - true
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
@@ -27,7 +31,11 @@
   become: true
   when: pngnx_phoneprov
   ansible.builtin.command:
-    cmd: /sbin/fwconsole setting HTTPPREFIX asterisk
+    argv:
+      - /sbin/fwconsole
+      - setting
+      - HTTPPREFIX
+      - asterisk
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
@@ -35,20 +43,28 @@
   become: true
   when: pngnx_phoneprov
   ansible.builtin.command:
-    cmd: /sbin/fwconsole setting HTTPBINDADDRESS 0.0.0.0
+    argv:
+      - /sbin/fwconsole
+      - setting
+      - HTTPBINDADDRESS
+      - 0.0.0.0
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
 - name: Reload FreePBX.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/fwconsole reload
+    argv:
+      - /sbin/fwconsole
+      - reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
 - name: Restart FreePBX.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/fwconsole restart
+    argv:
+      - /sbin/fwconsole
+      - restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

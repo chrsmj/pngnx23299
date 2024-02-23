@@ -9,20 +9,28 @@
 - name: Install the plus local modules. As a group.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/fwconsole ma install {{ pngnx_freepbx_plus_modules | flatten }}
+    argv:
+      - /sbin/fwconsole
+      - ma
+      - install
+      - "{{ pngnx_freepbx_plus_modules | flatten }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
 - name: Reload FreePBX.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/fwconsole reload
+    argv:
+      - /sbin/fwconsole
+      - reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
 
 - name: Restart FreePBX.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/fwconsole restart
+    argv:
+      - /sbin/fwconsole
+      - restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"

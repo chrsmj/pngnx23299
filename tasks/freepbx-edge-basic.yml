@@ -46,7 +46,9 @@
 - name: Start Asterisk using FreePBX scripts.
   become: true
   ansible.builtin.command:
-    cmd: ./start_asterisk start
+    argv:
+      - ./start_asterisk
+      - start
   args:
     chdir: "{{ pngnx_freepbx_edge_target }}"
 
@@ -55,7 +57,11 @@
 - name: Install FreePBX. Ignoring errors because even with install script -q option there is a bunch of output.
   become: true
   ansible.builtin.command:
-    cmd: ./install -n -f -q
+    argv:
+      - ./install
+      - -n
+      - -f
+      - -q
   args:
     chdir: "{{ pngnx_freepbx_edge_target }}"
   environment:
@@ -64,8 +70,13 @@
 
 - name: Install the basic local modules. As a group.
   become: true
+  become_user: asterisk
   ansible.builtin.command:
-    cmd: /sbin/fwconsole ma install {{ pngnx_freepbx_basic_modules | flatten }}
+    argv:
+      - /sbin/fwconsole
+      - ma
+      - install
+      - "{{ pngnx_freepbx_basic_modules | flatten }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
@@ -73,7 +84,9 @@
 - name: Reload FreePBX.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/fwconsole reload
+    argv:
+      - /sbin/fwconsole
+      - reload
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true
@@ -81,7 +94,9 @@
 - name: Restart FreePBX.
   become: true
   ansible.builtin.command:
-    cmd: /sbin/fwconsole restart
+    argv:
+      - /sbin/fwconsole
+      - restart
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
   ignore_errors: true

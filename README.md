@@ -1,6 +1,6 @@
 # pngnx23299
 
-**An Ansible Role for installing FreePBX 17 on Asterisk 20 on Debian 12**
+**An Ansible Role for installing Asterisk and FreePBX 17 on Debian 12**
 
 *Currently for testing purposes only.*
 
@@ -20,12 +20,15 @@ Designed to get a few desk phones quickly ringing by manually configuring them i
 4. [Advanced Installation](#advanced-installation):
     * [Variable: pngnx_freepbx_upstream](#variable-pngnx_freepbx_upstream)
     * [Variable: pngnx_php_version](#variable-pngnx_php_version)
+    * [Variable: pngnx_asterisk_release](#variable-pngnx_asterisk_release)
+    * [Variable: pngnx_bug_hunter](#variable-pngnx_bug_hunter)
     * [Skip Tags: extra,plus](#skip-tags-extraplus)
     * [Multiple TARGETs](#multiple-targets)
     * [SSH Keys](#ssh-keys)
     * [Build Asterisk](#build-asterisk)
 5. [Idempotent Installation](#idempotent-installation) / Tag Details:
     * [apache](#tag-apache)
+    * [asr](#tag-asr)
     * [catbert](#tag-catbert)
     * [confirm](#tag-confirm)
     * [dahdi](#tag-dahdi)
@@ -43,6 +46,7 @@ Designed to get a few desk phones quickly ringing by manually configuring them i
     * [splat](#tag-splat)
     * [star](#tag-star)
     * [tests](#tag-tests)
+    * [tts](#tag-tts)
     * [uninstall](#tag-uninstall)
     * [vlan](#tag-vlan)
 
@@ -105,10 +109,10 @@ Installing Debian is outside the scope of this document.
 
 ### New to Ansible ?
 
-You run [Ansible](https://www.ansible.com) playbooks (scripts) on your LOCAL machine.
+You run [Ansible](https://www.ansible.com) playbooks (scripts) on your CONTROL machine.
 Then things happen (over SSH) on your TARGET machine(s).
 
-So on your LOCAL machine...
+So on your CONTROL machine...
 
 `sudo apt-get install ansible sshpass`
 
@@ -121,7 +125,7 @@ You can check the version number with:
 This Role was tested initially with ansible version 2.10.8 on Debian 11 and currently with version 2.14.3 on Debian 12.
 
 **PRO-TIP 1**
-Add an entry for TARGET in the ~/.ssh/config file on your LOCAL machine.
+Add an entry for TARGET in the ~/.ssh/config file on your CONTROL machine.
 This works because Ansible and SSH are friends! Ansible uses SSH hostnames.
 The following basic ssh command should work with only your password needed on most new Debian 12 installs:
 
@@ -140,9 +144,9 @@ or [you can specify them during (re-)install](#ssh-keys).
 Replace TARGET with the SSH hostname you will be installing on, and run these commands:
 
 ```shell
-wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.43-alpha.tar.gz
-tar xzf v0.24.43-alpha.tar.gz
-ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.43-alpha/playbook-alt.yml
+wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.54-alpha.tar.gz
+tar xzf v0.24.54-alpha.tar.gz
+ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.54-alpha/playbook-alt.yml
 ```
 
 You will be prompted for your SSH password for TARGET. Type it in and press Enter.
@@ -190,6 +194,20 @@ Installs system but changes the PHP version from the Debian 12 default of PHP 8.
 
 *Many things were deprecated in PHP 8.2 but upstream FreePBX 17 saw lots of commit activity in the fall of 2023 to make it compatible with the new PHP changes.*
 
+### Variable: pngnx_asterisk_release
+
+Lets you choose between compatible Asterisk versions:
+
+`ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_asterisk_release=std21 playbook.yml`
+
+Current options: lts18, lts20 (default), std21, crt18, or git
+
+### Variable: pngnx_bug_hunter
+
+Installs Asterisk with more debugging options enabled:
+
+`ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_bug_hunter=true playbook.yml`
+
 ### Skip Tags: extra,plus
 
 Installs system but with limited FreePBX modules -- just enough to send and receive calls:
@@ -220,7 +238,7 @@ Or later on, you can (re-)run Tasks specified by the firewall Tag to do several 
 
 ...or keep password logins working alongside the key-based logins, using an additional Variable 'pngnx_allow_ssh_passwords' (not recommended):
 
-`ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_rsa.pub,pngnx_allow_ssh_passwords=yes playbook.yml`
+`ansible-playbook --become-method=su -k -K -i TARGET, -t firewall -e pngnx_installer_sshpubkey=/home/user/.ssh/id_rsa.pub,pngnx_allow_ssh_passwords=true playbook.yml`
 
 *See SSH PRO-TIP 3 above, as well as more Variable controls in the defaults/main/controls.yml file, and also the tasks/firewall-\*.yml files.*
 
@@ -249,6 +267,12 @@ And when you do find the issue, you can jump ahead to that Tag, right from the c
 Prepares Apache webserver for FreePBX installation (but does not actually install Apache -- see the [packages Tag](#tag-packages)):
 
 `ansible-playbook -i TARGET, -t apache playbook.yml`
+
+### Tag: asr
+
+Sets up Automatic Speech Recognition in Asterisk using res_speech Vosk app:
+
+`ansible-playbook -i TARGET, -t asr playbook.yml`
 
 ### Tag: catbert
 
@@ -356,6 +380,12 @@ Installs only the Asterisk parts:
 Runs a test or two. Debugging use only:
 
 `ansible-playbook -i TARGET, -t tests playbook.yml`
+
+### Tag: tts
+
+Sets up Text-To-Speech in Asterisk using both eSpeak and Flite apps:
+
+`ansible-playbook -i TARGET, -t tts playbook.yml`
 
 ### Tag: uninstall
 

@@ -2,76 +2,75 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 ---
-# file: roles/pngnx23299/tasks/tts-espeak.yml
+# file: roles/pngnx23299/tasks/tts-flite.yml
 
-# Text-To-Speech using third-party Espeak for Asterisk application
-
-# TODO
-# - name: Generate default Espeak configuration file for Asterisk.
+# Text-To-Speech using third-party Flite for Asterisk application
 
 # TODO
-# - name: Provide helper dial plan for Espeak (extensions_pngnpbx_tts_espeak.conf)
+# - name: Generate default Flite configuration file for Asterisk.
 
-- name: Extra packages for Espeak.
+# TODO
+# - name: Provide helper dial plan for Flite (extensions_pngnpbx_tts_flite.conf)
+
+- name: Extra packages for Flite.
   become: true
   ansible.builtin.apt:
     state: present
     name:
-      - espeak
-      - libespeak-ng-dev
-      - libsamplerate0-dev
+      - flite
+      - flite1-dev
 
-- name: Make a place for the Espeak source.
+- name: Make a place for the Flite source.
   when: pngnx_new_src
   ansible.builtin.tempfile:
-    suffix: ".espeak-asterisk"
+    suffix: ".flite-asterisk"
     state: directory
-  register: tmpesp
+  register: tmpflt
 
-- name: Download Espeak.
+- name: Download Flite.
   when: pngnx_new_src
   ansible.builtin.get_url:
-    url: "{{ pngnx_espeak_asterisk_urlbase }}"
-    dest: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_zip }}"
+    url: "{{ pngnx_flite_asterisk_urlbase }}"
+    dest: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_zip }}"
     mode: "0500"
 
-- name: Unarchive Espeak.
+- name: Unarchive Flite.
   when: pngnx_new_src
   ansible.builtin.unarchive:
-    src: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_zip }}"
-    dest: "{{ tmpesp.path }}"
+    src: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_zip }}"
+    dest: "{{ tmpflt.path }}"
     remote_src: true
 
-- name: Copy Espeak source from temp directory to target install directory.
+- name: Copy Flite source from temp directory to target install directory.
   become: true
   when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_basename }}"
+    src: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_basename }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_id }}"
     mode: "0700"
 
-- name: Copy Espeak tarball from temp directory to target install directory.
+- name: Copy Flite tarball from temp directory to target install directory.
   become: true
   when: pngnx_new_src
   ansible.builtin.copy:
-    src: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_zip }}"
+    src: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_zip }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
     mode: "0400"
 
-- name: Make Espeak.
+- name: Make Flite.
   when: pngnx_new_src
   ansible.builtin.command:
     argv:
       - /usr/bin/make
   args:
-    chdir: "{{ pngnx_espeak_asterisk_target }}"
+    chdir: "{{ pngnx_flite_asterisk_target }}"
   changed_when: true
 
-- name: Install Espeak.
+- name: Install Flite.
   become: true
   when: pngnx_do_asterisk_install
   ansible.builtin.command:
@@ -79,7 +78,7 @@
       - /usr/bin/make
       - install
   args:
-    chdir: "{{ pngnx_espeak_asterisk_target }}"
+    chdir: "{{ pngnx_flite_asterisk_target }}"
   changed_when: true
 
 - name: Make sure needed Asterisk modules are loaded in modules.conf
@@ -89,4 +88,4 @@
     regexp: "{{ item }}"
     line: "load = {{ item }}"
   loop:
-    - app_espeak.so
+    - app_flite.so
