@@ -173,7 +173,7 @@
 - name: Limit SIP UDP attempts on the VLANs.
   become: true
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -193,7 +193,7 @@
 - name: Limit SIP TCP attempts on the VLANs.
   become: true
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -213,7 +213,7 @@
 - name: Open RTP to the VLANs.
   become: true
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -233,7 +233,7 @@
 - name: Open RTP for T38 FAX to the VLANs.
   become: true
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -253,7 +253,7 @@
 - name: Apache might get in on HTTP 80. Allow from friendlies/VLANs because GUI is a hog with requests.
   become: true
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -273,7 +273,7 @@
 - name: Apache might get in on HTTPS 443. Allow from friendlies/VLANs because GUI is a hog with requests.
   become: true
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   environment:
     PATH: "{{ ansible_env.PATH }}:/sbin:/usr/sbin"
@@ -292,7 +292,7 @@
 
 - name: Asterisk serves up phone provisioning on 8088 usually (but we might be proxying). Limit it to VLAN if defined; otherwise, the LAN. And log it!
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   become: true
   environment:
@@ -312,7 +312,7 @@
 
 - name: Asterisk serves up phone provisioning on 8088 usually (but might be proxying). Trying it on the LAN if no VLAN. Log it!
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is not defined
     - pngnx_friendly_lans is defined
   become: true
@@ -331,7 +331,7 @@
 
 - name: Phone book might be proxied. VLAN check.
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is defined
   become: true
   environment:
@@ -351,7 +351,7 @@
 
 - name: Phone book might be proxied. LAN check.
   when:
-    - pngnx_phoneprov
+    - pngnx_phoneprov|default(false)|bool
     - pngnx_phone_vlans is not defined
     - pngnx_friendly_lans is defined
   become: true

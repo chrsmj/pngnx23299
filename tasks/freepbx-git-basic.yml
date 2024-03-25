@@ -8,34 +8,34 @@
 # Useful for 3rd-party module development for the next major release before it is released :)
 
 - name: Make a place for the FreePBX source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".{{ pngnx_freepbx_git_basename }}-basic"
     state: directory
   register: tmpfbgit
 
 - name: Make top temp directory to hold the modules.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.file:
     path: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}"
     state: directory
 
 - name: Make sub temp directories to hold the modules.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.file:
     path: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
     state: directory
   with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Download FreePBX module sources from main FREEPBX git repo as zip files.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_freepbx_git_urlbase }}/{{ item }}/{{ pngnx_freepbx_git_urlpost }}"
     dest: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
   with_items: "{{ pngnx_freepbx_basic_modules }}"
 
 - name: Unarchive FreePBX module sources.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
     dest: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
@@ -44,7 +44,7 @@
 
 - name: Copy FreePBX module sources from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}"
     dest: "{{ pngnx_freepbx_git_target }}"
@@ -55,7 +55,7 @@
 
 - name: Copy FreePBX module zip files from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpfbgit.path }}/{{ pngnx_freepbx_git_basename }}/{{ item }}.zip"
     dest: "{{ pngnx_freepbx_git_target }}"

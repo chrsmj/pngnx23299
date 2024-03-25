@@ -7,14 +7,14 @@
 # Downloads, builds, and installs DAHDI Linux from source.
 
 - name: Make a place for the DAHDI source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".dahdi"
     state: directory
   register: tmpdahdi
 
 - name: Download DAHDI Linux source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_dahdilinux_urlbase }}/{{ pngnx_dahdilinux_tarball }}"
     dest: "{{ tmpdahdi.path }}/{{ pngnx_dahdilinux_tarball }}"
@@ -22,7 +22,7 @@
     mode: "0500"
 
 - name: Unarchive DAHDI Linux source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahdilinux_tarball }}"
     dest: "{{ tmpdahdi.path }}"
@@ -30,7 +30,7 @@
 
 - name: Copy DAHDI Linux source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/dahdi-linux-{{ pngnx_dahdilinux_version }}"
     dest: "{{ pngnx_build_target }}"
@@ -41,7 +41,7 @@
 
 - name: Copy DAHDI Linux tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahdilinux_tarball }}"
     dest: "{{ pngnx_build_target }}"
@@ -49,7 +49,7 @@
     mode: "0400"
 
 - name: Clean previous DAHDI Linux build.
-  when: pngnx_new_src or pngnx_clean_src
+  when: pngnx_new_src|default(true)|bool or pngnx_clean_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -76,7 +76,7 @@
 
 - name: Install DAHDI Linux.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -90,7 +90,7 @@
 - name: Install DAHDI Linux non-free firmware.
   become: true
   tags: [never, nonfree]
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -108,14 +108,14 @@
       - dahdi
 
 - name: Download DAHDI Tools source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_dahditools_urlbase }}/{{ pngnx_dahditools_tarball }}"
     dest: "{{ tmpdahdi.path }}/{{ pngnx_dahditools_tarball }}"
     checksum: "{{ pngnx_dahditools_checksum }}"
 
 - name: Unarchive DAHDI Tools source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahditools_tarball }}"
     dest: "{{ tmpdahdi.path }}"
@@ -123,7 +123,7 @@
 
 - name: Copy DAHDI Tools source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/dahdi-tools-{{ pngnx_dahditools_version }}"
     dest: "{{ pngnx_build_target }}"
@@ -133,14 +133,14 @@
 
 - name: Copy DAHDI Tools tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpdahdi.path }}/{{ pngnx_dahditools_tarball }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
 
 - name: Clean previous DAHDI Tools build.
-  when: pngnx_new_src or pngnx_clean_src
+  when: pngnx_new_src|default(true)|bool or pngnx_clean_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -154,7 +154,7 @@
   changed_when: true
 
 - name: Re-Configure the Configure script for DAHDI Tools.
-  when: pngnx_new_src or pngnx_clean_src
+  when: pngnx_new_src|default(true)|bool or pngnx_clean_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - autoreconf
@@ -167,7 +167,7 @@
   changed_when: true
 
 - name: Configure DAHDI Tools.
-  when: pngnx_new_src or pngnx_clean_src
+  when: pngnx_new_src|default(true)|bool or pngnx_clean_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - ./configure
@@ -191,7 +191,7 @@
 
 - name: Install DAHDI Tools.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -202,7 +202,7 @@
 
 - name: Install DAHDI using DKMS so it will work if the kernel changes.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - ./build_tools/dkms-helper

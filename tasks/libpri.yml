@@ -5,21 +5,21 @@
 # file: roles/pngnx23299/tasks/libpri.yml
 
 - name: Make a place for the LIBPRI source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".libpri"
     state: directory
   register: tmplibpri
 
 - name: Download LibPRI source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_libpri_urlbase }}/{{ pngnx_libpri_tarball }}"
     dest: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
     checksum: "{{ pngnx_libpri_checksum }}"
 
 - name: Unarchive LibPRI source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
     dest: "{{ tmplibpri.path }}"
@@ -27,7 +27,7 @@
 
 - name: Copy LibPRI source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmplibpri.path }}/libpri-{{ pngnx_libpri_version }}"
     dest: "{{ pngnx_build_target }}"
@@ -37,14 +37,14 @@
 
 - name: Copy LibPRI tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmplibpri.path }}/{{ pngnx_libpri_tarball }}"
     dest: "{{ pngnx_build_target }}"
     remote_src: true
 
 - name: Clean previous LibPRI build.
-  when: pngnx_new_src or pngnx_clean_src
+  when: pngnx_new_src|default(true)|bool or pngnx_clean_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -67,7 +67,7 @@
 
 - name: Install LibPRI.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make

@@ -53,7 +53,7 @@
 
 - name: Restart Asterisk. Only when new source build.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.service:
     name: asterisk
     enabled: true

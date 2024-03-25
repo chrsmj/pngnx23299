@@ -9,7 +9,7 @@
 # TODO: refine the changed_when clauses and generally speed up rebuilds
 
 - name: Make a place for the Asterisk source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".asterisk-{{ pngnx_asterisk_version }}"
     state: directory
@@ -17,7 +17,7 @@
 
 - name: Download Asterisk source.
   when:
-    - pngnx_new_src
+    - pngnx_new_src|default(true)|bool
     - pngnx_asterisk_minor != "git"
   ansible.builtin.get_url:
     url: "{{ pngnx_asterisk_urlbase }}/{{ pngnx_asterisk_tarball }}"
@@ -27,7 +27,7 @@
 
 - name: Unarchive Asterisk source.
   when:
-    - pngnx_new_src
+    - pngnx_new_src|default(true)|bool
     - pngnx_asterisk_minor != "git"
   ansible.builtin.unarchive:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
@@ -36,7 +36,7 @@
 
 - name: Pull the Asterisk source into temp dir - via git.
   when:
-    - pngnx_new_src
+    - pngnx_new_src|default(true)|bool
     - pngnx_asterisk_minor == "git"
   ansible.builtin.git:
     repo: "{{ pngnx_asterisk_git_repo }}"
@@ -45,7 +45,7 @@
 
 - name: Copy Asterisk source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_altname }}-{{ pngnx_asterisk_version }}"
     dest: "{{ pngnx_build_target }}"
@@ -57,7 +57,7 @@
 - name: Copy Asterisk tarball from temp directory to target install directory.
   become: true
   when:
-    - pngnx_new_src
+    - pngnx_new_src|default(true)|bool
     - pngnx_asterisk_minor != "git"
   ansible.builtin.copy:
     src: "{{ tmpast.path }}/{{ pngnx_asterisk_tarball }}"
@@ -73,7 +73,7 @@
     update: true
 
 - name: Clean previous Asterisk build. Might not have been one so ignore any errors.
-  when: pngnx_new_src or pngnx_clean_src
+  when: pngnx_new_src|default(true)|bool or pngnx_clean_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -104,7 +104,7 @@
 # TODO: debug build
 - name: Debugging build for big bug hunting.
   become: true
-  when: pngnx_bug_hunter
+  when: pngnx_bug_hunter|default(false)|bool
   ansible.builtin.lineinfile:
     path: /etc/asterisk.makeopts
     create: true
@@ -215,15 +215,15 @@
 - name: Wipe out the old modules.
   become: true
   when:
-    - pngnx_do_asterisk_install
-    - pngnx_clean_asterisk_modules
+    - pngnx_do_asterisk_install|default(true)|bool
+    - pngnx_clean_asterisk_modules|default(true)|bool
   ansible.builtin.file:
     path: /usr/lib/asterisk/modules/
     state: absent
 
 - name: Install Asterisk.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -234,7 +234,7 @@
 
 - name: Install Asterisk headers.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make

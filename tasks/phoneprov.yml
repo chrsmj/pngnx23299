@@ -32,15 +32,15 @@
 
 - name: Check for Polycom phones.
   include_tasks: phoneprov-polycom.yml
-  when: pngnx_phoneprov_polycom | default(false)
+  when: pngnx_phoneprov|default(false)|bool_polycom | default(false)
 
 - name: Check for Aastra phones.
   include_tasks: phoneprov-aastra.yml
-  when: pngnx_phoneprov_aastra | default(false)
+  when: pngnx_phoneprov|default(false)|bool_aastra | default(false)
 
 - name: Check for Snom phones.
   include_tasks: phoneprov-snom.yml
-  when: pngnx_phoneprov_snom | default(false)
+  when: pngnx_phoneprov|default(false)|bool_snom | default(false)
 
 - name: Place a small sample FreePBX Endpoint PJSIP config file in /etc/asterisk/pjsip.endpoint_custom_post.conf
   become: true

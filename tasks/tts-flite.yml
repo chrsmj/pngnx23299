@@ -21,21 +21,21 @@
       - flite1-dev
 
 - name: Make a place for the Flite source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".flite-asterisk"
     state: directory
   register: tmpflt
 
 - name: Download Flite.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_flite_asterisk_urlbase }}"
     dest: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_zip }}"
     mode: "0500"
 
 - name: Unarchive Flite.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_zip }}"
     dest: "{{ tmpflt.path }}"
@@ -43,7 +43,7 @@
 
 - name: Copy Flite source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_basename }}"
     dest: "{{ pngnx_build_target }}"
@@ -54,7 +54,7 @@
 
 - name: Copy Flite tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpflt.path }}/{{ pngnx_flite_asterisk_zip }}"
     dest: "{{ pngnx_build_target }}"
@@ -62,7 +62,7 @@
     mode: "0400"
 
 - name: Make Flite.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -72,7 +72,7 @@
 
 - name: Install Flite.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make

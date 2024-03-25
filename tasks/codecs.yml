@@ -7,7 +7,7 @@
 # Downloads and installs non-free codecs from Digium.
 
 - name: Make a place for the codec source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".non-free-codecs"
     state: directory
@@ -68,7 +68,7 @@
   become: true
   tags: nonfree
   no_log: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpcodecs.path }}/codec_{{ item.stdout }}-{{ ansible_userspace_architecture }}"
     dest: "{{ pngnx_build_target }}"
@@ -81,7 +81,7 @@
 - name: Copy codec tarballs from temp directory to target install directory.
   become: true
   tags: nonfree
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpcodecs.path }}/codec_{{ item }}.tar.gz"
     dest: "{{ pngnx_build_target }}"

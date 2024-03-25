@@ -6,7 +6,7 @@
 
 - name: Use the internal Asterisk phoneprov and pjsip_phoneprov_provider modules.
   become: true
-  when: pngnx_phoneprov
+  when: pngnx_phoneprov|default(false)|bool
   ansible.builtin.lineinfile:
     path: /etc/asterisk/modules.conf
     regexp: "{{ item }}"
@@ -17,7 +17,7 @@
 
 - name: Enable the Asterisk mini-HTTP server for use by phone provisioning subsystem.
   become: true
-  when: pngnx_phoneprov
+  when: pngnx_phoneprov|default(false)|bool
   ansible.builtin.command:
     argv:
       - /sbin/fwconsole
@@ -29,7 +29,7 @@
 
 - name: Forces a prefix for the Asterisk mini-HTTP server.
   become: true
-  when: pngnx_phoneprov
+  when: pngnx_phoneprov|default(false)|bool
   ansible.builtin.command:
     argv:
       - /sbin/fwconsole
@@ -41,7 +41,7 @@
 
 - name: Allows mini-HTTP server to listen on all IPs. Do not drop the firewall!
   become: true
-  when: pngnx_phoneprov
+  when: pngnx_phoneprov|default(false)|bool
   ansible.builtin.command:
     argv:
       - /sbin/fwconsole

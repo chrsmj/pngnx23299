@@ -22,21 +22,21 @@
       - libsamplerate0-dev
 
 - name: Make a place for the Espeak source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".espeak-asterisk"
     state: directory
   register: tmpesp
 
 - name: Download Espeak.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_espeak_asterisk_urlbase }}"
     dest: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_zip }}"
     mode: "0500"
 
 - name: Unarchive Espeak.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_zip }}"
     dest: "{{ tmpesp.path }}"
@@ -44,7 +44,7 @@
 
 - name: Copy Espeak source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_basename }}"
     dest: "{{ pngnx_build_target }}"
@@ -55,7 +55,7 @@
 
 - name: Copy Espeak tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpesp.path }}/{{ pngnx_espeak_asterisk_zip }}"
     dest: "{{ pngnx_build_target }}"
@@ -63,7 +63,7 @@
     mode: "0400"
 
 - name: Make Espeak.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -73,7 +73,7 @@
 
 - name: Install Espeak.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make

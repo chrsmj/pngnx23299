@@ -13,21 +13,21 @@
 # - name: Provide helper dial plan for Vosk (maybe extensions_pngnpbx_hh.conf)
 
 - name: Make a place for the Vosk source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".vosk-asterisk"
     state: directory
   register: tmpvsk
 
 - name: Download Vosk.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_vosk_asterisk_urlbase }}"
     dest: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_zip }}"
     mode: "0500"
 
 - name: Unarchive Vosk.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_zip }}"
     dest: "{{ tmpvsk.path }}"
@@ -35,7 +35,7 @@
 
 - name: Copy Vosk source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_basename }}"
     dest: "{{ pngnx_build_target }}"
@@ -46,7 +46,7 @@
 
 - name: Copy Vosk tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpvsk.path }}/{{ pngnx_vosk_asterisk_zip }}"
     dest: "{{ pngnx_build_target }}"
@@ -54,7 +54,7 @@
     mode: "0400"
 
 - name: Bootstrap Vosk.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - ./bootstrap
@@ -63,19 +63,19 @@
   changed_when: true
 
 - name: Configure Vosk.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - ./configure
       - --with-asterisk={{ pngnx_asterisk_target }}
       - --prefix=/usr
-      - "{{ 'CFLAGS=-Og' if pngnx_bug_hunter }}"
+      - "{{ 'CFLAGS=-Og' if pngnx_bug_hunter|default(false)|bool }}"
   args:
     chdir: "{{ pngnx_vosk_asterisk_target }}"
   changed_when: true
 
 - name: Make Vosk.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -85,7 +85,7 @@
 
 - name: Install Vosk.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
@@ -96,7 +96,7 @@
 
 - name: Copy over default Vosk configuration file for Asterisk.
   become: true
-  when: pngnx_do_asterisk_install
+  when: pngnx_do_asterisk_install|default(true)|bool
   ansible.builtin.copy:
     src: res_speech_vosk.conf
     dest: /etc/asterisk/res_speech_vosk.conf

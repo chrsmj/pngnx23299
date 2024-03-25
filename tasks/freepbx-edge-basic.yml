@@ -8,20 +8,20 @@
 # Useful for 3rd-party module development for the next major release before it is released :)
 
 - name: Make a place for the FreePBX source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.tempfile:
     suffix: ".{{ pngnx_freepbx_edge_basename }}"
     state: directory
   register: tmpedge
 
 - name: Download FreePBX source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.get_url:
     url: "{{ pngnx_freepbx_edge_urlbase }}/{{ pngnx_freepbx_edge_tarball }}"
     dest: "{{ tmpedge.path }}"
 
 - name: Unarchive FreePBX source.
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.unarchive:
     src: "{{ tmpedge.path }}/{{ pngnx_freepbx_edge_tarball }}"
     dest: "{{ tmpedge.path }}"
@@ -29,7 +29,7 @@
 
 - name: Copy FreePBX source from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpedge.path }}/freepbx"
     dest: "{{ pngnx_build_target }}"
@@ -37,7 +37,7 @@
 
 - name: Copy FreePBX tarball from temp directory to target install directory.
   become: true
-  when: pngnx_new_src
+  when: pngnx_new_src|default(true)|bool
   ansible.builtin.copy:
     src: "{{ tmpedge.path }}/{{ pngnx_freepbx_edge_tarball }}"
     dest: "{{ pngnx_build_target }}"
