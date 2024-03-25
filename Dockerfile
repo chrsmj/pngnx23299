@@ -1,4 +1,4 @@
-FROM debian:12
-RUN apt update && apt install -y ansible git python3 lsb-release
+FROM geerlingguy/docker-debian12-ansible:latest
+RUN apt-get -qq install git lsb-release
 COPY entrypoint.bash /entrypoint.bash
 ENTRYPOINT ["/entrypoint.bash"]
