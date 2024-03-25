@@ -1,6 +1,13 @@
-# docker-pipeline.yml
-name: 'Build PNGNX23299'
-description: 'Docker pipeline for building PNGNX23299 via Ansible bootstrap'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
+---
+# .github/workflows/docker-pipeline.yml
+
+name: Build PNGNX23299
+
+on: push
+
+jobs:
+  build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/pngnx23299@v2
