@@ -250,6 +250,14 @@ Downloads and Builds Asterisk but does not Install it:
 
 *See defaults/main/versions.yml for changing the Asterisk version.*
 
+### Re-Run starting at an arbitrary Task
+
+If your install breaks at any Task, you can inspect, fix, and then restart at that point:
+
+`ansible-playbook --become-method=su -k -K -i TARGET, --start-at-task="Firewall protection." playbook.yml`
+
+*This would run starting at the task "Firewall protection."*
+
 ---
 
 ## Idempotent Installation
