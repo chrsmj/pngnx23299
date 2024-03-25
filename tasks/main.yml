@@ -103,22 +103,22 @@
         file: deb-repo-sng.yml
         apply:
           tags: debrepo
-    - name: Repository from Wazo.
-      when:
-        - pngnx_debrepo is defined
-        - pngnx_debrepo == "wzo"
-      ansible.builtin.include_tasks:
-        file: deb-repo-wzo.yml
-        apply:
-          tags: debrepo
-    - name: Repository from Debian Voip Team.
-      when:
-        - pngnx_debrepo is defined
-        - pngnx_debrepo == "dvt"
-      ansible.builtin.include_tasks:
-        file: deb-repo-dvt.yml
-        apply:
-          tags: debrepo
+#    - name: Repository from Wazo.
+#      when:
+#        - pngnx_debrepo is defined
+#        - pngnx_debrepo == "wzo"
+#      ansible.builtin.include_tasks:
+#        file: deb-repo-wzo.yml
+#        apply:
+#          tags: debrepo
+#    - name: Repository from Debian Voip Team.
+#      when:
+#        - pngnx_debrepo is defined
+#        - pngnx_debrepo == "dvt"
+#      ansible.builtin.include_tasks:
+#        file: deb-repo-dvt.yml
+#        apply:
+#          tags: debrepo
 
 - name: Packages.
   ansible.builtin.include_tasks:
