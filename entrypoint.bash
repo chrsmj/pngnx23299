@@ -46,12 +46,13 @@ cd pngnx23299/ || exit
 git checkout main
 
 # Run the Ansible playbook locally (normally over SSH from CONTROL to TARGET)
+# Only doing enough to build Asterisk in this Docker CI pipeline
 ansible-playbook \
   --inventory localhost, \
   --become-method=su \
   --connection=local \
   --extra-vars "pngnx_update_kernel=false" \
-  --skip-tags apache,confirm,dahdi,db,firewall,gui \
+  --tags packages,star \
   playbook.yml
 
 # Clean up the Ansible bits (mostly python libs)
