@@ -145,8 +145,12 @@
   tags: [never, nonfree]
   ansible.builtin.include_tasks: dahdi.yml
 
-- name: LIBPRI installation.
-  ansible.builtin.include_tasks: libpri.yml
+- name: LIBPRI installation. Only if DAHDI too.
+  ansible.builtin.include_tasks:
+    file: libpri.yml
+    apply:
+      tags: dahdi
+  tags: dahdi
 
 - name: Debian VoiP Team build of Asterisk.
   ansible.builtin.include_tasks:
