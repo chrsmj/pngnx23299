@@ -17,6 +17,10 @@
     state: latest
     name: linux-image-amd64
 
+- name: Check updated var.
+  ansible.builtin.debug:
+    msg: "pngnx_update_kernel is: {{ pngnx_update_kernel }}"
+
 - name: >
     Automatically rebooting if necessary.
     You may need to manually power-up the machine.
