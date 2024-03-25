@@ -7,6 +7,7 @@
 # Bootstrap of Ansible to auto-install PNGNX23299.
 #
 # You can run this directly on your TARGET machine.
+# But it is mostly used for testing Docker CI in github.
 
 # Check if we are bash shell
 if [ "${EUID}" = "" ]; then
@@ -50,7 +51,7 @@ ansible-playbook \
   --become-method=su \
   --connection=local \
   --extra-vars "pngnx_update_kernel=false" \
-  --skip-tags confirm \
+  --skip-tags confirm,db,gui \
   playbook.yml
 
 # Clean up the Ansible bits (mostly python libs)
