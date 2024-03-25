@@ -41,17 +41,17 @@ pngnx_asterisk:
   lts18:
     major: 18
     minor: 22.0
-    checksum: sha256:879d42ec9303e89fbcd91af78fa69eb2317381cab93ce637d591eba6d5693909
+    checksum: sha256:ad54e6089029d8eaa3e25576037c412cf54a57db904fcbc05fe23835f65e4015
   # current Asterisk LTS
   lts20:
     major: 20
     minor: 7.0
-    checksum: sha256:879d42ec9303e89fbcd91af78fa69eb2317381cab93ce637d591eba6d5693909
+    checksum: sha256:3d47889d2c4501974a8adaaba49738e6268a836dc177c7887a93a8ecf1d38b26
   # latest Asterisk STD
   std21:
     major: 21
     minor: 2.0
-    checksum: sha256:ce01eaa7d41702945e6f3309108a041aded9e9cc076d2f897a934cadb01d7b44
+    checksum: sha256:5737a976e9252e2d5e87d2e8176b1e07415057291c656b7547d0a79e0e8c3969
   # certified Asterisk 18
   crt18:
     major: 18
