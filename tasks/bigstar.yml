@@ -129,6 +129,7 @@
       - ./configure
       - --with-pjproject-bundled
       - --with-jansson-bundled
+      - --with-libjwt-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true
@@ -140,6 +141,7 @@
       - ./configure
       - --with-pjproject-bundled
       - --with-jansson-bundled
+      - --with-libjwt-bundled
   args:
     chdir: "{{ pngnx_asterisk_target }}"
   changed_when: true
