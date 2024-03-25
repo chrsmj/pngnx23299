@@ -30,7 +30,7 @@
 * git clone each module from freepbx GitHub, to make it easier to patch
 * initial web user should be available to auto-generate [see](https://community.freepbx.org/t/create-1st-admin-user-from-cli/65133)
 * ARI interfaces
-* Wazo repo
+* Wazo repository
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX

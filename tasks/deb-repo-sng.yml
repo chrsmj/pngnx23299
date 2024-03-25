@@ -2,13 +2,12 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 ---
-# file: roles/pngnx23299/tasks/debrepo-sng.yml
+# file: roles/pngnx23299/tasks/deb-repo-sng.yml
 
-# wget -qO - https://deb.freepbx.org/gpg/aptly-pubkey.asc | gpg --armor --export
-- name: Setup the Sangoma Debian Repo the deb822 way.
+- name: Setup the Sangoma Debian Repository the deb822 way.
   become: true
   ansible.builtin.copy:
-    src: 00-sangoma-fpbx-repository.sources
+    src: 20-sangoma-fpbx-repository-prod.sources
     dest: /etc/apt/sources.list.d/
 
 # TODO: warn the user per https://wiki.debian.org/DebianRepository/UseThirdParty (Standard pinning section)
