@@ -32,7 +32,7 @@ echo -n "START: " && date
 # Include executed commands in the log
 set -x
 
-cd /root
+cd /root || exit
 
 # Bootstrap minimal Ansible install, plus git, python3, and lsb-release
 # apt-get -qq install ansible git python3 lsb-release
