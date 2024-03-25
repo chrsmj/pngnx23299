@@ -46,9 +46,10 @@ git checkout main
 
 # Run the Ansible playbook locally (normally over SSH from CONTROL to TARGET)
 ansible-playbook \
-  -i localhost, \
+  --inventory localhost, \
+  --become-method=su \
   --connection=local \
-  -e pngnx_update_kernel=false \
+  --extra-vars "pngnx_update_kernel=false" \
   --skip-tags confirm \
   playbook.yml
 

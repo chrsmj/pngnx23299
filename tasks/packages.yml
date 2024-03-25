@@ -10,7 +10,7 @@
   become: true
   register: rkrn12
   when:
-    - pngnx_update_kernel
+    - pngnx_update_kernel|default(true)|bool
     - ansible_architecture == "x86_64"
   ansible.builtin.apt:
     update_cache: true
@@ -23,7 +23,7 @@
     Script will continue once connection is re-established.
   become: true
   when:
-    - pngnx_update_kernel
+    - pngnx_update_kernel|default(true)|bool
     - rkrn12.changed
   ansible.builtin.reboot:
     msg:
@@ -33,7 +33,7 @@
 
 - name: Reboot status check.
   when:
-    - pngnx_update_kernel
+    - pngnx_update_kernel|default(true)|bool
     - rkrn12.changed
   ansible.builtin.debug:
     msg:

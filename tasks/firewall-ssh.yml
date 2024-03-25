@@ -80,7 +80,7 @@
   become: true
   when:
     - pngnx_installer_sshpubkey is defined
-    - not pngnx_allow_ssh_passwords
+    - not pngnx_allow_ssh_passwords|default(false)|bool
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: '^PasswordAuthentication '
@@ -88,7 +88,7 @@
 
 - name: Allow password auth - in addition to keys.
   become: true
-  when: pngnx_allow_ssh_passwords
+  when: pngnx_allow_ssh_passwords|default(false)|bool
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config.d/pngnx23299.conf
     regexp: '^PasswordAuthentication '
