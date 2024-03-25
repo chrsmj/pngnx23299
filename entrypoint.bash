@@ -45,7 +45,12 @@ cd pngnx23299/
 git checkout main
 
 # Run the Ansible playbook locally (normally over SSH from CONTROL to TARGET)
-ansible-playbook -i localhost, --connection=local --skip-tags confirm playbook.yml
+ansible-playbook \
+  -i localhost, \
+  --connection=local \
+  -e pngnx_update_kernel=false \
+  --skip-tags confirm \
+  playbook.yml
 
 # Clean up the Ansible bits (mostly python libs)
 # apt-get -qq remove ansible

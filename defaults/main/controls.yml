@@ -47,3 +47,8 @@ pngnx_freepbx_systemd_name: freepbx
 # if key is defined, then logins can be limited to only public keys - no more password logins
 # note this does nothing UNLESS you specify a value for pngnx_installer_sshpubkey
 pngnx_allow_ssh_passwords: false
+
+# Linux kernel updates are only necessary when building DAHDI
+# by default, that is what happens, but allow override on command line
+# (eg. helps builds on Docker containers as part of the CI pipeline in github)
+pngnx_update_kernel: true

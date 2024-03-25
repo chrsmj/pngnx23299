@@ -4,18 +4,27 @@
 ---
 # file: roles/pngnx23299/tasks/packages.yml
 
-- name: Update kernel. If this step is 'ok' then no reboot will happen because kernel is up-to-date.
+- name: >
+    Update kernel.
+    If this step is 'ok' then no reboot will happen as kernel is up-to-date.
   become: true
   register: rkrn12
-  when: ansible_architecture == "x86_64"
+  when:
+    - ansible_architecture == "x86_64"
+    - pngnx_update_kernel
   ansible.builtin.apt:
     update_cache: true
     state: latest
     name: linux-image-amd64
 
-- name: Automatically rebooting if necessary. You may need to manually power-up the machine. Script will continue once connection is re-established.
+- name: >
+    Automatically rebooting if necessary.
+    You may need to manually power-up the machine.
+    Script will continue once connection is re-established.
   become: true
-  when: rkrn12.changed
+  when:
+    - rkrn12.changed
+    - pngnx_update_kernel
   ansible.builtin.reboot:
     msg:
       - "**************************************************************************"
@@ -23,7 +32,9 @@
       - "**************************************************************************"
 
 - name: Reboot status check.
-  when: rkrn12.changed
+  when:
+    - rkrn12.changed
+    - pngnx_update_kernel
   ansible.builtin.debug:
     msg:
       - "**************************************************************************"
