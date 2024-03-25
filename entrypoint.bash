@@ -35,7 +35,7 @@ set -x
 cd /root
 
 # Bootstrap minimal Ansible install, plus git, python3, and lsb-release
-apt-get -qq install ansible git python3 lsb-release
+# apt-get -qq install ansible git python3 lsb-release
 
 # Assume we only downloaded this shell script, so get the repo
 git clone https://github.com/chrsmj/pngnx23299.git
@@ -48,8 +48,8 @@ git checkout main
 ansible-playbook -i localhost, --connection=local --skip-tags confirm playbook.yml
 
 # Clean up the Ansible bits (mostly python libs)
-apt-get -qq remove ansible
-apt-get -qq autoremove
+# apt-get -qq remove ansible
+# apt-get -qq autoremove
 
 # Finish the command logging
 set +x
