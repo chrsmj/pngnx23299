@@ -9,7 +9,7 @@
 # You can run this directly on your TARGET machine.
 
 # Check if we are bash shell
-if [ "x${EUID}" = "x" ]; then
+if [ "${EUID}" = "" ]; then
   echo "This script must be run in bash"
   exit 1
 fi
@@ -41,7 +41,7 @@ cd /root
 git clone https://github.com/chrsmj/pngnx23299.git
 
 # Get to the right branch in the repo
-cd pngnx23299/
+cd pngnx23299/ || exit
 git checkout main
 
 # Run the Ansible playbook locally (normally over SSH from CONTROL to TARGET)
