@@ -25,6 +25,7 @@ pngnx_asterisk_release: lts20
 # pngnx_asterisk_release: lts18
 # pngnx_asterisk_release: std21
 # pngnx_asterisk_release: crt18
+# pngnx_asterisk_release: crt20
 # pngnx_asterisk_release: git
 
 # where to pull freepbx from

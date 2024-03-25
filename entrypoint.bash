@@ -51,7 +51,7 @@ ansible-playbook \
   --become-method=su \
   --connection=local \
   --extra-vars "pngnx_update_kernel=false" \
-  --skip-tags confirm,dahdi,db,gui \
+  --skip-tags apache,confirm,dahdi,db,firewall,gui \
   playbook.yml
 
 # Clean up the Ansible bits (mostly python libs)

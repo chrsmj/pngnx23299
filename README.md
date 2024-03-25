@@ -200,7 +200,7 @@ Lets you choose between compatible Asterisk versions:
 
 `ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_asterisk_release=std21 playbook.yml`
 
-Current options: lts18, lts20 (default), std21, crt18, or git
+Current options: lts18, lts20 (default), std21, crt18, crt20, or git
 
 ### Variable: pngnx_bug_hunter
 
