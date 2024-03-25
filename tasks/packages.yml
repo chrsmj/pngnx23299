@@ -10,16 +10,12 @@
   become: true
   register: rkrn12
   when:
-    - ansible_architecture == "x86_64"
     - pngnx_update_kernel
+    - ansible_architecture == "x86_64"
   ansible.builtin.apt:
     update_cache: true
     state: latest
     name: linux-image-amd64
-
-- name: Check updated var.
-  ansible.builtin.debug:
-    msg: "pngnx_update_kernel is: {{ pngnx_update_kernel }}"
 
 - name: >
     Automatically rebooting if necessary.
@@ -27,8 +23,8 @@
     Script will continue once connection is re-established.
   become: true
   when:
-    - rkrn12.changed
     - pngnx_update_kernel
+    - rkrn12.changed
   ansible.builtin.reboot:
     msg:
       - "**************************************************************************"
@@ -37,8 +33,8 @@
 
 - name: Reboot status check.
   when:
-    - rkrn12.changed
     - pngnx_update_kernel
+    - rkrn12.changed
   ansible.builtin.debug:
     msg:
       - "**************************************************************************"
