@@ -26,7 +26,7 @@ fi
 
 # Initialize logging
 mkdir -p "${LOG_FOLDER}"
-echo "" > $LOG_FILE
+echo "" > "${LOG_FILE}"
 
 # The rest will tee to the log
 {
@@ -67,4 +67,4 @@ set +x
 
 echo -n "STOP: " && date
 
-} 2>&1 | tee -a $LOG_FILE
+} 2>&1 | tee -a "${LOG_FILE}"
