@@ -276,10 +276,10 @@
   block:
     - name: Phone provisioning with NGINX proxy in front of the Asterisk HTTP port.
       ansible.builtin.include_tasks: nginx.yml
-      when: pngnx_phoneprov|default(false)|bool_polycom is defined
+      when: pngnx_phoneprov_polycom|default(false)|bool is defined
     - name: Phone provisioning template files.
       ansible.builtin.include_tasks: phoneprov.yml
-      when: pngnx_phoneprov|default(false)|bool_polycom is defined
+      when: pngnx_phoneprov_polycom|default(false)|bool is defined
 
 # TODO: expand to more places
 - name: Log rotation policies for things in /var/log/asterisk/ tree.

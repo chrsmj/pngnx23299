@@ -9,6 +9,9 @@
 # You can run this directly on your TARGET machine.
 # But it is mostly used for testing Docker CI in github.
 
+LOG_FOLDER="/var/log/pbx"
+LOG_FILE="${LOG_FOLDER}/freepbx17-install-pngnx23299-$(date '+%Y.%m.%d-%H.%M.%S').log"
+
 # Check if we are bash shell
 if [ "${EUID}" = "" ]; then
   echo "This script must be run in bash"
@@ -22,8 +25,8 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Initialize logging
-LOG_FILE='/var/log/pbx/freepbx17-install-alt.log'
-mkdir -p '/var/log/pbx/'
+mkdir -p "${LOG_FOLDER}"
+echo "" > $log
 
 # The rest will tee to the log
 {
