@@ -26,7 +26,7 @@ fi
 
 # Initialize logging
 mkdir -p "${LOG_FOLDER}"
-echo "" > $log
+echo "" > $LOG_FILE
 
 # The rest will tee to the log
 {
