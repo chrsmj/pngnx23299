@@ -144,9 +144,9 @@ or [you can specify them during (re-)install](#ssh-keys).
 Replace TARGET with the SSH hostname you will be installing on, and run these commands:
 
 ```shell
-wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.85-alpha.tar.gz
-tar xzf v0.24.85-alpha.tar.gz
-ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.85-alpha/playbook-alt.yml
+wget https://github.com/chrsmj/pngnx23299/archive/refs/tags/v0.24.86-alpha.tar.gz
+tar xzf v0.24.86-alpha.tar.gz
+ansible-playbook --become-method=su -k -K -i TARGET, pngnx23299-0.24.86-alpha/playbook-alt.yml
 ```
 
 You will be prompted for your SSH password for TARGET. Type it in and press Enter.
