@@ -40,30 +40,30 @@ pngnx_asterisk:
   # previous Asterisk LTS
   lts18:
     major: 18
-    minor: 22.0
-    checksum: sha256:ad54e6089029d8eaa3e25576037c412cf54a57db904fcbc05fe23835f65e4015
+    minor: 23.1
+    checksum: sha256:a46a85f676ea820f9c3c550c7caa8d9515e7754512740768a1336a82e8cf6162
   # current Asterisk LTS
   lts20:
     major: 20
-    minor: 7.0
-    checksum: sha256:3d47889d2c4501974a8adaaba49738e6268a836dc177c7887a93a8ecf1d38b26
+    minor: 8.1
+    checksum: sha256:fa498b6224e8c262de6840a67e00e3747e178fcefd9fb2595885d402ca3248f5
   # latest Asterisk STD
   std21:
     major: 21
-    minor: 2.0
-    checksum: sha256:5737a976e9252e2d5e87d2e8176b1e07415057291c656b7547d0a79e0e8c3969
+    minor: 3.1
+    checksum: sha256:cf59196b94851fbfdbcc63d1d6a8d2b83a4ae093c89c3d37b5d460b3a3d20f15
   # certified Asterisk 18
   crt18:
     major: 18
-    minor: 9-cert8
-    checksum: sha256:23108e81e7a5a6e66ec6e059f403e6610710cb3afa22ed0f875768338b20d247
+    minor: 9-cert9
+    checksum: sha256:35ce5b34c090c68dd05fe0977a00fc0e5313df867878f3b49d428102c0c8e35b
     name: certified-asterisk
     altname: asterisk-certified
   # certified Asterisk 20
   crt20:
     major: 20
-    minor: 7-cert1-rc1
-    checksum: sha256:881189ca7165de05ad251b043a84c20a5a790eb32bcfa238b305dbec02e8772b
+    minor: 7-cert1-rc2
+    checksum: sha256:113095fae567a89cc739a54184ccf8128ab0658acd5f63a25a2eeebb9f6a6200
     name: certified-asterisk
     altname: asterisk-certified
   # git Asterisk

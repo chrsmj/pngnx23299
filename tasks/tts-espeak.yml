@@ -62,8 +62,17 @@
     remote_src: true
     mode: "0400"
 
+- name: Clean Espeak.
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - clean
+  args:
+    chdir: "{{ pngnx_espeak_asterisk_target }}"
+  changed_when: true
+  ignore_errors: true
+
 - name: Make Espeak.
-  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make

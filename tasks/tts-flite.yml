@@ -61,8 +61,17 @@
     remote_src: true
     mode: "0400"
 
+- name: Clean Flite.
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+      - clean
+  args:
+    chdir: "{{ pngnx_flite_asterisk_target }}"
+  changed_when: true
+  ignore_errors: true
+
 - name: Make Flite.
-  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make

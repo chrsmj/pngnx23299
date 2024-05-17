@@ -31,6 +31,7 @@
 * initial web user should be available to auto-generate [see](https://community.freepbx.org/t/create-1st-admin-user-from-cli/65133)
 * ARI interfaces
 * Wazo repository
+* alembic and PostgreSQL setup (apt-get install alembic python3-psycopg2)
 
 ## phoneprov
 * phoneprov should probably be a FreePBX module with proxying via Apache instead of NGINX

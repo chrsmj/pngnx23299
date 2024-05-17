@@ -62,20 +62,27 @@
     chdir: "{{ pngnx_vosk_asterisk_target }}"
   changed_when: true
 
+- name: Clean Vosk.
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/make
+  args:
+    chdir: "{{ pngnx_vosk_asterisk_target }}"
+  changed_when: true
+  ignore_errors: true
+
 - name: Configure Vosk.
-  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - ./configure
       - --with-asterisk={{ pngnx_asterisk_target }}
       - --prefix=/usr
-      - "{{ 'CFLAGS=-Og' if pngnx_bug_hunter|default(false)|bool }}"
+      - "{{ 'CFLAGS=-Og -ggdb3 -pthread' if pngnx_bug_hunter|default(false)|bool else 'CFLAGS=-O2 -pthread' }}"
   args:
     chdir: "{{ pngnx_vosk_asterisk_target }}"
   changed_when: true
 
 - name: Make Vosk.
-  when: pngnx_new_src|default(true)|bool
   ansible.builtin.command:
     argv:
       - /usr/bin/make
