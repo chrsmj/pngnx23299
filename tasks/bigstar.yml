@@ -43,6 +43,23 @@
     dest: "{{ tmpast.path }}/asterisk-{{ pngnx_asterisk_version }}"
     version: "{{ pngnx_asterisk_major }}"
 
+- name: Backup existing source directory (if any.)
+  become: true
+  when: pngnx_backup_src|default(true)|bool
+  ansible.builtin.copy:
+    src: "{{ pngnx_asterisk_target }}"
+    dest: "{{ pngnx_asterisk_target }}.{{ pngnx_backup_suffix }}"
+    remote_src: true
+    backup: true
+  ignore_errors: true
+
+- name: Recursively purge and remove the old source directory (if any.)
+  become: true
+  when: pngnx_purge_src|default(true)|bool
+  ansible.builtin.file:
+    path: "{{ pngnx_asterisk_target }}"
+    state: absent
+
 - name: Copy Asterisk source from temp directory to target install directory.
   become: true
   when: pngnx_new_src|default(true)|bool
@@ -64,6 +81,24 @@
     dest: "{{ pngnx_build_target }}"
     remote_src: true
     mode: "0400"
+
+- name: Version control the source directory.
+  when:
+    - pngnx_control_src|default(true)|bool
+    - pngnx_asterisk_minor != "git"
+  ansible.builtin.command:
+    argv:
+      - /usr/bin/git
+      - "{{ item.0 }}"
+      - "{{ item.1 }}"
+      - "{{ item.2 }}"
+      - "{{ item.3 }}"
+  args:
+    chdir: "{{ pngnx_asterisk_target }}"
+  loop:
+    - { 0: "init",    1: "-q",  2: "-q",             3: "-q" }
+    - { 0: "add",     1: ".",   2: "-v",             3: "-v" }
+    - { 0: "commit",  1: "-m",  2: "initial import", 3: "--allow-empty" }
 
 - name: Update the Asterisk source in target dir - via git.
   when: pngnx_asterisk_minor == "git"

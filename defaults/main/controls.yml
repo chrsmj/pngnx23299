@@ -3,20 +3,41 @@
 
 # This control file makes for easy copy-pasta into your hosts/ definitions.
 # It is probably the one you will modify most often when customizing things.
+# Overall, fairly idempotent, but you can still shoot yourself in the foot!
 
+# name for many things eg. the systemd service
 pngnx_distro: pngnx23299
 
-# the script is fairly idempotent but you can still shoot yourself in the foot
+# download new sources (uses ansible module)
 pngnx_new_src: true
+
+# clean source tree (make clean)
 pngnx_clean_src: true
+
+# make a copy of existing sources (if any)
+pngnx_backup_src: true
+
+# recursively purge existing source tree (if any)
+pngnx_purge_src: false
+
+# initialize fresh local git repos for the source trees (tarballs only - ie. not if upstream is git)
+pngnx_control_src: true
+
+# removes all existing installed asterisk module binaries
 pngnx_clean_asterisk_modules: true
+
+# runs make install (including install-headers for asterisk)
 pngnx_do_asterisk_install: true
+
+# source downloads initially to temp files then copied to build target
 pngnx_build_target: /usr/local/src
 
 # useful for development and advanced debugging
 pngnx_bug_hunter: false
 
 # which upstream repos to use, if any
+# pngnx_debrepo: deb
+# pngnx_debrepo: pnx
 # pngnx_debrepo: sng
 # pngnx_debrepo: wzo
 
