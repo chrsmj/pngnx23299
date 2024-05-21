@@ -43,7 +43,7 @@
     dest: "{{ tmpast.path }}/asterisk-{{ pngnx_asterisk_version }}"
     version: "{{ pngnx_asterisk_major }}"
 
-- name: Backup existing source directory (if any.)
+- name: Backup existing Asterisk source directory (if any.)
   become: true
   when: pngnx_backup_src|default(true)|bool
   ansible.builtin.copy:
@@ -53,7 +53,7 @@
     backup: true
   ignore_errors: true
 
-- name: Recursively purge and remove the old source directory (if any.)
+- name: Recursively purge and remove the old Asterisk source directory (if any.)
   become: true
   when: pngnx_purge_src|default(true)|bool
   ansible.builtin.file:
@@ -82,7 +82,7 @@
     remote_src: true
     mode: "0400"
 
-- name: Version control the source directory.
+- name: Version control the Asterisk source directory.
   when:
     - pngnx_control_src|default(true)|bool
     - pngnx_asterisk_minor != "git"
@@ -120,7 +120,7 @@
   failed_when: fail_astdistclean.rc != 0
   changed_when: "'Cleaning' in fail_astdistclean.stdout"
 
-- name: Specify some default build options.
+- name: Specify some default Asterisk build options.
   become: true
   ansible.builtin.copy:
     src: asterisk-{{ pngnx_asterisk_major }}.makeopts

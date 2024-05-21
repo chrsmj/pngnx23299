@@ -33,7 +33,7 @@
     dest: "{{ tmpvsk.path }}"
     remote_src: true
 
-- name: Backup existing source directory (if any.)
+- name: Backup existing Vosk source directory (if any.)
   become: true
   when: pngnx_backup_src|default(true)|bool
   ansible.builtin.copy:
@@ -43,7 +43,7 @@
     backup: true
   ignore_errors: true
 
-- name: Recursively purge and remove the old source directory (if any.)
+- name: Recursively purge and remove the old Vosk source directory (if any.)
   become: true
   when: pngnx_purge_src|default(true)|bool
   ansible.builtin.file:
@@ -70,7 +70,7 @@
     remote_src: true
     mode: "0400"
 
-- name: Version control the source directory.
+- name: Version control the Vosk source directory.
   when:
     - pngnx_control_src|default(true)|bool
   ansible.builtin.command:
@@ -144,7 +144,7 @@
     force: false
     mode: "0555"
 
-- name: Make sure needed Asterisk modules are loaded in modules.conf
+- name: Make sure needed Asterisk modules for Vosk are loaded in modules.conf
   become: true
   ansible.builtin.lineinfile:
     path: /etc/asterisk/modules.conf
