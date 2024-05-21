@@ -216,7 +216,7 @@ Current options:
 * lts = long term support
 * std = standard
 * crt = certified
-* git = github pull
+* git = clone the latest Asterisk source repository from GitHub
 
 ### Variable: pngnx_bug_hunter
 
