@@ -1,6 +1,6 @@
 # pngnx23299
 
-**An Ansible Role for installing Asterisk and FreePBX 17 on Debian 12**
+**An Ansible Role for installing Asterisk on Debian 12 with (or without) FreePBX 17**
 
 *Currently for testing purposes only.*
 
@@ -23,9 +23,11 @@ Designed to get a few desk phones quickly ringing by manually configuring them i
     * [Variable: pngnx_asterisk_release](#variable-pngnx_asterisk_release)
     * [Variable: pngnx_bug_hunter](#variable-pngnx_bug_hunter)
     * [Skip Tags: extra,plus](#skip-tags-extraplus)
+    * [Combine Tags](#combine-tags)
     * [Multiple TARGETs](#multiple-targets)
     * [SSH Keys](#ssh-keys)
     * [Build Asterisk](#build-asterisk)
+    * [Arbitrary Task](#arbitrary-task)
 5. [Idempotent Installation](#idempotent-installation) / Tag Details:
     * [apache](#tag-apache)
     * [asr](#tag-asr)
@@ -200,13 +202,35 @@ Lets you choose between compatible Asterisk versions:
 
 `ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_asterisk_release=std21 playbook.yml`
 
-Current options: lts18, lts20 (default), std21, crt18, crt20, or git
+Current options:
+
+* lts18
+* lts20 (default)
+* std21
+* crt18
+* crt20
+* git
+
+*Abbreviations:*
+
+* lts = long term support
+* std = standard
+* crt = certified
+* git = github pull
 
 ### Variable: pngnx_bug_hunter
 
 Installs Asterisk with more debugging options enabled:
 
 `ansible-playbook --become-method=su -k -K -i TARGET, -e pngnx_bug_hunter=true playbook.yml`
+
+### Combine Tags
+
+Install only certain parts eg. Asterisk, Vosk, Espeak & Flite -- plus Debian packages:
+
+`ansible-playbook --become-method=su -k -K -i TARGET, -t packages,star,asr,tts -e pngnx_bug_hunter=true playbook.yml`
+
+*Produces debugging Asterisk binary with separate modules for standalone Text-To-Speech (tts) and Speech-To-Text (tts) / Automatic Speech Recognition (asr).*
 
 ### Skip Tags: extra,plus
 
@@ -250,7 +274,7 @@ Downloads and Builds Asterisk but does not Install it:
 
 *See defaults/main/versions.yml for changing the Asterisk version.*
 
-### Re-Run starting at an arbitrary Task
+### Arbitrary Task
 
 If your install breaks at any Task, you can inspect, fix, and then restart at that point:
 
@@ -281,6 +305,8 @@ Prepares Apache webserver for FreePBX installation (but does not actually instal
 Sets up Automatic Speech Recognition in Asterisk using res_speech Vosk app:
 
 `ansible-playbook -i TARGET, -t asr playbook.yml`
+
+*ASR is also known as Speech-To-Text (STT).*
 
 ### Tag: catbert
 
